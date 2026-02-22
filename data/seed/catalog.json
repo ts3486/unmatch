@@ -1,0 +1,156 @@
+{
+  "version": "1.0.0",
+  "localeDefault": "en",
+  "triggers": [
+    { "id": "lonely", "label": "Lonely", "description": "Feeling alone or craving connection." },
+    { "id": "bored", "label": "Bored", "description": "Nothing to do; looking for quick stimulation." },
+    { "id": "anxious", "label": "Anxious", "description": "Worrying or restless; seeking relief." },
+    { "id": "low_self_esteem", "label": "Low self-esteem", "description": "Seeking validation or reassurance." },
+    { "id": "before_sleep", "label": "Before sleep", "description": "Late-night scrolling habit." },
+    { "id": "after_drinking", "label": "After drinking", "description": "Lower inhibition; impulsive choices." },
+    { "id": "after_notification", "label": "After a notification", "description": "Reacting to pings, likes, or messages." }
+  ],
+  "urgeKinds": [
+    { "id": "swipe", "label": "Swiping", "help": "I want to swipe right now." },
+    { "id": "check", "label": "Checking", "help": "I want to check messages/likes." },
+    { "id": "spend", "label": "Spending", "help": "I want to buy boosts/premium or spend money to meet." }
+  ],
+  "spendCategories": [
+    { "id": "iap", "label": "In-app purchase" },
+    { "id": "date", "label": "Date spending" },
+    { "id": "gift", "label": "Gifts" },
+    { "id": "tipping", "label": "Tipping / sending money" },
+    { "id": "transport", "label": "Transport" },
+    { "id": "other", "label": "Other" }
+  ],
+  "spendItemTypes": [
+    { "id": "boost", "label": "Boost" },
+    { "id": "like_pack", "label": "Like pack" },
+    { "id": "premium", "label": "Premium subscription" },
+    { "id": "other", "label": "Other" }
+  ],
+  "actions": [
+    {
+      "id": "breathing_60",
+      "minutes": 1,
+      "title": "60-second reset breathing",
+      "steps": ["Inhale 4s", "Hold 2s", "Exhale 6s", "Repeat 5 times"],
+      "tags": ["calm", "panic"]
+    },
+    {
+      "id": "water_1",
+      "minutes": 1,
+      "title": "Drink water, reset posture",
+      "steps": ["Drink a glass of water", "Roll shoulders back", "Relax jaw for 10 seconds"],
+      "tags": ["body", "quick"]
+    },
+    {
+      "id": "stretch_5",
+      "minutes": 5,
+      "title": "5-minute stretch",
+      "steps": ["Neck stretch 30s", "Chest opener 60s", "Hip flexor stretch 2m", "Deep breaths 1m"],
+      "tags": ["body", "calm"]
+    },
+    {
+      "id": "walk_5",
+      "minutes": 5,
+      "title": "5-minute walk",
+      "steps": ["Stand up", "Walk to a different room or outside", "Notice 5 things you see"],
+      "tags": ["movement", "reset"]
+    },
+    {
+      "id": "tidy_5",
+      "minutes": 5,
+      "title": "5-minute tidy",
+      "steps": ["Set a 5-min timer", "Clear one small surface", "Stop when timer ends"],
+      "tags": ["reset", "environment"]
+    },
+    {
+      "id": "journal_5",
+      "minutes": 5,
+      "title": "5-minute urge journal (picklist)",
+      "steps": [
+        "Pick your trigger",
+        "Pick your feeling (restless/lonely/anxious/bored)",
+        "Pick one helpful next step"
+      ],
+      "tags": ["reflection", "awareness"]
+    },
+    {
+      "id": "message_friend_1",
+      "minutes": 1,
+      "title": "Send a quick check-in to a friend",
+      "steps": ["Send: “Hey, quick check-in—how’s your day?”", "Put phone down after sending"],
+      "tags": ["connection", "replacement"]
+    },
+    {
+      "id": "close_app_now",
+      "minutes": 1,
+      "title": "Close the app now",
+      "steps": ["Close the dating app", "Turn phone face down", "Do one 1-minute action instead"],
+      "tags": ["boundary", "spend"]
+    },
+    {
+      "id": "budget_check",
+      "minutes": 1,
+      "title": "Budget check (gentle)",
+      "steps": [
+        "Look at your daily/weekly limit",
+        "Ask: “Will I still want this tomorrow?”",
+        "If unsure, delay 24 hours"
+      ],
+      "tags": ["spend", "delay"]
+    },
+    {
+      "id": "rule_24h",
+      "minutes": 1,
+      "title": "24-hour rule",
+      "steps": ["Delay the decision 24 hours", "If you still want it tomorrow, reconsider calmly"],
+      "tags": ["spend", "delay"]
+    },
+    {
+      "id": "reason_picklist",
+      "minutes": 1,
+      "title": "Reason picklist",
+      "steps": [
+        "Pick why you want to spend (validation/curiosity/FOMO/anxiety)",
+        "Pick why you might not (money/time/self-respect)",
+        "Choose a 1-minute replacement action"
+      ],
+      "tags": ["spend", "awareness"]
+    }
+  ],
+  "spendDelayCards": [
+    {
+      "id": "rule_24h_card",
+      "title": "Delay the purchase by 24 hours",
+      "body": "Impulses shrink when you pause. You can always choose later with a clearer head.",
+      "ctaActionId": "rule_24h"
+    },
+    {
+      "id": "budget_check_card",
+      "title": "Do a 10-second budget check",
+      "body": "Look at your daily/weekly limit. If you’re unsure, delay the decision.",
+      "ctaActionId": "budget_check"
+    },
+    {
+      "id": "reason_picklist_card",
+      "title": "Name the impulse (pick one)",
+      "body": "Validation, curiosity, FOMO, anxiety, boredom. Naming reduces its power.",
+      "ctaActionId": "reason_picklist"
+    },
+    {
+      "id": "close_app_now_card",
+      "title": "Close the app right now",
+      "body": "You don’t have to decide while activated. Close the app, then do one tiny action.",
+      "ctaActionId": "close_app_now"
+    }
+  ],
+  "copy": {
+    "panicCta": "Reset now",
+    "successTitle": "Nice work.",
+    "successBody": "Small wins add up.",
+    "failTitle": "It’s okay.",
+    "failBody": "Let’s aim for the next 1-minute win."
+  }
+}

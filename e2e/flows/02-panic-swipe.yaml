@@ -1,0 +1,37 @@
+appId: com.quittr.app
+---
+# Panic flow: swipe urge → breathing (skip) → action → resist → home.
+# Verifies the reset flow is reachable in 2 taps and works fully offline.
+
+- launchApp:
+    clearState: true
+- runFlow: ../subflows/onboarding.yaml
+
+# --- Tap 1: Home → Panic tab via sticky CTA ---
+- tapOn: "Reset now"
+- assertVisible: "What's happening right now?"
+- assertVisible: "Choose what's pulling you"
+
+# --- Tap 2: Select urge — flow starts ---
+- tapOn: "Swiping"
+- assertVisible: "One minute to reset"
+- assertVisible: "Follow the breathing guide below"
+
+# Skip breathing exercise
+- tapOn: "Skip"
+- assertVisible: "Choose your next step"
+- assertVisible: "Pick something you can do right now"
+
+# Select first action (IconButton has accessibilityLabel "Select <title>")
+- tapOn: "Select 60-second reset breathing"
+- assertVisible: "How did it go?"
+- assertVisible: "Be honest — there's no judgment here"
+
+# Log outcome: resisted
+- tapOn: "I resisted"
+- assertVisible: "Nice work."
+- assertVisible: "Small wins add up."
+
+# Return to Home
+- tapOn: "Done"
+- assertVisible: "Home"

@@ -1,0 +1,44 @@
+appId: com.quittr.app
+---
+# Panic flow: spend urge → breathing (skip) → spend delay step → resisted → home.
+# The spend path has an extra "spend delay" screen not present in swipe/check flows.
+
+- launchApp:
+    clearState: true
+- runFlow: ../subflows/onboarding.yaml
+
+- tapOn: "Reset now"
+- assertVisible: "What's happening right now?"
+
+# Select spend urge
+- tapOn: "Spending"
+- assertVisible: "One minute to reset"
+- tapOn: "Skip"
+
+# Spend-delay step (unique to spend urge kind)
+- assertVisible: "Before you spend..."
+- assertVisible: "Try one of these first"
+- assertVisible: "Delay the purchase by 24 hours"
+- assertVisible: "Do a 10-second budget check"
+
+# Resist without taking an action
+- tapOn: "I resisted"
+- assertVisible: "Nice work."
+- tapOn: "Done"
+- assertVisible: "Home"
+
+# --- Second pass: "spent anyway" path ---
+- tapOn: "Reset now"
+- tapOn: "Spending"
+- tapOn: "Skip"
+- assertVisible: "Before you spend..."
+- tapOn: "I spent anyway"
+- assertVisible: "How did it go?"
+
+# Log a trigger + category, then give in
+- tapOn: "Lonely"
+- tapOn: "In-app purchases"
+- tapOn: "I gave in"
+- assertVisible: "It's okay."
+- tapOn: "Done"
+- assertVisible: "Home"

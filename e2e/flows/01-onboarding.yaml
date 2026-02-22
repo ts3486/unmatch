@@ -1,0 +1,39 @@
+appId: com.quittr.app
+---
+# Full onboarding flow — verifies every step renders and submits correctly.
+
+- launchApp:
+    clearState: true
+
+# Welcome
+- assertVisible: "Something worth protecting"
+- tapOn:
+    id: "welcome-get-started"
+
+# Goal selection — toggle between two options to verify tap works
+- assertVisible: "What would feel like a win?"
+- tapOn:
+    id: "goal-reduce_open"
+- tapOn:
+    id: "goal-reduce_swipe"
+- tapOn:
+    point: "50%, 91%"
+
+# Trigger selection — pick one chip, then continue
+- assertVisible: "When does the pull feel strongest?"
+- tapOn: "Bored"
+- tapOn:
+    point: "50%, 91%"
+
+# Notifications — switch style then start
+- assertVisible: "How should we notify you?"
+- tapOn:
+    id: "notif-stealth"
+- tapOn:
+    id: "notif-normal"
+- tapOn:
+    point: "50%, 91%"
+
+# Should land on Home tab
+- assertVisible: "Home"
+- assertVisible: "Reset now"

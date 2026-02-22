@@ -1,0 +1,29 @@
+appId: com.quittr.app
+---
+# Reusable subflow: completes onboarding from a fresh launch.
+# Call this after launchApp (clearState: true) in any flow that needs the app set up.
+
+# Welcome step
+- assertVisible: "Something worth protecting"
+- tapOn:
+    id: "welcome-get-started"
+
+# Goal step
+- assertVisible: "What would feel like a win?"
+- tapOn:
+    id: "goal-reduce_swipe"
+- tapOn:
+    point: "50%, 91%"
+
+# Triggers step — skip selection
+- assertVisible: "When does the pull feel strongest?"
+- tapOn:
+    point: "50%, 91%"
+
+# Notifications step — tap Begin
+- assertVisible: "How should we notify you?"
+- tapOn:
+    point: "50%, 91%"
+
+# Home should be visible
+- assertVisible: "Home"

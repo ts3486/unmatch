@@ -1,0 +1,37 @@
+appId: com.quittr.app
+---
+# Ship checklist: export and delete data flows.
+# Verifies both actions are reachable, dialogs open, and delete requires confirmation.
+
+- launchApp:
+    clearState: true
+- runFlow: ../subflows/onboarding.yaml
+
+# Navigate: Settings → Privacy and data
+- tapOn: "Settings"
+- tapOn: "Privacy and data"
+- assertVisible: "Privacy and data"
+- assertVisible: "All your data is stored locally on your device."
+
+# --- Export flow ---
+- tapOn: "Export"
+- assertVisible: "Data exported"
+- assertVisible: "exported_at"    # JSON preview contains this key
+- tapOn: "Close"
+
+# --- Delete flow: cancel path (confirm dialog opens, then cancel) ---
+- tapOn: "Delete"
+- assertVisible: "Delete all data?"
+- assertVisible: "This action cannot be undone."
+- tapOn: "Cancel"
+- assertVisible: "Privacy and data"  # still on screen, no deletion happened
+
+# --- Delete flow: confirm path ---
+- tapOn: "Delete"
+- assertVisible: "Delete all data?"
+- tapOn: "Delete all"
+- assertVisible: "Data deleted"
+- tapOn: "OK"
+
+# App should still be on the Privacy screen (not crashed)
+- assertVisible: "Privacy and data"

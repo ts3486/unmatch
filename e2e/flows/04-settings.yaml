@@ -1,0 +1,50 @@
+appId: com.quittr.app
+---
+# Settings navigation — verifies all list items are tappable and sub-screens open.
+
+- launchApp:
+    clearState: true
+- runFlow: ../subflows/onboarding.yaml
+
+# Navigate to Settings tab
+- tapOn: "Settings"
+- assertVisible: "Settings"
+- assertVisible: "Your Boundaries"
+- assertVisible: "Your Notifications"
+- assertVisible: "Tools"
+- assertVisible: "Your Data"
+- assertVisible: "Plan"
+
+# Notification style cycles: Normal → Stealth → Off → Normal
+- tapOn: "Notification style"
+- assertVisible: "Stealth"
+- tapOn: "Notification style"
+- assertVisible: "Off"
+- tapOn: "Notification style"
+- assertVisible: "Normal"
+
+# Open Blocker guide sub-screen
+- tapOn: "Blocker guide"
+- assertVisible: "Blocker guide"
+- swipe:
+    direction: LEFT
+    startX: 5%
+    startY: 50%
+
+# Open Privacy and data sub-screen
+- tapOn: "Privacy and data"
+- assertVisible: "Privacy and data"
+- assertVisible: "Export data"
+- assertVisible: "Delete all data"
+- swipe:
+    direction: LEFT
+    startX: 5%
+    startY: 50%
+
+# Open Paywall sub-screen
+- tapOn: "Manage subscription"
+- swipe:
+    direction: LEFT
+    startX: 5%
+    startY: 50%
+- assertVisible: "Settings"

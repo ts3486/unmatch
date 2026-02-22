@@ -1,0 +1,411 @@
+// Unit tests for src/data/repositories/urge-repository.ts.
+// The SQLiteDatabase is mocked so tests run in Node without native modules.
+// Key focus: UTC date-range logic, SQL correctness, and row mapping.
+
+import type { SQLiteDatabase } from 'expo-sqlite';
+import {
+  createUrgeEvent,
+  countSpendAvoidedByDate,
+  countSuccessesByDate,
+  getUrgeEventsByDate,
+  getUrgeEventsInRange,
+} from '@/src/data/repositories/urge-repository';
+
+// ---------------------------------------------------------------------------
+// SQLiteDatabase mock factory
+// ---------------------------------------------------------------------------
+
+function makeMockDb(overrides?: Partial<{
+  getFirstAsync: jest.Mock;
+  getAllAsync: jest.Mock;
+  runAsync: jest.Mock;
+}>): SQLiteDatabase {
+  return {
+    getFirstAsync: jest.fn().mockResolvedValue(null),
+    getAllAsync: jest.fn().mockResolvedValue([]),
+    runAsync: jest.fn().mockResolvedValue(undefined),
+    ...overrides,
+  } as unknown as SQLiteDatabase;
+}
+
+// ---------------------------------------------------------------------------
+// createUrgeEvent
+// ---------------------------------------------------------------------------
+
+describe('createUrgeEvent', () => {
+  it('calls db.runAsync exactly once', async () => {
+    const db = makeMockDb();
+    await createUrgeEvent(db, {
+      started_at: '2026-02-18T10:00:00.000Z',
+      from_screen: 'panic',
+      urge_level: 5,
+      protocol_completed: 1,
+      urge_kind: 'swipe',
+      action_type: 'calm',
+      action_id: 'breathing_60',
+      outcome: 'success',
+      trigger_tag: null,
+      spend_category: null,
+      spend_item_type: null,
+      spend_amount: null,
+    });
+    expect(db.runAsync).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses INSERT INTO urge_event SQL', async () => {
+    const db = makeMockDb();
+    await createUrgeEvent(db, {
+      started_at: '2026-02-18T10:00:00.000Z',
+      from_screen: 'panic',
+      urge_level: 7,
+      protocol_completed: 1,
+      urge_kind: 'check',
+      action_type: 'body',
+      action_id: 'water_1',
+      outcome: 'fail',
+      trigger_tag: 'bored',
+      spend_category: null,
+      spend_item_type: null,
+      spend_amount: null,
+    });
+    const [sql] = (db.runAsync as jest.Mock).mock.calls[0] as [string];
+    expect(sql).toMatch(/INSERT INTO urge_event/i);
+  });
+
+  it('returns the event with the generated ID included', async () => {
+    const db = makeMockDb();
+    const event = {
+      started_at: '2026-02-18T10:00:00.000Z',
+      from_screen: 'panic',
+      urge_level: 3,
+      protocol_completed: 1,
+      urge_kind: 'spend' as const,
+      action_type: 'reset',
+      action_id: 'walk_5',
+      outcome: 'success' as const,
+      trigger_tag: null,
+      spend_category: 'iap' as const,
+      spend_item_type: 'boost' as const,
+      spend_amount: null,
+    };
+    const result = await createUrgeEvent(db, event);
+    // ID is a generated UUID — verify it is a non-empty string
+    expect(typeof result.id).toBe('string');
+    expect(result.id.length).toBeGreaterThan(0);
+    expect(result.urge_kind).toBe('spend');
+    expect(result.outcome).toBe('success');
+    expect(result.spend_category).toBe('iap');
+  });
+
+  it('passes spend_amount as null to the DB (never stored via panic flow)', async () => {
+    const db = makeMockDb();
+    await createUrgeEvent(db, {
+      started_at: '2026-02-18T10:00:00.000Z',
+      from_screen: 'panic',
+      urge_level: 5,
+      protocol_completed: 1,
+      urge_kind: 'spend',
+      action_type: 'calm',
+      action_id: 'breathing_60',
+      outcome: 'success',
+      trigger_tag: null,
+      spend_category: null,
+      spend_item_type: null,
+      spend_amount: null,
+    });
+    const params = (db.runAsync as jest.Mock).mock.calls[0][1] as unknown[];
+    // spend_amount is the last param (index 12, 0-based)
+    const spendAmountParam = params[params.length - 1];
+    expect(spendAmountParam).toBeNull();
+  });
+
+  it('passes trigger_tag correctly when provided', async () => {
+    const db = makeMockDb();
+    await createUrgeEvent(db, {
+      started_at: '2026-02-18T10:00:00.000Z',
+      from_screen: 'panic',
+      urge_level: 5,
+      protocol_completed: 1,
+      urge_kind: 'swipe',
+      action_type: 'calm',
+      action_id: 'breathing_60',
+      outcome: 'success',
+      trigger_tag: 'lonely',
+      spend_category: null,
+      spend_item_type: null,
+      spend_amount: null,
+    });
+    const params = (db.runAsync as jest.Mock).mock.calls[0][1] as unknown[];
+    expect(params).toContain('lonely');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getUrgeEventsByDate — UTC range logic
+// ---------------------------------------------------------------------------
+
+describe('getUrgeEventsByDate', () => {
+  it('calls db.getAllAsync with two UTC ISO-8601 strings', async () => {
+    const db = makeMockDb();
+    await getUrgeEventsByDate(db, '2026-02-18');
+    const [, params] = (db.getAllAsync as jest.Mock).mock.calls[0] as [string, string[]];
+    expect(params).toHaveLength(2);
+    // Both should parse as valid dates
+    expect(isNaN(new Date(params[0]).getTime())).toBe(false);
+    expect(isNaN(new Date(params[1]).getTime())).toBe(false);
+  });
+
+  it('UTC range spans exactly 24 hours', async () => {
+    const db = makeMockDb();
+    await getUrgeEventsByDate(db, '2026-02-18');
+    const [, params] = (db.getAllAsync as jest.Mock).mock.calls[0] as [string, string[]];
+    const startMs = new Date(params[0]).getTime();
+    const endMs = new Date(params[1]).getTime();
+    expect(endMs - startMs).toBe(24 * 60 * 60 * 1000);
+  });
+
+  it('range start corresponds to midnight local time for the given date', async () => {
+    const db = makeMockDb();
+    await getUrgeEventsByDate(db, '2026-02-18');
+    const [, params] = (db.getAllAsync as jest.Mock).mock.calls[0] as [string, string[]];
+    // The start should be the UTC equivalent of local midnight on 2026-02-18
+    const expectedStartMs = new Date('2026-02-18T00:00:00').getTime();
+    expect(new Date(params[0]).getTime()).toBe(expectedStartMs);
+  });
+
+  it('handles month boundary correctly (Jan 31 → Feb 1)', async () => {
+    const db = makeMockDb();
+    await getUrgeEventsByDate(db, '2026-01-31');
+    const [, params] = (db.getAllAsync as jest.Mock).mock.calls[0] as [string, string[]];
+    const startMs = new Date(params[0]).getTime();
+    const endMs = new Date(params[1]).getTime();
+    // End date local time should correspond to Feb 1 midnight
+    const expectedEndMs = new Date('2026-02-01T00:00:00').getTime();
+    expect(endMs).toBe(expectedEndMs);
+    expect(endMs - startMs).toBe(24 * 60 * 60 * 1000);
+  });
+
+  it('handles year boundary correctly (Dec 31 → Jan 1)', async () => {
+    const db = makeMockDb();
+    await getUrgeEventsByDate(db, '2025-12-31');
+    const [, params] = (db.getAllAsync as jest.Mock).mock.calls[0] as [string, string[]];
+    const startMs = new Date(params[0]).getTime();
+    const endMs = new Date(params[1]).getTime();
+    const expectedEndMs = new Date('2026-01-01T00:00:00').getTime();
+    expect(endMs).toBe(expectedEndMs);
+    expect(endMs - startMs).toBe(24 * 60 * 60 * 1000);
+  });
+
+  it('returns empty array when db returns no rows', async () => {
+    const db = makeMockDb();
+    const result = await getUrgeEventsByDate(db, '2026-02-18');
+    expect(result).toEqual([]);
+  });
+
+  it('maps rows to UrgeEvent objects correctly', async () => {
+    const mockRow = {
+      id: 'event-1',
+      started_at: '2026-02-18T10:00:00.000Z',
+      from_screen: 'panic',
+      urge_level: 6,
+      protocol_completed: 1,
+      urge_kind: 'swipe',
+      action_type: 'calm',
+      action_id: 'breathing_60',
+      outcome: 'success',
+      trigger_tag: 'bored',
+      spend_category: null,
+      spend_item_type: null,
+      spend_amount: null,
+    };
+    const db = makeMockDb({
+      getAllAsync: jest.fn().mockResolvedValue([mockRow]),
+    });
+    const result = await getUrgeEventsByDate(db, '2026-02-18');
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('event-1');
+    expect(result[0].urge_kind).toBe('swipe');
+    expect(result[0].outcome).toBe('success');
+    expect(result[0].trigger_tag).toBe('bored');
+  });
+
+  it('maps null action_type to empty string', async () => {
+    const mockRow = {
+      id: 'event-2',
+      started_at: '2026-02-18T10:00:00.000Z',
+      from_screen: 'panic',
+      urge_level: 3,
+      protocol_completed: 0,
+      urge_kind: 'check',
+      action_type: null,
+      action_id: null,
+      outcome: null,
+      trigger_tag: null,
+      spend_category: null,
+      spend_item_type: null,
+      spend_amount: null,
+    };
+    const db = makeMockDb({
+      getAllAsync: jest.fn().mockResolvedValue([mockRow]),
+    });
+    const result = await getUrgeEventsByDate(db, '2026-02-18');
+    expect(result[0].action_type).toBe('');
+    expect(result[0].action_id).toBe('');
+    // null outcome defaults to 'ongoing'
+    expect(result[0].outcome).toBe('ongoing');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// countSuccessesByDate
+// ---------------------------------------------------------------------------
+
+describe('countSuccessesByDate', () => {
+  it('returns 0 when db returns null', async () => {
+    const db = makeMockDb({
+      getFirstAsync: jest.fn().mockResolvedValue(null),
+    });
+    const count = await countSuccessesByDate(db, '2026-02-18');
+    expect(count).toBe(0);
+  });
+
+  it('returns the count from the db row', async () => {
+    const db = makeMockDb({
+      getFirstAsync: jest.fn().mockResolvedValue({ count: 3 }),
+    });
+    const count = await countSuccessesByDate(db, '2026-02-18');
+    expect(count).toBe(3);
+  });
+
+  it('SQL filters by outcome = success', async () => {
+    const db = makeMockDb({
+      getFirstAsync: jest.fn().mockResolvedValue({ count: 0 }),
+    });
+    await countSuccessesByDate(db, '2026-02-18');
+    const [sql] = (db.getFirstAsync as jest.Mock).mock.calls[0] as [string];
+    expect(sql).toMatch(/outcome\s*=\s*'success'/i);
+  });
+
+  it('UTC range spans 24 hours', async () => {
+    const db = makeMockDb({
+      getFirstAsync: jest.fn().mockResolvedValue({ count: 0 }),
+    });
+    await countSuccessesByDate(db, '2026-02-18');
+    const [, params] = (db.getFirstAsync as jest.Mock).mock.calls[0] as [string, string[]];
+    const startMs = new Date(params[0]).getTime();
+    const endMs = new Date(params[1]).getTime();
+    expect(endMs - startMs).toBe(24 * 60 * 60 * 1000);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// countSpendAvoidedByDate
+// ---------------------------------------------------------------------------
+
+describe('countSpendAvoidedByDate', () => {
+  it('returns 0 when db returns null', async () => {
+    const db = makeMockDb({
+      getFirstAsync: jest.fn().mockResolvedValue(null),
+    });
+    const count = await countSpendAvoidedByDate(db, '2026-02-18');
+    expect(count).toBe(0);
+  });
+
+  it('returns the count from the db row', async () => {
+    const db = makeMockDb({
+      getFirstAsync: jest.fn().mockResolvedValue({ count: 2 }),
+    });
+    const count = await countSpendAvoidedByDate(db, '2026-02-18');
+    expect(count).toBe(2);
+  });
+
+  it('SQL filters by urge_kind = spend AND outcome = success', async () => {
+    const db = makeMockDb({
+      getFirstAsync: jest.fn().mockResolvedValue({ count: 0 }),
+    });
+    await countSpendAvoidedByDate(db, '2026-02-18');
+    const [sql] = (db.getFirstAsync as jest.Mock).mock.calls[0] as [string];
+    expect(sql).toMatch(/urge_kind\s*=\s*'spend'/i);
+    expect(sql).toMatch(/outcome\s*=\s*'success'/i);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getUrgeEventsInRange
+// ---------------------------------------------------------------------------
+
+describe('getUrgeEventsInRange', () => {
+  it('returns empty array when db returns no rows', async () => {
+    const db = makeMockDb();
+    const result = await getUrgeEventsInRange(db, '2026-02-15', '2026-02-18');
+    expect(result).toEqual([]);
+  });
+
+  it('start of range is midnight local of startDate', async () => {
+    const db = makeMockDb();
+    await getUrgeEventsInRange(db, '2026-02-15', '2026-02-18');
+    const [, params] = (db.getAllAsync as jest.Mock).mock.calls[0] as [string, string[]];
+    const expectedStart = new Date('2026-02-15T00:00:00').getTime();
+    expect(new Date(params[0]).getTime()).toBe(expectedStart);
+  });
+
+  it('end of range is midnight local of day AFTER endDate (exclusive)', async () => {
+    const db = makeMockDb();
+    await getUrgeEventsInRange(db, '2026-02-15', '2026-02-18');
+    const [, params] = (db.getAllAsync as jest.Mock).mock.calls[0] as [string, string[]];
+    const expectedEnd = new Date('2026-02-19T00:00:00').getTime();
+    expect(new Date(params[1]).getTime()).toBe(expectedEnd);
+  });
+
+  it('a single-day range behaves the same as getUrgeEventsByDate', async () => {
+    const db = makeMockDb();
+    await getUrgeEventsInRange(db, '2026-02-18', '2026-02-18');
+    const [, params] = (db.getAllAsync as jest.Mock).mock.calls[0] as [string, string[]];
+    const startMs = new Date(params[0]).getTime();
+    const endMs = new Date(params[1]).getTime();
+    expect(endMs - startMs).toBe(24 * 60 * 60 * 1000);
+  });
+
+  it('maps multiple rows to UrgeEvent array', async () => {
+    const mockRows = [
+      {
+        id: 'e1',
+        started_at: '2026-02-15T09:00:00.000Z',
+        from_screen: 'panic',
+        urge_level: 5,
+        protocol_completed: 1,
+        urge_kind: 'swipe',
+        action_type: 'calm',
+        action_id: 'breathing_60',
+        outcome: 'success',
+        trigger_tag: null,
+        spend_category: null,
+        spend_item_type: null,
+        spend_amount: null,
+      },
+      {
+        id: 'e2',
+        started_at: '2026-02-17T14:00:00.000Z',
+        from_screen: 'panic',
+        urge_level: 8,
+        protocol_completed: 1,
+        urge_kind: 'spend',
+        action_type: 'reset',
+        action_id: 'walk_5',
+        outcome: 'fail',
+        trigger_tag: 'anxious',
+        spend_category: 'iap',
+        spend_item_type: 'boost',
+        spend_amount: null,
+      },
+    ];
+    const db = makeMockDb({
+      getAllAsync: jest.fn().mockResolvedValue(mockRows),
+    });
+    const result = await getUrgeEventsInRange(db, '2026-02-15', '2026-02-17');
+    expect(result).toHaveLength(2);
+    expect(result[0].id).toBe('e1');
+    expect(result[1].id).toBe('e2');
+    expect(result[1].spend_category).toBe('iap');
+  });
+});
