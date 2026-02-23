@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Unswipe",
-    "slug": "unswipe",
+    "name": "Unmatch",
+    "slug": "unmatch",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "unswipe",
+    "scheme": "unmatch",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.h25ksmwn99.unswipe",
+      "bundleIdentifier": "com.h25ksmwn99.unmatch",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -26,7 +26,7 @@
         "backgroundColor": "#0B1220"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.unswipe.app",
+      "package": "com.unmatch.app",
       "permissions": [
         "android.permission.USE_BIOMETRIC",
         "android.permission.USE_FINGERPRINT"

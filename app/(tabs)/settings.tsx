@@ -11,7 +11,7 @@ import { useAnalytics } from '@/src/contexts/AnalyticsContext';
 import { updateUserProfile } from '@/src/data/repositories';
 import { useDatabaseContext } from '@/src/contexts/DatabaseContext';
 import { colors } from '@/src/constants/theme';
-import { UnswipeLogo } from '@/src/components/UnswipeLogo';
+import { Logo } from '@/src/components/Logo';
 import type { NotificationStyle } from '@/src/domain/types';
 
 // ---------------------------------------------------------------------------
@@ -183,11 +183,9 @@ export default function SettingsScreen(): React.ReactElement {
 
       <Divider style={styles.footerDivider} />
       <View style={styles.brandingRow}>
-        <UnswipeLogo
+        <Logo
           markSize={24}
           layout="horizontal"
-          ringColor={colors.muted}
-          leafColor={colors.muted}
           wordmarkColor={colors.muted}
         />
       </View>

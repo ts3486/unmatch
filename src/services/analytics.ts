@@ -1,4 +1,4 @@
-// Analytics interface and adapters for the Unswipe app.
+// Analytics interface and adapters for the Unmatch app.
 //
 // PRIVACY RULES (LOCKED):
 //   - `note` (daily_checkin.note) must NEVER appear in any event props.

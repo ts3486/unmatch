@@ -10,7 +10,7 @@ import type {
   UrgeOutcome,
 } from '@/src/domain/types';
 import {
-  calculateTreeLevel,
+  calculateResistRank,
   isDaySuccess,
   shouldIncrementResist,
   shouldIncrementSpendAvoided,
@@ -254,7 +254,7 @@ export function usePanicFlow(): UsePanicFlowReturn {
         ? prevSpendAvoided + 1
         : prevSpendAvoided;
 
-      const newTreeLevel = calculateTreeLevel(newResistTotal);
+      const newResistRank = calculateResistRank(newResistTotal);
 
       // Build streak from all success dates.
       const allDates = await getAllProgressDates(db);
@@ -271,7 +271,7 @@ export function usePanicFlow(): UsePanicFlowReturn {
         date_local: today,
         streak_current: newStreak,
         resist_count_total: newResistTotal,
-        tree_level: newTreeLevel,
+        tree_level: newResistRank,
         last_success_date: daySuccess ? today : (existing?.last_success_date ?? null),
         spend_avoided_count_total: newSpendAvoided,
       });

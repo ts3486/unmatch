@@ -1,4 +1,4 @@
-// Jest configuration for the Unswipe project.
+// Jest configuration for the Unmatch project.
 // Uses ts-jest to run TypeScript tests without a separate compile step.
 // Mirrors the @/ path alias defined in tsconfig.json.
 

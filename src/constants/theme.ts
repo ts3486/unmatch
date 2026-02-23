@@ -1,4 +1,4 @@
-// LOCKED theme constants for the Unswipe app.
+// LOCKED theme constants for the Unmatch app.
 // Palette and paperTheme must not be changed without explicit approval.
 // No default exports.
 

@@ -1,5 +1,5 @@
 // Database initialization module.
-// Opens unswipe.db using expo-sqlite v16 API and runs all table creation SQL.
+// Opens the database using expo-sqlite v16 API and runs all table creation SQL.
 // No default exports. TypeScript strict mode.
 
 import * as SQLite from 'expo-sqlite';
@@ -94,12 +94,12 @@ CREATE TABLE IF NOT EXISTS subscription_state (
 `.trim();
 
 /**
- * Opens unswipe.db, enables WAL mode, and creates all tables.
+ * Opens the database, enables WAL mode, and creates all tables.
  * Must be called once at app startup before any repository is used.
  * Returns the initialized SQLiteDatabase instance.
  */
 export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
-  const db = await SQLite.openDatabaseAsync('unswipe.db');
+  const db = await SQLite.openDatabaseAsync('app.db');
 
   // Enable WAL mode for better write concurrency.
   await db.execAsync('PRAGMA journal_mode = WAL;');

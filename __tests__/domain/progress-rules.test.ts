@@ -3,56 +3,56 @@
 
 import {
   calculateStreak,
-  calculateTreeLevel,
+  calculateResistRank,
   isDaySuccess,
   shouldIncrementResist,
   shouldIncrementSpendAvoided,
 } from '@/src/domain/progress-rules';
 
 // ---------------------------------------------------------------------------
-// calculateTreeLevel
+// calculateResistRank
 // ---------------------------------------------------------------------------
 
-describe('calculateTreeLevel', () => {
+describe('calculateResistRank', () => {
   it('returns level 1 when resist count is 0', () => {
-    expect(calculateTreeLevel(0)).toBe(1);
+    expect(calculateResistRank(0)).toBe(1);
   });
 
   it('returns level 1 when resist count is 4 (not yet enough for level 2)', () => {
-    expect(calculateTreeLevel(4)).toBe(1);
+    expect(calculateResistRank(4)).toBe(1);
   });
 
   it('returns level 2 when resist count is exactly 5', () => {
-    expect(calculateTreeLevel(5)).toBe(2);
+    expect(calculateResistRank(5)).toBe(2);
   });
 
   it('returns level 3 when resist count is 10', () => {
-    expect(calculateTreeLevel(10)).toBe(3);
+    expect(calculateResistRank(10)).toBe(3);
   });
 
   it('returns level 5 when resist count is 24', () => {
     // floor(24 / 5) + 1 = 4 + 1 = 5
-    expect(calculateTreeLevel(24)).toBe(5);
+    expect(calculateResistRank(24)).toBe(5);
   });
 
   it('returns level 6 when resist count is 25', () => {
     // floor(25 / 5) + 1 = 5 + 1 = 6
-    expect(calculateTreeLevel(25)).toBe(6);
+    expect(calculateResistRank(25)).toBe(6);
   });
 
   it('returns capped level 30 when resist count is 145', () => {
     // floor(145 / 5) + 1 = 29 + 1 = 30 (exactly at cap)
-    expect(calculateTreeLevel(145)).toBe(30);
+    expect(calculateResistRank(145)).toBe(30);
   });
 
   it('returns capped level 30 when resist count exceeds cap threshold (200)', () => {
     // floor(200 / 5) + 1 = 40 + 1 = 41, capped to 30
-    expect(calculateTreeLevel(200)).toBe(30);
+    expect(calculateResistRank(200)).toBe(30);
   });
 
   it('returns level 1 for negative resist count (guard clause)', () => {
-    expect(calculateTreeLevel(-1)).toBe(1);
-    expect(calculateTreeLevel(-100)).toBe(1);
+    expect(calculateResistRank(-1)).toBe(1);
+    expect(calculateResistRank(-100)).toBe(1);
   });
 });
 

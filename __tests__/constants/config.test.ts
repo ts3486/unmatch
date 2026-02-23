@@ -7,37 +7,37 @@ import {
   BREATHING_EXHALE,
   BREATHING_HOLD,
   BREATHING_INHALE,
-  LIFE_TREE_CAP,
-  LIFE_TREE_RESISTS_PER_LEVEL,
-  LIFE_TREE_START,
+  RESIST_RANK_CAP,
+  RESIST_RANK_RESISTS_PER_LEVEL,
+  RESIST_RANK_START,
 } from '@/src/constants/config';
 
 // ---------------------------------------------------------------------------
-// Life Tree constants (LOCKED per spec)
+// Resist Rank constants (LOCKED per spec)
 // ---------------------------------------------------------------------------
 
-describe('Life Tree constants (LOCKED)', () => {
-  it('LIFE_TREE_START is 1', () => {
-    expect(LIFE_TREE_START).toBe(1);
+describe('Resist Rank constants (LOCKED)', () => {
+  it('RESIST_RANK_START is 1', () => {
+    expect(RESIST_RANK_START).toBe(1);
   });
 
-  it('LIFE_TREE_CAP is 30', () => {
-    expect(LIFE_TREE_CAP).toBe(30);
+  it('RESIST_RANK_CAP is 30', () => {
+    expect(RESIST_RANK_CAP).toBe(30);
   });
 
-  it('LIFE_TREE_RESISTS_PER_LEVEL is 5', () => {
-    expect(LIFE_TREE_RESISTS_PER_LEVEL).toBe(5);
+  it('RESIST_RANK_RESISTS_PER_LEVEL is 5', () => {
+    expect(RESIST_RANK_RESISTS_PER_LEVEL).toBe(5);
   });
 
-  it('LIFE_TREE_CAP is reachable: (CAP - START) * RESISTS_PER_LEVEL resists = level 30', () => {
+  it('RESIST_RANK_CAP is reachable: (CAP - START) * RESISTS_PER_LEVEL resists = level 30', () => {
     // At (30 - 1) * 5 = 145 resists the tree hits cap exactly.
-    const resistsToMax = (LIFE_TREE_CAP - LIFE_TREE_START) * LIFE_TREE_RESISTS_PER_LEVEL;
-    const computedLevel = Math.floor(resistsToMax / LIFE_TREE_RESISTS_PER_LEVEL) + LIFE_TREE_START;
-    expect(Math.min(computedLevel, LIFE_TREE_CAP)).toBe(LIFE_TREE_CAP);
+    const resistsToMax = (RESIST_RANK_CAP - RESIST_RANK_START) * RESIST_RANK_RESISTS_PER_LEVEL;
+    const computedLevel = Math.floor(resistsToMax / RESIST_RANK_RESISTS_PER_LEVEL) + RESIST_RANK_START;
+    expect(Math.min(computedLevel, RESIST_RANK_CAP)).toBe(RESIST_RANK_CAP);
   });
 
-  it('LIFE_TREE_START < LIFE_TREE_CAP', () => {
-    expect(LIFE_TREE_START).toBeLessThan(LIFE_TREE_CAP);
+  it('RESIST_RANK_START < RESIST_RANK_CAP', () => {
+    expect(RESIST_RANK_START).toBeLessThan(RESIST_RANK_CAP);
   });
 });
 

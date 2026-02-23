@@ -2,17 +2,17 @@
 // No default exports.
 
 // ---------------------------------------------------------------------------
-// Life Tree (LOCKED)
+// Resist Rank (LOCKED)
 // ---------------------------------------------------------------------------
 
-/** Starting level for every new user. */
-export const LIFE_TREE_START = 1 as const;
+/** Starting rank for every new user. */
+export const RESIST_RANK_START = 1 as const;
 
-/** Maximum level the tree can reach. */
-export const LIFE_TREE_CAP = 30 as const;
+/** Maximum rank a user can reach. */
+export const RESIST_RANK_CAP = 30 as const;
 
-/** Number of successful resists required to advance one tree level. */
-export const LIFE_TREE_RESISTS_PER_LEVEL = 5 as const;
+/** Number of successful resists required to advance one rank. */
+export const RESIST_RANK_RESISTS_PER_LEVEL = 5 as const;
 
 // ---------------------------------------------------------------------------
 // Breathing exercise timings (seconds)

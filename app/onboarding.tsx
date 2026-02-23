@@ -23,7 +23,7 @@ import { useAppState } from '@/src/contexts/AppStateContext';
 import { useAnalytics } from '@/src/contexts/AnalyticsContext';
 import { getCatalog } from '@/src/data/seed-loader';
 import { colors } from '@/src/constants/theme';
-import { UnswipeLogo } from '@/src/components/UnswipeLogo';
+import { Logo } from '@/src/components/Logo';
 import type { GoalType, NotificationStyle, SpendingLimitMode } from '@/src/domain/types';
 
 // ---------------------------------------------------------------------------
@@ -170,7 +170,7 @@ export default function OnboardingScreen(): React.ReactElement {
     return (
       <View style={styles.root}>
         <View style={styles.centeredContent}>
-          <UnswipeLogo markSize={72} layout="vertical" wordmarkColor={colors.text} />
+          <Logo markSize={72} layout="vertical" wordmarkColor={colors.text} />
           <View style={styles.welcomeTextBlock}>
             <Text variant="displaySmall" style={styles.welcomeTitle}>
               Something worth protecting

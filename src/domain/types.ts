@@ -1,4 +1,4 @@
-// Domain type definitions for the Unswipe app.
+// Domain type definitions for the Unmatch app.
 // All types are derived from the SQLite schema and seed data shapes.
 // No default exports. TypeScript strict mode assumed.
 

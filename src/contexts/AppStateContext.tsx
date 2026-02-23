@@ -13,7 +13,7 @@ import React, {
 import type { Progress, UserProfile } from '@/src/domain/types';
 import {
   calculateStreak,
-  calculateTreeLevel,
+  calculateResistRank,
   isDaySuccess,
 } from '@/src/domain/progress-rules';
 import {
@@ -34,7 +34,7 @@ interface AppState {
   userProfile: UserProfile | null;
   todayProgress: Progress | null;
   streak: number;
-  treeLevel: number;
+  resistRank: number;
   resistCount: number;
   todaySuccess: boolean;
   isOnboarded: boolean;
@@ -71,7 +71,7 @@ export function AppStateProvider({ children }: AppStateProviderProps): React.Rea
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [todayProgress, setTodayProgress] = useState<Progress | null>(null);
   const [streak, setStreak] = useState<number>(0);
-  const [treeLevel, setTreeLevel] = useState<number>(1);
+  const [resistRank, setResistRank] = useState<number>(1);
   const [resistCount, setResistCount] = useState<number>(0);
   const [todaySuccess, setTodaySuccess] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -97,8 +97,8 @@ export function AppStateProvider({ children }: AppStateProviderProps): React.Rea
     const totalResists = todayRow?.resist_count_total ?? progress?.resist_count_total ?? 0;
     setResistCount(totalResists);
 
-    // Tree level is derived purely from total resist count.
-    setTreeLevel(calculateTreeLevel(totalResists));
+    // Resist rank is derived purely from total resist count.
+    setResistRank(calculateResistRank(totalResists));
 
     // Streak: gather all progress dates that were success days.
     const allDates = await getAllProgressDates(db);
@@ -155,7 +155,7 @@ export function AppStateProvider({ children }: AppStateProviderProps): React.Rea
     userProfile,
     todayProgress,
     streak,
-    treeLevel,
+    resistRank,
     resistCount,
     todaySuccess,
     isOnboarded: userProfile !== null,

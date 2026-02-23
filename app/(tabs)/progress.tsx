@@ -12,7 +12,9 @@ import {
 import { Card, Divider, Text } from 'react-native-paper';
 import { router } from 'expo-router';
 import { format, getDaysInMonth, getDay, startOfMonth } from 'date-fns';
+import { useAppState } from '@/src/contexts/AppStateContext';
 import { useDatabaseContext } from '@/src/contexts/DatabaseContext';
+import { ResistRankCompact } from '@/src/components/ResistRankCompact';
 import {
   countSuccessesByDate,
   getUrgeEventsInRange,
@@ -148,6 +150,7 @@ function WeekComparisonCard({
 
 export default function ProgressScreen(): React.ReactElement {
   const { db } = useDatabaseContext();
+  const { resistRank, resistCount: totalResistCount } = useAppState();
   const today = getLocalDateString();
 
   // Current month display
@@ -405,6 +408,9 @@ export default function ProgressScreen(): React.ReactElement {
         Progress
       </Text>
 
+      {/* Resist Rank */}
+      <ResistRankCompact level={resistRank} resistCount={totalResistCount} />
+
       {/* Calendar */}
       <Card style={styles.card} mode="contained">
         <Card.Content>
@@ -632,22 +638,25 @@ const styles = StyleSheet.create({
   },
   dayCell: {
     width: `${100 / 7}%`,
-    aspectRatio: 1,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent',
     borderRadius: 8,
   },
   dayCellSuccess: {
     backgroundColor: 'rgba(71, 194, 139, 0.2)',
   },
   dayCellToday: {
-    borderWidth: 2,
     borderColor: colors.primary,
   },
   dayNum: {
     color: colors.text,
     fontSize: 13,
     fontWeight: '400',
+    lineHeight: 18,
+    textAlign: 'center',
   },
   dayNumSuccess: {
     color: colors.success,

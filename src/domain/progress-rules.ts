@@ -2,29 +2,29 @@
 // All rules are LOCKED. Changes require explicit spec approval.
 // No default exports.
 
-import { LIFE_TREE_CAP, LIFE_TREE_RESISTS_PER_LEVEL, LIFE_TREE_START } from '../constants/config';
+import { RESIST_RANK_CAP, RESIST_RANK_RESISTS_PER_LEVEL, RESIST_RANK_START } from '../constants/config';
 import type { UrgeKind, UrgeOutcome } from './types';
 
 // ---------------------------------------------------------------------------
-// Tree level
+// Resist Rank
 // ---------------------------------------------------------------------------
 
 /**
- * Derive the Life Tree level from the cumulative resist count.
+ * Derive the Resist Rank from the cumulative resist count.
  *
- * Formula: floor(resistCountTotal / LIFE_TREE_RESISTS_PER_LEVEL) + LIFE_TREE_START
- * Capped at LIFE_TREE_CAP (30). Level never decreases.
+ * Formula: floor(resistCountTotal / RESIST_RANK_RESISTS_PER_LEVEL) + RESIST_RANK_START
+ * Capped at RESIST_RANK_CAP (30). Rank never decreases.
  *
  * @param resistCountTotal - Lifetime count of successful resists (>= 0).
- * @returns Tree level in the range [1, 30].
+ * @returns Resist rank in the range [1, 30].
  */
-export function calculateTreeLevel(resistCountTotal: number): number {
+export function calculateResistRank(resistCountTotal: number): number {
   if (resistCountTotal < 0) {
-    return LIFE_TREE_START;
+    return RESIST_RANK_START;
   }
   const computed =
-    Math.floor(resistCountTotal / LIFE_TREE_RESISTS_PER_LEVEL) + LIFE_TREE_START;
-  return Math.min(computed, LIFE_TREE_CAP);
+    Math.floor(resistCountTotal / RESIST_RANK_RESISTS_PER_LEVEL) + RESIST_RANK_START;
+  return Math.min(computed, RESIST_RANK_CAP);
 }
 
 // ---------------------------------------------------------------------------

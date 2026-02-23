@@ -1,8 +1,8 @@
-# Unswipe — Product Concept
+# Unmatch — Product Concept
 
 ## What it is
 
-Unswipe is a self-care app that helps people reduce compulsive dating app usage — the swiping, the checking, and the spending that comes with it. It is not therapy, not a blocker, and not dating advice. It is a private, offline-first tool that gives users a structured way to pause, reflect, and build better habits around dating apps.
+Unmatch is a self-care app that helps people reduce compulsive dating app usage — the swiping, the checking, and the spending that comes with it. It is not therapy, not a blocker, and not dating advice. It is a private, offline-first tool that gives users a structured way to pause, reflect, and build better habits around dating apps.
 
 ## The problem
 
@@ -32,11 +32,11 @@ Typical user signals:
 ### Core loop
 
 1. User feels an urge (to swipe, check, or spend)
-2. Opens Unswipe and taps the Panic/Reset button (reachable in 2 taps)
+2. Opens Unmatch and taps the Panic/Reset button (reachable in 2 taps)
 3. Completes a 60-second breathing protocol
 4. Chooses a short coping action (1–15 min, from a preset catalog)
 5. Logs the outcome — did they resist, give in, or is it still ongoing?
-6. Their Life Tree grows with each successful resist
+6. Their Resist Rank increases with each successful resist
 
 This loop is the core of the app. Everything else supports it.
 
@@ -45,7 +45,7 @@ This loop is the core of the app. Everything else supports it.
 - **Daily check-in** — mood, fatigue, and urge levels (1–5 scale), plus optional flags for night opens and spending. Private notes stay on-device only.
 - **7-day starter course** — short daily lessons that build awareness (triggers, notifications, bedtime boundaries, spending patterns, habit replacement). Content is preset and ships with the app.
 - **Progress tracking** — calendar view of success days, streak counter, weekly stats (success rate, panic outcomes, urge trends, spend avoided). A day counts as successful if the user resisted at least one urge OR completed a daily task.
-- **Life Tree** — a visual representation of cumulative progress. Starts at level 1, gains a level for every 5 successful resists, capped at 30. Never decreases. Simple, motivating, no gamification tricks.
+- **Resist Rank** — a visual representation of cumulative progress. Starts at level 1, gains a level for every 5 successful resists, capped at 30. Never decreases. Simple, motivating, no gamification tricks.
 
 ### Spend-specific flow
 
@@ -70,7 +70,7 @@ All data stays on-device in V1. No backend, no cloud sync, no accounts. Spend am
 The reset flow works without an internet connection. The entire app works offline. No loading spinners, no server dependencies.
 
 ### Non-coercive
-No forced lockouts, no guilt trips, no shame mechanics. The app helps when the user asks for help. A failed reset is logged without judgment. The Life Tree never shrinks. Progress is cumulative.
+No forced lockouts, no guilt trips, no shame mechanics. The app helps when the user asks for help. A failed reset is logged without judgment. The Resist Rank never decreases. Progress is cumulative.
 
 ### Preset-only content
 Triggers, coping actions, spend categories, and course content are all preset — shipped as seed data, not user-generated. This keeps the experience consistent, avoids moderation issues, and ensures privacy (no free-text in analytics). The only free-text field is the daily check-in note, which never leaves the device.
@@ -94,7 +94,7 @@ Architecture follows a clean layered pattern: domain rules (pure functions) → 
 ## What's built (V1)
 
 - Onboarding (goal selection, trigger picklist, optional budget, notification preferences)
-- Home tab (Life Tree, streak, resist count, daily card, reset CTA)
+- Home tab (Resist Rank, streak, resist count, daily card, reset CTA)
 - Panic tab (6-step reset protocol with breathing, action selection, outcome logging)
 - Progress tab (calendar, weekly stats, streak tracking)
 - Learn tab (7-day starter course with day-locked progression)
@@ -140,6 +140,6 @@ Freemium model with a subscription paywall. The core reset flow is free. Premium
 
 ## Positioning
 
-Unswipe sits in a gap between general wellness apps and clinical tools. It borrows the habit-interruption model from smoking/alcohol cessation apps (like the Quittr pattern) and applies it to a specific, underserved problem. The closest comparisons are screen-time tools, but Unswipe is narrower and deeper — it understands *why* someone opens a dating app, not just *that* they did.
+Unmatch sits in a gap between general wellness apps and clinical tools. It borrows the habit-interruption model from smoking/alcohol cessation apps (like the Quittr pattern) and applies it to a specific, underserved problem. The closest comparisons are screen-time tools, but Unmatch is narrower and deeper — it understands *why* someone opens a dating app, not just *that* they did.
 
 The discreet, private-by-default approach is a feature, not a limitation. People don't want to announce they're struggling with dating apps. They want a quiet tool that helps when they need it and stays out of the way when they don't.

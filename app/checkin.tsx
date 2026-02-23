@@ -15,84 +15,7 @@ import { Button, Card, Chip, Divider, Text, TextInput } from 'react-native-paper
 import { router } from 'expo-router';
 import { useCheckin } from '@/src/hooks/useCheckin';
 import { colors } from '@/src/constants/theme';
-
-// ---------------------------------------------------------------------------
-// Label maps for rating chips
-// ---------------------------------------------------------------------------
-
-const MOOD_LABELS: Record<number, string> = {
-  1: 'Low',
-  2: 'Okay',
-  3: 'Good',
-  4: 'Great',
-  5: 'Amazing',
-};
-
-const FATIGUE_LABELS: Record<number, string> = {
-  1: 'Fine',
-  2: 'Tired',
-  3: 'Drained',
-  4: 'Exhausted',
-  5: 'Wrecked',
-};
-
-const URGE_LABELS: Record<number, string> = {
-  1: 'Calm',
-  2: 'Mild',
-  3: 'Strong',
-  4: 'Intense',
-  5: 'Overwhelming',
-};
-
-// ---------------------------------------------------------------------------
-// Sub-component: RatingChips
-// ---------------------------------------------------------------------------
-
-interface RatingChipsProps {
-  label: string;
-  value: number;
-  onChange: (v: number) => void;
-  readonly?: boolean;
-  labelMap?: Record<number, string>;
-  subtitle?: string;
-}
-
-function RatingChips({ label, value, onChange, readonly = false, labelMap, subtitle }: RatingChipsProps): React.ReactElement {
-  return (
-    <View style={styles.ratingRow}>
-      <Text variant="labelLarge" style={styles.ratingLabel}>
-        {label}
-      </Text>
-      {subtitle !== undefined && (
-        <Text variant="bodySmall" style={styles.ratingSubtitle}>
-          {subtitle}
-        </Text>
-      )}
-      <View style={styles.chipRow}>
-        {[1, 2, 3, 4, 5].map((n) => (
-          <Chip
-            key={n}
-            selected={value === n}
-            onPress={readonly ? undefined : () => { onChange(n); }}
-            style={[
-              styles.ratingChip,
-              labelMap !== undefined && styles.ratingChipWide,
-              value === n && styles.ratingChipSelected,
-              readonly && styles.ratingChipReadonly,
-            ]}
-            textStyle={[
-              styles.ratingChipText,
-              value === n && styles.ratingChipTextSelected,
-            ]}
-            compact
-          >
-            {labelMap !== undefined ? labelMap[n] : String(n)}
-          </Chip>
-        ))}
-      </View>
-    </View>
-  );
-}
+import { RatingChips, MOOD_LABELS, FATIGUE_LABELS, URGE_LABELS } from '@/src/components/RatingChips';
 
 // ---------------------------------------------------------------------------
 // Sub-component: YesNoToggle
@@ -435,10 +358,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     gap: 2,
   },
-  ratingRow: {
-    paddingVertical: 12,
-    gap: 10,
-  },
   yesNoRow: {
     paddingVertical: 12,
     gap: 10,
@@ -452,23 +371,11 @@ const styles = StyleSheet.create({
     gap: 8,
     flexWrap: 'wrap',
   },
-  ratingSubtitle: {
-    color: colors.muted,
-    marginTop: -6,
-    marginBottom: 4,
-  },
   ratingChip: {
     backgroundColor: colors.background,
     borderColor: colors.border,
     borderWidth: 1,
     minWidth: 44,
-  },
-  ratingChipWide: {
-    paddingHorizontal: 4,
-  },
-  ratingChipSelected: {
-    backgroundColor: '#0F1D3A',
-    borderColor: colors.primary,
   },
   yesChipSelected: {
     backgroundColor: '#1A3D2E',
@@ -477,9 +384,6 @@ const styles = StyleSheet.create({
   noChipSelected: {
     backgroundColor: '#1A1220',
     borderColor: '#E05A5A',
-  },
-  ratingChipReadonly: {
-    opacity: 0.8,
   },
   ratingChipText: {
     color: colors.muted,

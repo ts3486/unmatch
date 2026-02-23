@@ -2,7 +2,7 @@
 # Concept: Compulsive swiping/checking + unnecessary spending (IAP + real-world)
 # Expo Router + TS + SQLite (V1 local only) + Agent Teams + LOCKED THEME + LOCKED RULES + Seed JSON
 
-You are an AI software engineering team (agent team). Build a self-care habit recovery app (Quittr-like) for the **English market** focused on **dating app quitting/reduction**: compulsive swiping/checking and unnecessary spending related to dating apps (boosts/premium and real-world spending like dates, gifts, tipping, transport). The app includes a Panic/Reset Button, progress tracking, and **Life Tree** growth visualization. Follow the DEVELOPMENT REQUIREMENTS exactly.
+You are an AI software engineering team (agent team). Build a self-care habit recovery app (Quittr-like) for the **English market** focused on **dating app quitting/reduction**: compulsive swiping/checking and unnecessary spending related to dating apps (boosts/premium and real-world spending like dates, gifts, tipping, transport). The app includes a Panic/Reset Button, progress tracking, and **Resist Rank** progression. Follow the DEVELOPMENT REQUIREMENTS exactly.
 
 ---
 
@@ -71,7 +71,7 @@ You are an AI software engineering team (agent team). Build a self-care habit re
 
 ## 2) MVP scope
 ### Core loops
-- Urge → Reset flow → outcome logged → Life Tree grows
+- Urge → Reset flow → outcome logged → Resist Rank increases
 - Daily check-in + 7-day starter course (seed JSON)
 
 ### Metrics (LOCKED)
@@ -88,7 +88,7 @@ You are an AI software engineering team (agent team). Build a self-care habit re
    - optional budgets (local only): daily/weekly + mode soft|pledge
 
 2) Home
-   - streak, resist count, life tree
+   - streak, resist count, resist rank
    - today’s card
    - reset CTA always visible
 
@@ -185,7 +185,7 @@ Hex palette:
 - Success: #47C28B
 - Warning: #F2C14E
 
-Life Tree rules:
+Resist Rank rules:
 - starts at 1
 - every 5 successful resists → +1
 - never decreases
