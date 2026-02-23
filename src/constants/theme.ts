@@ -1,4 +1,4 @@
-// LOCKED theme constants for the dating-quitter app.
+// LOCKED theme constants for the Unswipe app.
 // Palette and paperTheme must not be changed without explicit approval.
 // No default exports.
 

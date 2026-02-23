@@ -1,4 +1,4 @@
-// Analytics interface and adapters for the dating-quitter app.
+// Analytics interface and adapters for the Unswipe app.
 //
 // PRIVACY RULES (LOCKED):
 //   - `note` (daily_checkin.note) must NEVER appear in any event props.

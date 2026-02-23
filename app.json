@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Unswipe",
-    "slug": "dating-quitter",
+    "slug": "unswipe",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,7 +15,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.unswipe.app"
+      "bundleIdentifier": "com.h25ksmwn99.unswipe",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +26,11 @@
         "backgroundColor": "#0B1220"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.unswipe.app"
+      "package": "com.unswipe.app",
+      "permissions": [
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -38,6 +45,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "328c88ce-d9a4-46d1-9441-7a5f6de73459"
+      }
     }
   }
 }
