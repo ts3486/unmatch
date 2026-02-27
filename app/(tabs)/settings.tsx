@@ -4,33 +4,70 @@
 
 import { Logo } from "@/src/components/Logo";
 import { colors } from "@/src/constants/theme";
-import { useAnalytics } from "@/src/contexts/AnalyticsContext";
 import { useAppState } from "@/src/contexts/AppStateContext";
 import { useDatabaseContext } from "@/src/contexts/DatabaseContext";
 import { updateUserProfile } from "@/src/data/repositories";
 import type { NotificationStyle } from "@/src/domain/types";
 import {
-	requestNotificationPermission,
-	rescheduleAll,
-} from "@/src/services/notification-service";
+	cancelAllScheduled,
+	requestPermissions,
+} from "@/src/services/notifications";
 import { router } from "expo-router";
 import type React from "react";
 import { useCallback, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
-import { Divider, List, Switch, Text } from "react-native-paper";
+import { Divider, List, Surface, Text } from "react-native-paper";
+
+// ---------------------------------------------------------------------------
+// WhyWeCharge — inline expandable card
+// ---------------------------------------------------------------------------
+
+function WhyWeCharge(): React.ReactElement {
+	const [expanded, setExpanded] = useState(false);
+
+	return (
+		<Surface style={styles.whyCard} elevation={1}>
+			<List.Item
+				title="Why Unmatch costs $6.99"
+				description={
+					expanded
+						? "No ads. No data selling. No subscription traps. Your one-time purchase funds development and keeps your data private. We'll never show ads or sell your information."
+						: "Tap to learn why we charge a one-time fee."
+				}
+				titleStyle={styles.listTitle}
+				descriptionStyle={[
+					styles.listDesc,
+					expanded && styles.listDescExpanded,
+				]}
+				descriptionNumberOfLines={expanded ? 0 : 1}
+				onPress={() => {
+					setExpanded((prev) => !prev);
+				}}
+				accessibilityLabel={`Why Unmatch costs $6.99 — ${expanded ? "collapse" : "expand"}`}
+				accessibilityRole="button"
+				accessibilityState={{ expanded }}
+				left={() => (
+					<List.Icon icon="information-outline" color={colors.secondary} />
+				)}
+				right={() => (
+					<List.Icon
+						icon={expanded ? "chevron-up" : "chevron-down"}
+						color={colors.muted}
+					/>
+				)}
+			/>
+		</Surface>
+	);
+}
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
 export default function SettingsScreen(): React.ReactElement {
-	const { userProfile, refreshProfile } = useAppState();
-	const analytics = useAnalytics();
+	const { userProfile, refreshProfile, isPremium } = useAppState();
 	const { db } = useDatabaseContext();
 
-	const [lockEnabled, setLockEnabled] = useState<boolean>(
-		(userProfile?.lock_enabled ?? 0) === 1,
-	);
 	const [notifStyle, setNotifStyle] = useState<NotificationStyle>(
 		userProfile?.notification_style ?? "normal",
 	);
@@ -39,29 +76,6 @@ export default function SettingsScreen(): React.ReactElement {
 	// ---------------------------------------------------------------------------
 	// Actions
 	// ---------------------------------------------------------------------------
-
-	const handleLockToggle = useCallback(
-		async (value: boolean): Promise<void> => {
-			if (userProfile === null || isUpdating) {
-				return;
-			}
-			setLockEnabled(value);
-			setIsUpdating(true);
-			try {
-				await updateUserProfile(db, userProfile.id, {
-					lock_enabled: value ? 1 : 0,
-				});
-				await refreshProfile();
-				analytics.track({
-					name: "app_lock_toggled",
-					props: { enabled: value },
-				});
-			} finally {
-				setIsUpdating(false);
-			}
-		},
-		[db, userProfile, refreshProfile, analytics, isUpdating],
-	);
 
 	const cycleNotifStyle = useCallback(async (): Promise<void> => {
 		if (userProfile === null || isUpdating) {
@@ -77,12 +91,10 @@ export default function SettingsScreen(): React.ReactElement {
 			await refreshProfile();
 
 			if (next === "off") {
-				await rescheduleAll("off");
+				await cancelAllScheduled();
 			} else {
-				const granted = await requestNotificationPermission();
-				if (granted) {
-					await rescheduleAll(next);
-				} else {
+				const granted = await requestPermissions();
+				if (!granted) {
 					Alert.alert(
 						"Notifications Disabled",
 						"You can enable notifications in your device settings.",
@@ -114,29 +126,6 @@ export default function SettingsScreen(): React.ReactElement {
 				Settings
 			</Text>
 
-			{/* Privacy & Security */}
-			<Text variant="labelLarge" style={styles.sectionLabel}>
-				Your Boundaries
-			</Text>
-			<View style={styles.listCard}>
-				<List.Item
-					title="App lock"
-					description="Require authentication to open the app"
-					titleStyle={styles.listTitle}
-					descriptionStyle={styles.listDesc}
-					right={() => (
-						<Switch
-							value={lockEnabled}
-							onValueChange={(v) => {
-								void handleLockToggle(v);
-							}}
-							color={colors.primary}
-							disabled={isUpdating}
-						/>
-					)}
-				/>
-			</View>
-
 			{/* Notifications */}
 			<Text variant="labelLarge" style={styles.sectionLabel}>
 				Your Notifications
@@ -144,12 +133,14 @@ export default function SettingsScreen(): React.ReactElement {
 			<View style={styles.listCard}>
 				<List.Item
 					title="Notification style"
-					description="Controls how notifications appear"
+					description={`Current: ${notifLabel[notifStyle]}`}
 					titleStyle={styles.listTitle}
 					descriptionStyle={styles.listDesc}
 					onPress={() => {
 						void cycleNotifStyle();
 					}}
+					accessibilityLabel={`Notification style: ${notifLabel[notifStyle]}. Tap to change.`}
+					accessibilityRole="button"
 					right={() => (
 						<Text variant="labelMedium" style={styles.rightLabel}>
 							{notifLabel[notifStyle]}
@@ -171,6 +162,8 @@ export default function SettingsScreen(): React.ReactElement {
 					onPress={() => {
 						router.push("/settings/blocker-guide");
 					}}
+					accessibilityLabel="Blocker guide — how to limit dating app access"
+					accessibilityRole="button"
 					right={({ color }) => (
 						<List.Icon icon="chevron-right" color={color} />
 					)}
@@ -190,30 +183,53 @@ export default function SettingsScreen(): React.ReactElement {
 					onPress={() => {
 						router.push("/settings/privacy");
 					}}
+					accessibilityLabel="Privacy and data — export or delete your local data"
+					accessibilityRole="button"
 					right={({ color }) => (
 						<List.Icon icon="chevron-right" color={color} />
 					)}
 				/>
 			</View>
 
-			{/* Subscription */}
+			{/* Subscription / Unlock */}
 			<Text variant="labelLarge" style={styles.sectionLabel}>
 				Plan
 			</Text>
 			<View style={styles.listCard}>
-				<List.Item
-					title="Manage subscription"
-					description="View plans and premium features"
-					titleStyle={styles.listTitle}
-					descriptionStyle={styles.listDesc}
-					onPress={() => {
-						router.push("/paywall");
-					}}
-					right={({ color }) => (
-						<List.Icon icon="chevron-right" color={color} />
-					)}
-				/>
+				{!isPremium ? (
+					<List.Item
+						title="Unlock Unmatch"
+						description="One-time purchase — $6.99. No subscription."
+						titleStyle={[styles.listTitle, styles.unlockTitle]}
+						descriptionStyle={styles.listDesc}
+						onPress={() => {
+							router.push("/paywall");
+						}}
+						accessibilityLabel="Unlock Unmatch — one-time purchase for $6.99"
+						accessibilityRole="button"
+						left={() => (
+							<List.Icon icon="lock-open-outline" color={colors.primary} />
+						)}
+						right={({ color }) => (
+							<List.Icon icon="chevron-right" color={color} />
+						)}
+					/>
+				) : (
+					<List.Item
+						title="Unmatch Unlocked"
+						description="You have full access. Thank you!"
+						titleStyle={styles.listTitle}
+						descriptionStyle={styles.listDesc}
+						accessibilityLabel="Unmatch is unlocked — you have full access"
+						left={() => (
+							<List.Icon icon="check-circle-outline" color={colors.success} />
+						)}
+					/>
+				)}
 			</View>
+
+			{/* Why We Charge */}
+			<WhyWeCharge />
 
 			<Divider style={styles.footerDivider} />
 			<View style={styles.brandingRow}>
@@ -266,6 +282,10 @@ const styles = StyleSheet.create({
 		color: colors.text,
 		fontWeight: "500",
 	},
+	unlockTitle: {
+		color: colors.primary,
+		fontWeight: "700",
+	},
 	listDesc: {
 		color: colors.muted,
 		fontSize: 12,
@@ -275,6 +295,18 @@ const styles = StyleSheet.create({
 		color: colors.primary,
 		alignSelf: "center",
 		marginRight: 4,
+	},
+	listDescExpanded: {
+		lineHeight: 20,
+		marginTop: 4,
+	},
+	whyCard: {
+		backgroundColor: colors.surface,
+		borderRadius: 14,
+		borderWidth: 1,
+		borderColor: colors.border,
+		overflow: "hidden",
+		marginTop: 4,
 	},
 	footerDivider: {
 		backgroundColor: colors.border,
