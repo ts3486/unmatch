@@ -1,16 +1,12 @@
 // AnalyticsContext — provides the AnalyticsAdapter throughout the app.
 // No default exports. TypeScript strict mode.
 
-import React, {
-  createContext,
-  useContext,
-  useMemo,
-  type ReactNode,
-} from 'react';
 import {
-  createAnalytics,
-  type AnalyticsAdapter,
-} from '@/src/services/analytics';
+	type AnalyticsAdapter,
+	createAnalytics,
+} from "@/src/services/analytics";
+import type React from "react";
+import { type ReactNode, createContext, useContext, useMemo } from "react";
 
 // ---------------------------------------------------------------------------
 // Context
@@ -23,18 +19,20 @@ const AnalyticsContext = createContext<AnalyticsAdapter | null>(null);
 // ---------------------------------------------------------------------------
 
 interface AnalyticsProviderProps {
-  children: ReactNode;
+	children: ReactNode;
 }
 
-export function AnalyticsProvider({ children }: AnalyticsProviderProps): React.ReactElement {
-  // The adapter is created once for the lifetime of the app.
-  const adapter = useMemo(() => createAnalytics(), []);
+export function AnalyticsProvider({
+	children,
+}: AnalyticsProviderProps): React.ReactElement {
+	// The adapter is created once for the lifetime of the app.
+	const adapter = useMemo(() => createAnalytics(), []);
 
-  return (
-    <AnalyticsContext.Provider value={adapter}>
-      {children}
-    </AnalyticsContext.Provider>
-  );
+	return (
+		<AnalyticsContext.Provider value={adapter}>
+			{children}
+		</AnalyticsContext.Provider>
+	);
 }
 
 // ---------------------------------------------------------------------------
@@ -46,9 +44,9 @@ export function AnalyticsProvider({ children }: AnalyticsProviderProps): React.R
  * Must be used inside AnalyticsProvider; throws otherwise.
  */
 export function useAnalytics(): AnalyticsAdapter {
-  const value = useContext(AnalyticsContext);
-  if (value === null) {
-    throw new Error('useAnalytics must be used inside AnalyticsProvider.');
-  }
-  return value;
+	const value = useContext(AnalyticsContext);
+	if (value === null) {
+		throw new Error("useAnalytics must be used inside AnalyticsProvider.");
+	}
+	return value;
 }

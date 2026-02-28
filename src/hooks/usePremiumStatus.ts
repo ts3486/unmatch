@@ -2,7 +2,7 @@
 // Screens use this to decide whether to show gated content or redirect.
 // No default exports. TypeScript strict mode.
 
-import { useAppState } from '@/src/contexts/AppStateContext';
+import { useAppState } from "@/src/contexts/AppStateContext";
 
 /**
  * Returns { isPremium } from central app state.
@@ -10,6 +10,6 @@ import { useAppState } from '@/src/contexts/AppStateContext';
  * need the premium flag, so gating logic stays readable.
  */
 export function usePremiumStatus(): { isPremium: boolean } {
-  const { isPremium } = useAppState();
-  return { isPremium };
+	const { isPremium } = useAppState();
+	return { isPremium };
 }

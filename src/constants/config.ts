@@ -49,7 +49,7 @@ export const TIME_SAVED_PER_RESIST_MINUTES = 12 as const;
 // ---------------------------------------------------------------------------
 
 /** RevenueCat API key for iOS. Replace before release. */
-export const REVENUECAT_API_KEY_IOS = "TODO_REPLACE_WITH_IOS_KEY";
+export const REVENUECAT_API_KEY_IOS = "test_diqJjNMNWatOpFJPcwkJKOvxtpu";
 
 /** RevenueCat API key for Android. Replace before release. */
 export const REVENUECAT_API_KEY_ANDROID = "TODO_REPLACE_WITH_ANDROID_KEY";

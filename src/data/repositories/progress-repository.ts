@@ -3,31 +3,31 @@
 // All functions accept a SQLiteDatabase instance directly.
 // No default exports. TypeScript strict mode.
 
-import type { SQLiteDatabase } from 'expo-sqlite';
-import type { Progress } from '@/src/domain/types';
+import type { Progress } from "@/src/domain/types";
+import type { SQLiteDatabase } from "expo-sqlite";
 
 // ---------------------------------------------------------------------------
 // Row shape
 // ---------------------------------------------------------------------------
 
 interface ProgressRow {
-  date_local: string;
-  streak_current: number;
-  resist_count_total: number;
-  tree_level: number;
-  last_success_date: string | null;
-  spend_avoided_count_total: number;
+	date_local: string;
+	streak_current: number;
+	resist_count_total: number;
+	tree_level: number;
+	last_success_date: string | null;
+	spend_avoided_count_total: number;
 }
 
 function rowToProgress(row: ProgressRow): Progress {
-  return {
-    date_local: row.date_local,
-    streak_current: row.streak_current,
-    resist_count_total: row.resist_count_total,
-    tree_level: row.tree_level,
-    last_success_date: row.last_success_date,
-    spend_avoided_count_total: row.spend_avoided_count_total,
-  };
+	return {
+		date_local: row.date_local,
+		streak_current: row.streak_current,
+		resist_count_total: row.resist_count_total,
+		tree_level: row.tree_level,
+		last_success_date: row.last_success_date,
+		spend_avoided_count_total: row.spend_avoided_count_total,
+	};
 }
 
 // ---------------------------------------------------------------------------
@@ -39,15 +39,15 @@ function rowToProgress(row: ProgressRow): Progress {
  * not exist yet.
  */
 export async function getProgress(
-  db: SQLiteDatabase,
-  dateLocal: string,
+	db: SQLiteDatabase,
+	dateLocal: string,
 ): Promise<Progress | null> {
-  const row = await db.getFirstAsync<ProgressRow>(
-    'SELECT * FROM progress WHERE date_local = ?;',
-    [dateLocal],
-  );
+	const row = await db.getFirstAsync<ProgressRow>(
+		"SELECT * FROM progress WHERE date_local = ?;",
+		[dateLocal],
+	);
 
-  return row !== null ? rowToProgress(row) : null;
+	return row !== null ? rowToProgress(row) : null;
 }
 
 /**
@@ -55,13 +55,13 @@ export async function getProgress(
  * empty.
  */
 export async function getLatestProgress(
-  db: SQLiteDatabase,
+	db: SQLiteDatabase,
 ): Promise<Progress | null> {
-  const row = await db.getFirstAsync<ProgressRow>(
-    'SELECT * FROM progress ORDER BY date_local DESC LIMIT 1;',
-  );
+	const row = await db.getFirstAsync<ProgressRow>(
+		"SELECT * FROM progress ORDER BY date_local DESC LIMIT 1;",
+	);
 
-  return row !== null ? rowToProgress(row) : null;
+	return row !== null ? rowToProgress(row) : null;
 }
 
 /**
@@ -69,23 +69,23 @@ export async function getLatestProgress(
  * Uses INSERT OR REPLACE so callers do not need to distinguish create vs update.
  */
 export async function upsertProgress(
-  db: SQLiteDatabase,
-  progress: Progress,
+	db: SQLiteDatabase,
+	progress: Progress,
 ): Promise<void> {
-  await db.runAsync(
-    `INSERT OR REPLACE INTO progress
+	await db.runAsync(
+		`INSERT OR REPLACE INTO progress
        (date_local, streak_current, resist_count_total, tree_level,
         last_success_date, spend_avoided_count_total)
      VALUES (?, ?, ?, ?, ?, ?);`,
-    [
-      progress.date_local,
-      progress.streak_current,
-      progress.resist_count_total,
-      progress.tree_level,
-      progress.last_success_date ?? null,
-      progress.spend_avoided_count_total,
-    ],
-  );
+		[
+			progress.date_local,
+			progress.streak_current,
+			progress.resist_count_total,
+			progress.tree_level,
+			progress.last_success_date ?? null,
+			progress.spend_avoided_count_total,
+		],
+	);
 }
 
 /**
@@ -93,11 +93,11 @@ export async function upsertProgress(
  * chronological order.
  */
 export async function getAllProgressDates(
-  db: SQLiteDatabase,
+	db: SQLiteDatabase,
 ): Promise<string[]> {
-  const rows = await db.getAllAsync<{ date_local: string }>(
-    'SELECT date_local FROM progress ORDER BY date_local ASC;',
-  );
+	const rows = await db.getAllAsync<{ date_local: string }>(
+		"SELECT date_local FROM progress ORDER BY date_local ASC;",
+	);
 
-  return rows.map((r) => r.date_local);
+	return rows.map((r) => r.date_local);
 }
