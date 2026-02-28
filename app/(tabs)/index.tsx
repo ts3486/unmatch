@@ -31,7 +31,6 @@ export default function HomeScreen(): React.ReactElement {
 		todaySuccess,
 		userProfile,
 		isLoading,
-		isPremium,
 	} = useAppState();
 
 	const {
@@ -135,20 +134,8 @@ export default function HomeScreen(): React.ReactElement {
 				<View style={styles.bottomSpacer} />
 			</ScrollView>
 
-			{/* Sticky bottom: Unlock banner (free users) + Reset CTA */}
+			{/* Sticky bottom: Reset CTA */}
 			<View style={styles.stickyBottom}>
-				{!isPremium && (
-					<Button
-						mode="outlined"
-						onPress={() => { router.push('/paywall'); }}
-						style={styles.unlockBanner}
-						contentStyle={styles.unlockBannerContent}
-						labelStyle={styles.unlockBannerLabel}
-						accessibilityLabel="Unlock Unmatch for $6.99"
-					>
-						Unlock Unmatch — $6.99
-					</Button>
-				)}
 				<Button
 					mode="contained"
 					onPress={handleResetPress}
@@ -323,18 +310,5 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: "700",
 		letterSpacing: 0.5,
-	},
-	unlockBanner: {
-		borderRadius: 12,
-		borderColor: colors.primary,
-		marginBottom: 8,
-	},
-	unlockBannerContent: {
-		paddingVertical: 4,
-	},
-	unlockBannerLabel: {
-		fontSize: 14,
-		fontWeight: '600',
-		color: colors.primary,
 	},
 });
