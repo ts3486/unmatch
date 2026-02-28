@@ -39,6 +39,19 @@ const config: Config = {
 			"__mocks__/react-native-purchases.ts",
 		),
 		"^react-native$": path.resolve(__dirname, "__mocks__/react-native.ts"),
+		"^expo-file-system$": path.resolve(
+			__dirname,
+			"__mocks__/expo-file-system.ts",
+		),
+		"^expo-sharing$": path.resolve(__dirname, "__mocks__/expo-sharing.ts"),
+		"^expo-document-picker$": path.resolve(
+			__dirname,
+			"__mocks__/expo-document-picker.ts",
+		),
+		"^expo-file-system/legacy$": path.resolve(
+			__dirname,
+			"__mocks__/expo-file-system-legacy.ts",
+		),
 	},
 
 	// Only run files that match the project's test naming convention.

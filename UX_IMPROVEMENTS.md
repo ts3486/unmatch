@@ -18,7 +18,7 @@ Audit of the current Unmatch app UX with actionable improvements, organized by i
 
 ### 2. Onboarding: Explain what the app actually does on the welcome screen
 
-**Problem:** The welcome screen says "This app helps you be intentional about dating apps" — but never explains *how*. A new user has no mental model of what a "resist," "check-in," or "course" is. They're asked to pick a goal and triggers for a process they don't yet understand.
+**Problem:** The welcome screen says "Unmatch helps you be intentional about dating apps" — but never explains *how*. A new user has no mental model of what a "resist," "check-in," or "course" is. They're asked to pick a goal and triggers for a process they don't yet understand.
 
 **Fix:** Add a brief "How it works" summary below the subtitle on the welcome screen, using 3 short bullets:
 

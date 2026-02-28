@@ -3,7 +3,6 @@
 // TypeScript strict mode.
 
 import { PersonalBestCard } from "@/src/components/PersonalBestCard";
-import { PremiumGate } from "@/src/components/PremiumGate";
 import { ShareStreakCard } from "@/src/components/ShareStreakCard";
 import { WeeklyInsightCard } from "@/src/components/WeeklyInsightCard";
 import { colors } from "@/src/constants/theme";
@@ -166,12 +165,7 @@ function WeekComparisonCard({
 
 export default function ProgressScreen(): React.ReactElement {
 	const { db } = useDatabaseContext();
-	const {
-		resistRank,
-		resistCount: totalResistCount,
-		isPremium,
-		streak,
-	} = useAppState();
+	const { resistRank, resistCount: totalResistCount, streak } = useAppState();
 	const today = getLocalDateString();
 
 	// Share card ref
@@ -504,225 +498,209 @@ export default function ProgressScreen(): React.ReactElement {
 				Progress
 			</Text>
 
-			{/* Premium gate — free users see this instead of full stats */}
-			{!isPremium && (
-				<PremiumGate
-					headline="Unlock to track your journey"
-					subtext="See your success calendar, streaks, and weekly insights."
-					triggerSource="progress_locked"
-				/>
-			)}
+			{/* Full stats content */}
+			<React.Fragment>
+				<Card style={styles.card} mode="contained">
+					<Card.Content>
+						{/* Month navigation */}
+						<View style={styles.monthNav}>
+							<TouchableOpacity
+								onPress={prevMonth}
+								style={styles.navButton}
+								accessibilityLabel="Previous month"
+							>
+								<Text style={styles.navArrow}>{"<"}</Text>
+							</TouchableOpacity>
+							<Text variant="titleMedium" style={styles.monthLabel}>
+								{monthLabel}
+							</Text>
+							<TouchableOpacity
+								onPress={nextMonth}
+								style={styles.navButton}
+								accessibilityLabel="Next month"
+							>
+								<Text style={styles.navArrow}>{">"}</Text>
+							</TouchableOpacity>
+						</View>
 
-			{/* Full stats content — only shown to premium users */}
-			{isPremium && (
-				<React.Fragment>
-					<Card style={styles.card} mode="contained">
-						<Card.Content>
-							{/* Month navigation */}
-							<View style={styles.monthNav}>
-								<TouchableOpacity
-									onPress={prevMonth}
-									style={styles.navButton}
-									accessibilityLabel="Previous month"
-								>
-									<Text style={styles.navArrow}>{"<"}</Text>
-								</TouchableOpacity>
-								<Text variant="titleMedium" style={styles.monthLabel}>
-									{monthLabel}
-								</Text>
-								<TouchableOpacity
-									onPress={nextMonth}
-									style={styles.navButton}
-									accessibilityLabel="Next month"
-								>
-									<Text style={styles.navArrow}>{">"}</Text>
-								</TouchableOpacity>
-							</View>
-
-							{/* Weekday headers */}
-							<View style={styles.weekRow}>
-								{["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
-									<View key={i} style={styles.dayHeaderCell}>
-										<Text style={styles.dayHeader}>{d}</Text>
-									</View>
-								))}
-							</View>
-
-							{/* Day cells */}
-							{isLoading ? (
-								<View style={styles.calendarLoading}>
-									<Text style={styles.loadingText}>Loading...</Text>
+						{/* Weekday headers */}
+						<View style={styles.weekRow}>
+							{["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
+								<View key={i} style={styles.dayHeaderCell}>
+									<Text style={styles.dayHeader}>{d}</Text>
 								</View>
-							) : (
-								<View style={styles.calendarGrid}>
-									{calendarDays.map((cell, idx) => {
-										if (!cell.inMonth) {
-											return (
-												<View key={`empty-${idx}`} style={styles.dayCell} />
-											);
-										}
-										return (
-											<TouchableOpacity
-												key={cell.dateStr}
+							))}
+						</View>
+
+						{/* Day cells */}
+						{isLoading ? (
+							<View style={styles.calendarLoading}>
+								<Text style={styles.loadingText}>Loading...</Text>
+							</View>
+						) : (
+							<View style={styles.calendarGrid}>
+								{calendarDays.map((cell, idx) => {
+									if (!cell.inMonth) {
+										return <View key={`empty-${idx}`} style={styles.dayCell} />;
+									}
+									return (
+										<TouchableOpacity
+											key={cell.dateStr}
+											style={[
+												styles.dayCell,
+												cell.isSuccess && styles.dayCellSuccess,
+												cell.isToday && styles.dayCellToday,
+											]}
+											onPress={() => {
+												handleDayPress(cell.dateStr);
+											}}
+											accessibilityLabel={`${cell.dateStr}${cell.isSuccess ? ", success day" : ""}`}
+										>
+											<Text
 												style={[
-													styles.dayCell,
-													cell.isSuccess && styles.dayCellSuccess,
-													cell.isToday && styles.dayCellToday,
+													styles.dayNum,
+													cell.isSuccess && styles.dayNumSuccess,
+													cell.isToday && styles.dayNumToday,
 												]}
-												onPress={() => {
-													handleDayPress(cell.dateStr);
-												}}
-												accessibilityLabel={`${cell.dateStr}${cell.isSuccess ? ", success day" : ""}`}
 											>
-												<Text
-													style={[
-														styles.dayNum,
-														cell.isSuccess && styles.dayNumSuccess,
-														cell.isToday && styles.dayNumToday,
-													]}
-												>
-													{cell.dayNum}
-												</Text>
-											</TouchableOpacity>
-										);
-									})}
-								</View>
-							)}
-
-							{/* Legend */}
-							<View style={styles.legend}>
-								<View style={styles.legendItem}>
-									<View
-										style={[
-											styles.legendDot,
-											{ backgroundColor: colors.success },
-										]}
-									/>
-									<Text style={styles.legendText}>Success day</Text>
-								</View>
-								<View style={styles.legendItem}>
-									<View
-										style={[
-											styles.legendDot,
-											{
-												backgroundColor: colors.border,
-												borderColor: colors.primary,
-												borderWidth: 2,
-											},
-										]}
-									/>
-									<Text style={styles.legendText}>Today</Text>
-								</View>
+												{cell.dayNum}
+											</Text>
+										</TouchableOpacity>
+									);
+								})}
 							</View>
-						</Card.Content>
-					</Card>
+						)}
 
-					{/* Personal best highlight */}
-					<PersonalBestCard
-						bestStreak={bestStreak}
-						currentStreak={currentStreak}
-					/>
+						{/* Legend */}
+						<View style={styles.legend}>
+							<View style={styles.legendItem}>
+								<View
+									style={[
+										styles.legendDot,
+										{ backgroundColor: colors.success },
+									]}
+								/>
+								<Text style={styles.legendText}>Success day</Text>
+							</View>
+							<View style={styles.legendItem}>
+								<View
+									style={[
+										styles.legendDot,
+										{
+											backgroundColor: colors.border,
+											borderColor: colors.primary,
+											borderWidth: 2,
+										},
+									]}
+								/>
+								<Text style={styles.legendText}>Today</Text>
+							</View>
+						</View>
+					</Card.Content>
+				</Card>
 
-					{/* Share streak button */}
-					<Button
-						mode="outlined"
-						onPress={() => void handleShare()}
-						loading={isSharing}
-						disabled={isSharing}
-						style={styles.shareButton}
-						contentStyle={styles.shareButtonContent}
-						textColor={colors.secondary}
-						accessibilityLabel="Share your streak"
-					>
-						Share your streak
-					</Button>
+				{/* Personal best highlight */}
+				<PersonalBestCard
+					bestStreak={bestStreak}
+					currentStreak={currentStreak}
+				/>
 
-					{/* Off-screen share card for capture */}
-					<View style={styles.offscreenCapture} pointerEvents="none">
-						<ViewShot
-							ref={shareCardRef}
-							options={{ format: "png", quality: 1 }}
-						>
-							<ShareStreakCard
-								streak={streak}
-								resistCount={totalResistCount}
-								resistRank={resistRank}
-							/>
-						</ViewShot>
-					</View>
+				{/* Share streak button */}
+				<Button
+					mode="outlined"
+					onPress={() => void handleShare()}
+					loading={isSharing}
+					disabled={isSharing}
+					style={styles.shareButton}
+					contentStyle={styles.shareButtonContent}
+					textColor={colors.secondary}
+					accessibilityLabel="Share your streak"
+				>
+					Share your streak
+				</Button>
 
-					{/* Week comparison */}
-					<WeekComparisonCard
-						thisWeekSuccessDays={weeklyStats.successDays}
-						lastWeekSuccessDays={lastWeekStats.successDays}
-						thisWeekResists={weeklyStats.resistCount}
-						lastWeekResists={lastWeekStats.resistCount}
-					/>
+				{/* Off-screen share card for capture */}
+				<View style={styles.offscreenCapture} pointerEvents="none">
+					<ViewShot ref={shareCardRef} options={{ format: "png", quality: 1 }}>
+						<ShareStreakCard
+							streak={streak}
+							resistCount={totalResistCount}
+							resistRank={resistRank}
+						/>
+					</ViewShot>
+				</View>
 
-					{/* Weekly insight cards */}
-					<WeeklyInsightCard
-						dowCounts={dowCounts}
-						timeCounts={timeCounts}
-						thisWeekResists={weeklyStats.resistCount}
-						lastWeekResists={lastWeekStats.resistCount}
-					/>
+				{/* Week comparison */}
+				<WeekComparisonCard
+					thisWeekSuccessDays={weeklyStats.successDays}
+					lastWeekSuccessDays={lastWeekStats.successDays}
+					thisWeekResists={weeklyStats.resistCount}
+					lastWeekResists={lastWeekStats.resistCount}
+				/>
 
-					{/* Weekly stats */}
-					<Text variant="titleMedium" style={styles.sectionTitle}>
-						This Week
-					</Text>
+				{/* Weekly insight cards */}
+				<WeeklyInsightCard
+					dowCounts={dowCounts}
+					timeCounts={timeCounts}
+					thisWeekResists={weeklyStats.resistCount}
+					lastWeekResists={lastWeekStats.resistCount}
+				/>
 
-					<Card style={styles.card} mode="contained">
-						<Card.Content style={styles.statsContent}>
-							<StatRow
-								label="Personal best streak"
-								value={bestStreak > 0 ? `${bestStreak} days` : "Not yet"}
-								valueColor={bestStreak > 0 ? colors.primary : colors.muted}
-							/>
-							<Divider style={styles.divider} />
-							<StatRow
-								label="Success days"
-								value={`${weeklyStats.successDays} / ${weeklyStats.totalDays} (${pctSuccess}%)`}
-								valueColor={
-									weeklyStats.successDays > 0 ? colors.success : colors.muted
-								}
-							/>
-							<Divider style={styles.divider} />
-							<StatRow
-								label="Urge resets succeeded"
-								value={
-									weeklyStats.panicTotalCount > 0
-										? `${weeklyStats.panicSuccessCount} / ${weeklyStats.panicTotalCount} (${pctPanic}%)`
-										: "None yet"
-								}
-								valueColor={
-									weeklyStats.panicSuccessCount > 0
-										? colors.primary
-										: colors.muted
-								}
-							/>
-							<Divider style={styles.divider} />
-							<StatRow
-								label="Resists this week"
-								value={String(weeklyStats.resistCount)}
-								valueColor={
-									weeklyStats.resistCount > 0 ? colors.secondary : colors.muted
-								}
-							/>
-							<Divider style={styles.divider} />
-							<StatRow
-								label="Spend urges avoided"
-								value={String(weeklyStats.spendAvoidedCount)}
-								valueColor={
-									weeklyStats.spendAvoidedCount > 0
-										? colors.warning
-										: colors.muted
-								}
-							/>
-						</Card.Content>
-					</Card>
-				</React.Fragment>
-			)}
+				{/* Weekly stats */}
+				<Text variant="titleMedium" style={styles.sectionTitle}>
+					This Week
+				</Text>
+
+				<Card style={styles.card} mode="contained">
+					<Card.Content style={styles.statsContent}>
+						<StatRow
+							label="Personal best streak"
+							value={bestStreak > 0 ? `${bestStreak} days` : "Not yet"}
+							valueColor={bestStreak > 0 ? colors.primary : colors.muted}
+						/>
+						<Divider style={styles.divider} />
+						<StatRow
+							label="Success days"
+							value={`${weeklyStats.successDays} / ${weeklyStats.totalDays} (${pctSuccess}%)`}
+							valueColor={
+								weeklyStats.successDays > 0 ? colors.success : colors.muted
+							}
+						/>
+						<Divider style={styles.divider} />
+						<StatRow
+							label="Urge resets succeeded"
+							value={
+								weeklyStats.panicTotalCount > 0
+									? `${weeklyStats.panicSuccessCount} / ${weeklyStats.panicTotalCount} (${pctPanic}%)`
+									: "None yet"
+							}
+							valueColor={
+								weeklyStats.panicSuccessCount > 0
+									? colors.primary
+									: colors.muted
+							}
+						/>
+						<Divider style={styles.divider} />
+						<StatRow
+							label="Resists this week"
+							value={String(weeklyStats.resistCount)}
+							valueColor={
+								weeklyStats.resistCount > 0 ? colors.secondary : colors.muted
+							}
+						/>
+						<Divider style={styles.divider} />
+						<StatRow
+							label="Spend urges avoided"
+							value={String(weeklyStats.spendAvoidedCount)}
+							valueColor={
+								weeklyStats.spendAvoidedCount > 0
+									? colors.warning
+									: colors.muted
+							}
+						/>
+					</Card.Content>
+				</Card>
+			</React.Fragment>
 
 			<View style={styles.bottomSpacer} />
 		</ScrollView>

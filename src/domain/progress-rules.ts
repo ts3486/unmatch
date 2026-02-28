@@ -2,8 +2,12 @@
 // All rules are LOCKED. Changes require explicit spec approval.
 // No default exports.
 
-import { RESIST_RANK_CAP, RESIST_RANK_RESISTS_PER_LEVEL, RESIST_RANK_START } from '../constants/config';
-import type { UrgeKind, UrgeOutcome } from './types';
+import {
+	RESIST_RANK_CAP,
+	RESIST_RANK_RESISTS_PER_LEVEL,
+	RESIST_RANK_START,
+} from "../constants/config";
+import type { UrgeKind, UrgeOutcome } from "./types";
 
 // ---------------------------------------------------------------------------
 // Resist Rank
@@ -19,12 +23,13 @@ import type { UrgeKind, UrgeOutcome } from './types';
  * @returns Resist rank in the range [1, 30].
  */
 export function calculateResistRank(resistCountTotal: number): number {
-  if (resistCountTotal < 0) {
-    return RESIST_RANK_START;
-  }
-  const computed =
-    Math.floor(resistCountTotal / RESIST_RANK_RESISTS_PER_LEVEL) + RESIST_RANK_START;
-  return Math.min(computed, RESIST_RANK_CAP);
+	if (resistCountTotal < 0) {
+		return RESIST_RANK_START;
+	}
+	const computed =
+		Math.floor(resistCountTotal / RESIST_RANK_RESISTS_PER_LEVEL) +
+		RESIST_RANK_START;
+	return Math.min(computed, RESIST_RANK_CAP);
 }
 
 // ---------------------------------------------------------------------------
@@ -42,10 +47,10 @@ export function calculateResistRank(resistCountTotal: number): number {
  * @param dailyTaskCompleted - Whether the daily content task was completed today.
  */
 export function isDaySuccess(
-  panicSuccessCount: number,
-  dailyTaskCompleted: boolean,
+	panicSuccessCount: number,
+	dailyTaskCompleted: boolean,
 ): boolean {
-  return panicSuccessCount >= 1 || dailyTaskCompleted;
+	return panicSuccessCount >= 1 || dailyTaskCompleted;
 }
 
 // ---------------------------------------------------------------------------
@@ -62,17 +67,17 @@ export function isDaySuccess(
  * @returns Number of consecutive success days ending on today (0 if today is not a success day).
  */
 export function calculateStreak(dates: string[], today: string): number {
-  const successSet = new Set(dates);
+	const successSet = new Set(dates);
 
-  let streak = 0;
-  let current = today;
+	let streak = 0;
+	let current = today;
 
-  while (successSet.has(current)) {
-    streak += 1;
-    current = subtractOneDay(current);
-  }
+	while (successSet.has(current)) {
+		streak += 1;
+		current = subtractOneDay(current);
+	}
 
-  return streak;
+	return streak;
 }
 
 /**
@@ -80,17 +85,17 @@ export function calculateStreak(dates: string[], today: string): number {
  * Uses UTC arithmetic on the date components to avoid DST drift.
  */
 function subtractOneDay(dateLocal: string): string {
-  const [yearStr, monthStr, dayStr] = dateLocal.split('-');
-  const year = parseInt(yearStr, 10);
-  const month = parseInt(monthStr, 10) - 1; // Date months are 0-indexed
-  const day = parseInt(dayStr, 10);
+	const [yearStr, monthStr, dayStr] = dateLocal.split("-");
+	const year = Number.parseInt(yearStr, 10);
+	const month = Number.parseInt(monthStr, 10) - 1; // Date months are 0-indexed
+	const day = Number.parseInt(dayStr, 10);
 
-  const d = new Date(Date.UTC(year, month, day - 1));
+	const d = new Date(Date.UTC(year, month, day - 1));
 
-  const y = d.getUTCFullYear();
-  const m = String(d.getUTCMonth() + 1).padStart(2, '0');
-  const dd = String(d.getUTCDate()).padStart(2, '0');
-  return `${y}-${m}-${dd}`;
+	const y = d.getUTCFullYear();
+	const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+	const dd = String(d.getUTCDate()).padStart(2, "0");
+	return `${y}-${m}-${dd}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -106,7 +111,7 @@ function subtractOneDay(dateLocal: string): string {
  * @param outcome - The recorded outcome of a urge event.
  */
 export function shouldIncrementResist(outcome: UrgeOutcome): boolean {
-  return outcome === 'success';
+	return outcome === "success";
 }
 
 /**
@@ -117,8 +122,8 @@ export function shouldIncrementResist(outcome: UrgeOutcome): boolean {
  * @param outcome  - The recorded outcome of that urge event.
  */
 export function shouldIncrementSpendAvoided(
-  urgeKind: UrgeKind,
-  outcome: UrgeOutcome,
+	urgeKind: UrgeKind,
+	outcome: UrgeOutcome,
 ): boolean {
-  return urgeKind === 'spend' && outcome === 'success';
+	return urgeKind === "spend" && outcome === "success";
 }

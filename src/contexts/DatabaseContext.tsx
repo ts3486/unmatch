@@ -1,23 +1,24 @@
 // DatabaseContext — initializes SQLite on mount and exposes the db instance.
 // No default exports. TypeScript strict mode.
 
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from 'react';
-import type { SQLiteDatabase } from 'expo-sqlite';
-import { initDatabase } from '@/src/data/database';
-import { seedContentIfEmpty } from '@/src/data/seed-loader';
+import { initDatabase } from "@/src/data/database";
+import { seedContentIfEmpty } from "@/src/data/seed-loader";
+import type { SQLiteDatabase } from "expo-sqlite";
+import type React from "react";
+import {
+	type ReactNode,
+	createContext,
+	useContext,
+	useEffect,
+	useState,
+} from "react";
 
 // ---------------------------------------------------------------------------
 // Context value type
 // ---------------------------------------------------------------------------
 
 interface DatabaseContextValue {
-  db: SQLiteDatabase;
+	db: SQLiteDatabase;
 }
 
 // ---------------------------------------------------------------------------
@@ -31,41 +32,43 @@ const DatabaseContext = createContext<DatabaseContextValue | null>(null);
 // ---------------------------------------------------------------------------
 
 interface DatabaseProviderProps {
-  children: ReactNode;
+	children: ReactNode;
 }
 
-export function DatabaseProvider({ children }: DatabaseProviderProps): React.ReactElement | null {
-  const [db, setDb] = useState<SQLiteDatabase | null>(null);
+export function DatabaseProvider({
+	children,
+}: DatabaseProviderProps): React.ReactElement | null {
+	const [db, setDb] = useState<SQLiteDatabase | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
+	useEffect(() => {
+		let cancelled = false;
 
-    async function init(): Promise<void> {
-      const database = await initDatabase();
-      await seedContentIfEmpty(database);
+		async function init(): Promise<void> {
+			const database = await initDatabase();
+			await seedContentIfEmpty(database);
 
-      if (!cancelled) {
-        setDb(database);
-      }
-    }
+			if (!cancelled) {
+				setDb(database);
+			}
+		}
 
-    void init();
+		void init();
 
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+		return () => {
+			cancelled = true;
+		};
+	}, []);
 
-  if (db === null) {
-    // Render nothing while the database is initializing.
-    return null;
-  }
+	if (db === null) {
+		// Render nothing while the database is initializing.
+		return null;
+	}
 
-  return (
-    <DatabaseContext.Provider value={{ db }}>
-      {children}
-    </DatabaseContext.Provider>
-  );
+	return (
+		<DatabaseContext.Provider value={{ db }}>
+			{children}
+		</DatabaseContext.Provider>
+	);
 }
 
 // ---------------------------------------------------------------------------
@@ -77,9 +80,9 @@ export function DatabaseProvider({ children }: DatabaseProviderProps): React.Rea
  * Must be used inside a DatabaseProvider; throws otherwise.
  */
 export function useDatabaseContext(): DatabaseContextValue {
-  const value = useContext(DatabaseContext);
-  if (value === null) {
-    throw new Error('useDatabaseContext must be used inside DatabaseProvider.');
-  }
-  return value;
+	const value = useContext(DatabaseContext);
+	if (value === null) {
+		throw new Error("useDatabaseContext must be used inside DatabaseProvider.");
+	}
+	return value;
 }

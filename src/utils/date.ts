@@ -4,16 +4,16 @@
 // No default exports. TypeScript strict mode assumed.
 
 import {
-  eachDayOfInterval,
-  format,
-  isSameDay as dfIsSameDay,
-  isToday as dfIsToday,
-  parse,
-  startOfDay,
-} from 'date-fns';
-import { toZonedTime } from 'date-fns-tz';
+	isSameDay as dfIsSameDay,
+	isToday as dfIsToday,
+	eachDayOfInterval,
+	format,
+	parse,
+	startOfDay,
+} from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 
-const DATE_FORMAT = 'yyyy-MM-dd';
+const DATE_FORMAT = "yyyy-MM-dd";
 
 // ---------------------------------------------------------------------------
 // Internal helper
@@ -24,11 +24,11 @@ const DATE_FORMAT = 'yyyy-MM-dd';
  * if the Intl API is unavailable.
  */
 function getLocalTimeZone(): string {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone;
-  } catch {
-    return 'UTC';
-  }
+	try {
+		return Intl.DateTimeFormat().resolvedOptions().timeZone;
+	} catch {
+		return "UTC";
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -40,9 +40,9 @@ function getLocalTimeZone(): string {
  * This is the canonical way to get "today" throughout the app.
  */
 export function getLocalDateString(): string {
-  const tz = getLocalTimeZone();
-  const zonedNow = toZonedTime(new Date(), tz);
-  return format(zonedNow, DATE_FORMAT);
+	const tz = getLocalTimeZone();
+	const zonedNow = toZonedTime(new Date(), tz);
+	return format(zonedNow, DATE_FORMAT);
 }
 
 /**
@@ -51,9 +51,9 @@ export function getLocalDateString(): string {
  * @param date - Any JavaScript Date object.
  */
 export function getLocalDateStringForDate(date: Date): string {
-  const tz = getLocalTimeZone();
-  const zoned = toZonedTime(date, tz);
-  return format(zoned, DATE_FORMAT);
+	const tz = getLocalTimeZone();
+	const zoned = toZonedTime(date, tz);
+	return format(zoned, DATE_FORMAT);
 }
 
 /**
@@ -64,9 +64,9 @@ export function getLocalDateStringForDate(date: Date): string {
  * @returns A Date representing midnight local time on that day.
  */
 export function parseLocalDate(dateStr: string): Date {
-  // parse() without a reference date component treats the result as
-  // local time, which is exactly what we want.
-  return startOfDay(parse(dateStr, DATE_FORMAT, new Date()));
+	// parse() without a reference date component treats the result as
+	// local time, which is exactly what we want.
+	return startOfDay(parse(dateStr, DATE_FORMAT, new Date()));
 }
 
 /**
@@ -76,7 +76,7 @@ export function parseLocalDate(dateStr: string): Date {
  * @param dateStr - A YYYY-MM-DD string.
  */
 export function isToday(dateStr: string): boolean {
-  return dfIsToday(parseLocalDate(dateStr));
+	return dfIsToday(parseLocalDate(dateStr));
 }
 
 /**
@@ -86,7 +86,7 @@ export function isToday(dateStr: string): boolean {
  * @param b - Second YYYY-MM-DD string.
  */
 export function isSameDay(a: string, b: string): boolean {
-  return dfIsSameDay(parseLocalDate(a), parseLocalDate(b));
+	return dfIsSameDay(parseLocalDate(a), parseLocalDate(b));
 }
 
 /**
@@ -98,7 +98,7 @@ export function isSameDay(a: string, b: string): boolean {
  * @returns Array of YYYY-MM-DD strings.
  */
 export function getDaysBetween(startDate: string, endDate: string): string[] {
-  const start = parseLocalDate(startDate);
-  const end = parseLocalDate(endDate);
-  return eachDayOfInterval({ start, end }).map((d) => format(d, DATE_FORMAT));
+	const start = parseLocalDate(startDate);
+	const end = parseLocalDate(endDate);
+	return eachDayOfInterval({ start, end }).map((d) => format(d, DATE_FORMAT));
 }
