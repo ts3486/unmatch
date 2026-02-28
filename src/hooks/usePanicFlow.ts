@@ -64,14 +64,12 @@ interface PanicFlowActions {
 	selectUrgeKind: (kind: UrgeKind) => void;
 	startBreathing: () => void;
 	skipBreathing: () => void;
-	completeBreathing: () => void;
 	selectAction: (actionId: string) => void;
 	logOutcome: (
 		outcome: UrgeOutcome,
 		triggerTag?: string | null,
 	) => Promise<void>;
 	selectSpendCategory: (category: SpendCategory) => void;
-	selectSpendItemType: (itemType: SpendItemType) => void;
 	reset: () => void;
 }
 
@@ -190,16 +188,6 @@ export function usePanicFlow(): UsePanicFlowReturn {
 		}));
 	}, [clearBreathingTimer]);
 
-	const completeBreathing = useCallback((): void => {
-		clearBreathingTimer();
-		setState((prev) => ({
-			...prev,
-			step: "select_action",
-			isBreathing: false,
-			breathingTimeLeft: 0,
-		}));
-	}, [clearBreathingTimer]);
-
 	const selectAction = useCallback((actionId: string): void => {
 		setState((prev) => {
 			// For spend urges, show spend_delay card step before log_outcome.
@@ -211,10 +199,6 @@ export function usePanicFlow(): UsePanicFlowReturn {
 
 	const selectSpendCategory = useCallback((category: SpendCategory): void => {
 		setState((prev) => ({ ...prev, spendCategory: category }));
-	}, []);
-
-	const selectSpendItemType = useCallback((itemType: SpendItemType): void => {
-		setState((prev) => ({ ...prev, spendItemType: itemType }));
 	}, []);
 
 	const logOutcome = useCallback(
@@ -321,11 +305,9 @@ export function usePanicFlow(): UsePanicFlowReturn {
 		selectUrgeKind,
 		startBreathing,
 		skipBreathing,
-		completeBreathing,
 		selectAction,
 		logOutcome,
 		selectSpendCategory,
-		selectSpendItemType,
 		reset,
 	};
 }
