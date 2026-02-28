@@ -6,19 +6,12 @@ import { CheckinOverlay } from "@/src/components/CheckinOverlay";
 import { InlineCheckin } from "@/src/components/InlineCheckin";
 import { Logo } from "@/src/components/Logo";
 import { MeditationRank } from "@/src/components/MeditationRank";
-import {
-	MotivationCard,
-	getDailyMessage,
-} from "@/src/components/MotivationCard";
 import { PrivacyBadge } from "@/src/components/PrivacyBadge";
-import { TimeSavedCard } from "@/src/components/TimeSavedCard";
 import { colors } from "@/src/constants/theme";
 import { useAppState } from "@/src/contexts/AppStateContext";
 import { getCatalog } from "@/src/data/seed-loader";
 import { useCheckin } from "@/src/hooks/useCheckin";
 import { useContent } from "@/src/hooks/useContent";
-import { useWeeklySuccessCount } from "@/src/hooks/useWeeklySuccessCount";
-import { getLocalDateString } from "@/src/utils/date";
 import { router } from "expo-router";
 import type React from "react";
 import { useCallback, useState } from "react";
@@ -46,13 +39,10 @@ export default function HomeScreen(): React.ReactElement {
 	} = useContent(userProfile?.created_at ?? null);
 
 	const checkin = useCheckin();
-	const { weeklySuccessCount } = useWeeklySuccessCount();
 	const [checkinOverlayVisible, setCheckinOverlayVisible] = useState(false);
 
 	const catalog = getCatalog();
 	const resetCtaLabel = catalog.copy.panicCta ?? "Reset now";
-	const todayDate = getLocalDateString();
-	const dailyMessage = getDailyMessage(catalog.motivation_messages, todayDate);
 
 	// Today's content card (day_index matches current day in the course).
 	const todayContent =
@@ -112,9 +102,6 @@ export default function HomeScreen(): React.ReactElement {
 					</View>
 				</View>
 
-				{/* Daily motivation message */}
-				<MotivationCard message={dailyMessage} />
-
 				{/* Inline check-in hero */}
 				<InlineCheckin checkin={checkin} onExpand={handleCheckinExpand} />
 
@@ -144,9 +131,6 @@ export default function HomeScreen(): React.ReactElement {
 					level={meditationRank}
 					meditationCount={meditationCount}
 				/>
-
-				{/* Weekly time saved */}
-				<TimeSavedCard weeklySuccessCount={weeklySuccessCount} />
 
 				{/* Spacer to prevent content from hiding behind sticky CTA */}
 				<View style={styles.bottomSpacer} />
