@@ -27,7 +27,6 @@ export default function SettingsScreen(): React.ReactElement {
 		userProfile,
 		refreshProfile,
 		refreshPremiumStatus,
-		trialInfo,
 		isPremium,
 	} = useAppState();
 	const [whyWeChargeExpanded, setWhyWeChargeExpanded] = useState(false);
@@ -160,25 +159,7 @@ export default function SettingsScreen(): React.ReactElement {
 				Plan
 			</Text>
 			<View style={styles.listCard}>
-				{trialInfo.isTrialActive ? (
-					<List.Item
-						title="Free Trial"
-						description={`${trialInfo.trialDaysRemaining} day${trialInfo.trialDaysRemaining === 1 ? "" : "s"} remaining — tap to subscribe`}
-						titleStyle={styles.listTitle}
-						descriptionStyle={styles.listDesc}
-						accessibilityLabel={`Free trial — ${trialInfo.trialDaysRemaining} days remaining. Tap to subscribe.`}
-						accessibilityRole="button"
-						onPress={() => {
-							router.push("/paywall");
-						}}
-						left={() => (
-							<List.Icon icon="clock-outline" color={colors.warning} />
-						)}
-						right={({ color }) => (
-							<List.Icon icon="chevron-right" color={color} />
-						)}
-					/>
-				) : isPremium ? (
+				{isPremium ? (
 					<List.Item
 						title="Unmatch Subscriber"
 						description="You have full access. Thank you!"

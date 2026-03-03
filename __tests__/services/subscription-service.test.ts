@@ -158,7 +158,7 @@ describe("syncSubscriptionToDb", () => {
 		// Simulate existing row with trial fields
 		(db.getFirstAsync as jest.Mock).mockResolvedValue({
 			id: "singleton",
-			status: "trial",
+			status: "active",
 			product_id: "",
 			period: "monthly",
 			started_at: "2025-01-01T00:00:00Z",

@@ -30,7 +30,7 @@ export type UrgeOutcome = 'success' | 'fail' | 'ongoing';
 
 export type SpendingLimitMode = 'soft' | 'pledge';
 
-export type SubscriptionStatus = 'active' | 'expired' | 'none' | 'lifetime' | 'trial';
+export type SubscriptionStatus = 'active' | 'expired' | 'none' | 'lifetime';
 
 export type SubscriptionPeriod = 'monthly' | 'lifetime';
 

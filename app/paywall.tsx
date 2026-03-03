@@ -44,13 +44,13 @@ const FEATURES: FeatureItem[] = [
 
 export default function PaywallScreen(): React.ReactElement {
 	const analytics = useAnalytics();
-	const { startTrial, trialInfo, refreshPremiumStatus } = useAppState();
+	const { hasEverSubscribed, refreshPremiumStatus } = useAppState();
 	const { db } = useDatabaseContext();
 
 	const [isPurchasing, setIsPurchasing] = useState<boolean>(false);
 	const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
 
-	const isTrialOffer = !trialInfo.hasStartedTrial;
+	const isTrialOffer = !hasEverSubscribed;
 	const triggerSource = isTrialOffer ? "trial_offer" : "trial_expired";
 
 	// Fire paywall_viewed on mount.
@@ -60,23 +60,6 @@ export default function PaywallScreen(): React.ReactElement {
 			props: { trigger_source: triggerSource },
 		});
 	}, [analytics, triggerSource]);
-
-	const handleStartTrial = useCallback(async (): Promise<void> => {
-		setIsPurchasing(true);
-		setFeedbackMessage(null);
-		try {
-			await startTrial();
-			analytics.track({
-				name: "trial_started",
-				props: {},
-			});
-			router.replace("/(tabs)");
-		} catch {
-			setFeedbackMessage("Could not start your free trial. Please try again.");
-		} finally {
-			setIsPurchasing(false);
-		}
-	}, [startTrial, analytics]);
 
 	const handlePurchase = useCallback(async (): Promise<void> => {
 		if (isPurchasing) return;
@@ -151,7 +134,7 @@ export default function PaywallScreen(): React.ReactElement {
 				<Text variant="headlineMedium" style={styles.headline}>
 					{isTrialOffer
 						? "Pause from dating apps"
-						: "Your free trial has ended"}
+						: "Continue with Unmatch"}
 				</Text>
 				<Text variant="bodyLarge" style={styles.subtext}>
 					Everything you need to be intentional about dating apps.
@@ -200,7 +183,7 @@ export default function PaywallScreen(): React.ReactElement {
 					<Button
 						mode="contained"
 						onPress={() => {
-							void handleStartTrial();
+							void handlePurchase();
 						}}
 						loading={isPurchasing}
 						disabled={isPurchasing}

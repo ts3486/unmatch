@@ -11,13 +11,11 @@ import {
 	hasContentCompletedOnDate,
 } from "@/src/data/repositories";
 import {
+	getHasEverSubscribed,
 	getIsPremium,
-	getTrialInfo,
 	recordLifetimePurchase,
 	recordMonthlySubscription,
-	recordTrialStart,
 } from "@/src/data/repositories/subscription-repository";
-import type { TrialInfo } from "@/src/data/repositories/subscription-repository";
 import {
 	calculateMeditationRank,
 	calculateStreak,
@@ -40,13 +38,6 @@ import { useDatabaseContext } from "./DatabaseContext";
 // State and action interfaces
 // ---------------------------------------------------------------------------
 
-const DEFAULT_TRIAL_INFO: TrialInfo = {
-	hasStartedTrial: false,
-	isTrialActive: false,
-	trialDaysRemaining: 0,
-	trialEndsAt: "",
-};
-
 interface AppState {
 	userProfile: UserProfile | null;
 	todayProgress: Progress | null;
@@ -57,7 +48,7 @@ interface AppState {
 	isOnboarded: boolean;
 	isLoading: boolean;
 	isPremium: boolean;
-	trialInfo: TrialInfo;
+	hasEverSubscribed: boolean;
 }
 
 interface AppStateActions {
@@ -71,7 +62,6 @@ interface AppStateActions {
 		productId: string,
 		period: "monthly" | "lifetime",
 	) => Promise<void>;
-	startTrial: () => Promise<void>;
 }
 
 type AppStateContextValue = AppState & AppStateActions;
@@ -103,7 +93,7 @@ export function AppStateProvider({
 	const [todaySuccess, setTodaySuccess] = useState<boolean>(false);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [isPremium, setIsPremium] = useState<boolean>(false);
-	const [trialInfo, setTrialInfo] = useState<TrialInfo>(DEFAULT_TRIAL_INFO);
+	const [hasEverSubscribed, setHasEverSubscribed] = useState<boolean>(false);
 
 	// ---------------------------------------------------------------------------
 	// Data loaders
@@ -117,8 +107,8 @@ export function AppStateProvider({
 	const refreshPremium = useCallback(async (): Promise<void> => {
 		const premium = await getIsPremium(db);
 		setIsPremium(premium);
-		const trial = await getTrialInfo(db);
-		setTrialInfo(trial);
+		const everSubscribed = await getHasEverSubscribed(db);
+		setHasEverSubscribed(everSubscribed);
 	}, [db]);
 
 	const refreshProgress = useCallback(async (): Promise<void> => {
@@ -174,11 +164,6 @@ export function AppStateProvider({
 		[db, refreshPremium],
 	);
 
-	const startTrial = useCallback(async (): Promise<void> => {
-		await recordTrialStart(db);
-		await refreshPremium();
-	}, [db, refreshPremium]);
-
 	// ---------------------------------------------------------------------------
 	// Initial load
 	// ---------------------------------------------------------------------------
@@ -218,13 +203,12 @@ export function AppStateProvider({
 		isOnboarded: userProfile !== null,
 		isLoading,
 		isPremium,
-		trialInfo,
+		hasEverSubscribed,
 		refreshProgress,
 		refreshProfile,
 		refreshPremiumStatus: refreshPremium,
 		completeOnboarding,
 		unlockPremium,
-		startTrial,
 	};
 
 	return (

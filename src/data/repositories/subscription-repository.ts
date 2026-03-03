@@ -5,8 +5,6 @@
 
 import type { SQLiteDatabase } from 'expo-sqlite';
 import type { SubscriptionState } from '@/src/domain/types';
-import { FREE_TRIAL_DAYS } from '@/src/constants/config';
-import { addDays, differenceInCalendarDays } from 'date-fns';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -31,32 +29,11 @@ interface SubscriptionStateRow {
 }
 
 // ---------------------------------------------------------------------------
-// Trial info type
-// ---------------------------------------------------------------------------
-
-export interface TrialInfo {
-  hasStartedTrial: boolean;
-  isTrialActive: boolean;
-  trialDaysRemaining: number;
-  trialEndsAt: string;
-}
-
-// ---------------------------------------------------------------------------
 // Pure helpers
 // ---------------------------------------------------------------------------
 
-/**
- * Returns true if the trial end date is in the future.
- * Pure function — no DB calls.
- */
-export function isTrialActive(trialEndsAt: string, now: Date = new Date()): boolean {
-  if (!trialEndsAt) return false;
-  return now < new Date(trialEndsAt);
-}
-
 function rowToSubscriptionState(row: SubscriptionStateRow): SubscriptionState {
   const status = row.status as SubscriptionState['status'];
-  const trialActive = isTrialActive(row.trial_ends_at ?? '');
   return {
     id: row.id,
     status,
@@ -67,8 +44,7 @@ function rowToSubscriptionState(row: SubscriptionStateRow): SubscriptionState {
     is_premium:
       row.is_premium === 1 ||
       status === 'active' ||
-      status === 'lifetime' ||
-      (status === 'trial' && trialActive),
+      status === 'lifetime',
     trial_started_at: row.trial_started_at ?? '',
     trial_ends_at: row.trial_ends_at ?? '',
   };
@@ -165,7 +141,7 @@ export async function recordMonthlySubscription(
 }
 
 /**
- * Returns true if the user has premium access (lifetime, active subscription, or active trial).
+ * Returns true if the user has premium access (lifetime or active subscription).
  */
 export async function getIsPremium(db: SQLiteDatabase): Promise<boolean> {
   const state = await getSubscription(db);
@@ -173,49 +149,11 @@ export async function getIsPremium(db: SQLiteDatabase): Promise<boolean> {
 }
 
 /**
- * Records the start of a free trial.
- * Sets status='trial', trial_ends_at to now + FREE_TRIAL_DAYS, is_premium=true.
+ * Returns true if the user has ever had a subscription (product_id set or status isn't 'none').
+ * Used for paywall mode detection (first-time vs returning).
  */
-export async function recordTrialStart(db: SQLiteDatabase): Promise<void> {
-  const now = new Date();
-  const trialEndsAt = addDays(now, FREE_TRIAL_DAYS);
-  await upsertSubscription(db, {
-    status: 'trial',
-    product_id: '',
-    period: 'monthly',
-    started_at: now.toISOString(),
-    expires_at: '',
-    is_premium: true,
-    trial_started_at: now.toISOString(),
-    trial_ends_at: trialEndsAt.toISOString(),
-  });
-}
-
-/**
- * Returns trial info for the current user.
- */
-export async function getTrialInfo(db: SQLiteDatabase): Promise<TrialInfo> {
+export async function getHasEverSubscribed(db: SQLiteDatabase): Promise<boolean> {
   const state = await getSubscription(db);
-  if (!state || !state.trial_started_at) {
-    return {
-      hasStartedTrial: false,
-      isTrialActive: false,
-      trialDaysRemaining: 0,
-      trialEndsAt: '',
-    };
-  }
-
-  const now = new Date();
-  const trialEnd = new Date(state.trial_ends_at);
-  const active = isTrialActive(state.trial_ends_at, now);
-  const daysRemaining = active
-    ? Math.max(0, differenceInCalendarDays(trialEnd, now) + 1)
-    : 0;
-
-  return {
-    hasStartedTrial: true,
-    isTrialActive: active,
-    trialDaysRemaining: daysRemaining,
-    trialEndsAt: state.trial_ends_at,
-  };
+  if (!state) return false;
+  return state.product_id !== '' || state.status !== 'none';
 }
