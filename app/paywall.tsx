@@ -42,7 +42,7 @@ const FEATURES: FeatureItem[] = [
 
 export default function PaywallScreen(): React.ReactElement {
 	const analytics = useAnalytics();
-	const { isPremium, hasEverSubscribed, refreshPremiumStatus } = useAppState();
+	const { isPremium, hasEverSubscribed, refreshPremiumStatus, unlockPremium } = useAppState();
 	const { db } = useDatabaseContext();
 
 	const [isPurchasing, setIsPurchasing] = useState<boolean>(false);
@@ -75,6 +75,11 @@ export default function PaywallScreen(): React.ReactElement {
 			const offering = await getOfferings();
 			console.log("[Paywall] Offering:", JSON.stringify(offering, null, 2));
 			if (!offering || !offering.monthly) {
+				if (__DEV__) {
+					console.log("[Paywall] DEV mode — bypassing purchase, unlocking premium");
+					await unlockPremium("dev_monthly_sandbox", "monthly");
+					return;
+				}
 				console.log("[Paywall] No monthly package found in offering");
 				setFeedbackMessage(
 					"Unable to load subscription options. Please try again.",
@@ -95,6 +100,11 @@ export default function PaywallScreen(): React.ReactElement {
 			});
 		} catch (err: unknown) {
 			console.log("[Paywall] Purchase error:", JSON.stringify(err, null, 2));
+			if (__DEV__) {
+				console.log("[Paywall] DEV mode — bypassing purchase error, unlocking premium");
+				await unlockPremium("dev_monthly_sandbox", "monthly");
+				return;
+			}
 			const isCancelled =
 				err !== null &&
 				typeof err === "object" &&
@@ -108,7 +118,7 @@ export default function PaywallScreen(): React.ReactElement {
 		} finally {
 			setIsPurchasing(false);
 		}
-	}, [isPurchasing, db, refreshPremiumStatus, analytics]);
+	}, [isPurchasing, db, refreshPremiumStatus, unlockPremium, analytics]);
 
 	const handleRestore = useCallback(async (): Promise<void> => {
 		if (isPurchasing) return;
@@ -169,6 +179,24 @@ export default function PaywallScreen(): React.ReactElement {
 				))}
 			</View>
 
+			{/* Price comparison callout */}
+			<View style={styles.priceCompareWrap}>
+				<View style={styles.priceCompareBadge}>
+					<Text style={styles.priceCompareBadgeText}>
+						CHEAPER THAN ONE TINDER BOOST
+					</Text>
+				</View>
+				<View style={styles.priceCompare}>
+					<Text variant="titleMedium" style={styles.priceComparePrice}>
+						$4.99/month
+					</Text>
+					<Text variant="bodySmall" style={styles.priceCompareContext}>
+						A single boost costs $5.99 and lasts 30 minutes.{"\n"}
+						Unmatch costs less — and works all month.
+					</Text>
+				</View>
+			</View>
+
 			{/* CTA */}
 			{isTrialOffer ? (
 				<>
@@ -188,9 +216,6 @@ export default function PaywallScreen(): React.ReactElement {
 					>
 						Try 7 Days for Free
 					</Button>
-					<Text variant="bodySmall" style={styles.pricingNote}>
-						Then $4.99/month · Cancel anytime
-					</Text>
 				</>
 			) : (
 				<>
@@ -266,8 +291,9 @@ const styles = StyleSheet.create({
 	content: {
 		flexGrow: 1,
 		justifyContent: "center",
-		paddingHorizontal: 28,
-		paddingVertical: 40,
+		alignItems: "center",
+		paddingHorizontal: 32,
+		paddingVertical: 80,
 		gap: 28,
 	},
 	// Header
@@ -289,6 +315,7 @@ const styles = StyleSheet.create({
 	},
 	// Feature list
 	featureList: {
+		alignSelf: "stretch",
 		gap: 16,
 		paddingVertical: 4,
 	},
@@ -310,8 +337,49 @@ const styles = StyleSheet.create({
 		color: colors.text,
 		flex: 1,
 	},
+	// Price comparison callout
+	priceCompareWrap: {
+		alignSelf: "stretch",
+		alignItems: "center",
+	},
+	priceCompareBadge: {
+		backgroundColor: colors.warning,
+		borderRadius: 8,
+		paddingHorizontal: 12,
+		paddingVertical: 4,
+		marginBottom: -14,
+		zIndex: 1,
+	},
+	priceCompareBadgeText: {
+		color: colors.background,
+		fontSize: 11,
+		fontWeight: "800",
+		letterSpacing: 0.8,
+	},
+	priceCompare: {
+		backgroundColor: colors.surface,
+		borderRadius: 14,
+		borderWidth: 1,
+		borderColor: colors.warning,
+		paddingTop: 22,
+		paddingBottom: 14,
+		paddingHorizontal: 20,
+		alignItems: "center",
+		alignSelf: "stretch",
+		gap: 6,
+	},
+	priceComparePrice: {
+		color: colors.text,
+		fontWeight: "700",
+	},
+	priceCompareContext: {
+		color: colors.muted,
+		textAlign: "center",
+		lineHeight: 18,
+	},
 	// CTA button
 	ctaButton: {
+		alignSelf: "stretch",
 		borderRadius: 14,
 		backgroundColor: colors.primary,
 	},
@@ -353,6 +421,7 @@ const styles = StyleSheet.create({
 	},
 	// Feedback
 	feedbackBox: {
+		alignSelf: "stretch",
 		backgroundColor: colors.surface,
 		borderRadius: 10,
 		padding: 12,
