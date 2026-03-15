@@ -31,11 +31,9 @@ interface FeatureItem {
 }
 
 const FEATURES: FeatureItem[] = [
-	{ icon: "timer-outline", label: "60-second meditation — anytime, offline" },
-	{ icon: "clipboard-check-outline", label: "Daily check-in — private self-reflection" },
+	{ icon: "timer-outline", label: "60-second panic meditation — anytime, offline" },
 	{ icon: "credit-card-off-outline", label: "Spend delay cards — think before you boost" },
-	{ icon: "book-open-variant", label: "7-day starter course — learn the patterns" },
-	{ icon: "chart-line", label: "Progress tracking — streaks, rank, insights" },
+	{ icon: "chart-line", label: "Progress tracking — streaks, rank & insights" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -171,24 +169,6 @@ export default function PaywallScreen(): React.ReactElement {
 				))}
 			</View>
 
-			{/* Price comparison callout */}
-			<View style={styles.priceCompareWrap}>
-				<View style={styles.priceCompareBadge}>
-					<Text style={styles.priceCompareBadgeText}>
-						CHEAPER THAN ONE TINDER BOOST
-					</Text>
-				</View>
-				<View style={styles.priceCompare}>
-					<Text variant="titleMedium" style={styles.priceComparePrice}>
-						$4.99/month
-					</Text>
-					<Text variant="bodySmall" style={styles.priceCompareContext}>
-						A single boost costs $5.99 and lasts 30 minutes.{"\n"}
-						Unmatch costs less — and works all month.
-					</Text>
-				</View>
-			</View>
-
 			{/* CTA */}
 			{isTrialOffer ? (
 				<>
@@ -209,10 +189,7 @@ export default function PaywallScreen(): React.ReactElement {
 						Try 7 Days for Free
 					</Button>
 					<Text variant="bodySmall" style={styles.pricingNote}>
-						Then $4.99/month — cheaper than a single boost
-					</Text>
-					<Text variant="bodySmall" style={styles.cancelNote}>
-						Cancel anytime in Settings
+						Then $4.99/month · Cancel anytime
 					</Text>
 				</>
 			) : (
@@ -233,9 +210,6 @@ export default function PaywallScreen(): React.ReactElement {
 					>
 						Subscribe — $4.99/month
 					</Button>
-					<Text variant="bodySmall" style={styles.pricingNote}>
-						Cheaper than a single boost. Cancel anytime.
-					</Text>
 
 					{/* Restore link */}
 					<Button
@@ -256,32 +230,15 @@ export default function PaywallScreen(): React.ReactElement {
 
 			{/* Trust signals */}
 			<View style={styles.trustRow}>
-				<View style={styles.trustItem}>
-					<MaterialCommunityIcons
-						name="lock-outline"
-						size={14}
-						color={colors.muted}
-					/>
-					<Text variant="bodySmall" style={styles.trustText}>
-						All data stays on your device
-					</Text>
-				</View>
-				<View style={styles.trustItem}>
-					<MaterialCommunityIcons
-						name="account-off-outline"
-						size={14}
-						color={colors.muted}
-					/>
-					<Text variant="bodySmall" style={styles.trustText}>
-						No account required
-					</Text>
-				</View>
+				<MaterialCommunityIcons
+					name="lock-outline"
+					size={14}
+					color={colors.muted}
+				/>
+				<Text variant="bodySmall" style={styles.trustText}>
+					Private & on-device · No account required
+				</Text>
 			</View>
-
-			{/* Terms */}
-			<Text variant="bodySmall" style={styles.termsText}>
-				Subscription renews monthly. Cancel anytime.
-			</Text>
 
 			{/* Feedback message */}
 			{feedbackMessage !== null && (
@@ -307,16 +264,17 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.background,
 	},
 	content: {
-		paddingHorizontal: 20,
-		paddingTop: 40,
-		paddingBottom: 24,
-		gap: 16,
+		flexGrow: 1,
+		justifyContent: "center",
+		paddingHorizontal: 28,
+		paddingVertical: 40,
+		gap: 28,
 	},
 	// Header
 	header: {
 		alignItems: "center",
-		gap: 10,
-		paddingBottom: 2,
+		gap: 12,
+		paddingBottom: 4,
 	},
 	headline: {
 		color: colors.text,
@@ -331,7 +289,7 @@ const styles = StyleSheet.create({
 	},
 	// Feature list
 	featureList: {
-		gap: 12,
+		gap: 16,
 		paddingVertical: 4,
 	},
 	featureRow: {
@@ -351,46 +309,6 @@ const styles = StyleSheet.create({
 	featureLabel: {
 		color: colors.text,
 		flex: 1,
-	},
-	// Price comparison callout
-	priceCompareWrap: {
-		alignItems: "center",
-		marginTop: 2,
-	},
-	priceCompareBadge: {
-		backgroundColor: colors.warning,
-		borderRadius: 8,
-		paddingHorizontal: 12,
-		paddingVertical: 4,
-		marginBottom: -14,
-		zIndex: 1,
-	},
-	priceCompareBadgeText: {
-		color: colors.background,
-		fontSize: 11,
-		fontWeight: "800",
-		letterSpacing: 0.8,
-	},
-	priceCompare: {
-		backgroundColor: colors.surface,
-		borderRadius: 14,
-		borderWidth: 1,
-		borderColor: colors.warning,
-		paddingTop: 22,
-		paddingBottom: 14,
-		paddingHorizontal: 20,
-		alignItems: "center",
-		alignSelf: "stretch",
-		gap: 6,
-	},
-	priceComparePrice: {
-		color: colors.text,
-		fontWeight: "700",
-	},
-	priceCompareContext: {
-		color: colors.muted,
-		textAlign: "center",
-		lineHeight: 18,
 	},
 	// CTA button
 	ctaButton: {
@@ -412,26 +330,14 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 		fontSize: 13,
 		lineHeight: 18,
-		marginTop: -8,
-	},
-	cancelNote: {
-		color: colors.muted,
-		textAlign: "center",
-		fontSize: 12,
-		lineHeight: 16,
-		marginTop: -10,
+		marginTop: -16,
 	},
 	// Trust signals
 	trustRow: {
 		flexDirection: "row",
 		justifyContent: "center",
-		gap: 20,
-		flexWrap: "wrap",
-	},
-	trustItem: {
-		flexDirection: "row",
 		alignItems: "center",
-		gap: 5,
+		gap: 6,
 	},
 	trustText: {
 		color: colors.muted,
@@ -439,18 +345,11 @@ const styles = StyleSheet.create({
 	// Restore
 	restoreButton: {
 		alignSelf: "center",
-		marginTop: -6,
+		marginTop: -16,
 	},
 	restoreLabel: {
 		fontSize: 13,
 		textDecorationLine: "underline",
-	},
-	// Terms
-	termsText: {
-		color: colors.muted,
-		textAlign: "center",
-		fontSize: 12,
-		lineHeight: 16,
 	},
 	// Feedback
 	feedbackBox: {
