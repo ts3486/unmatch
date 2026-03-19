@@ -216,7 +216,7 @@ export function usePanicFlow(): UsePanicFlowReturn {
 			// Persist the urge event.
 			await createUrgeEvent(db, {
 				started_at: startedAt,
-				from_screen: "panic",
+				from_screen: "home",
 				urge_level: 5, // Default mid-range; callers may extend this later.
 				protocol_completed: 1,
 				urge_kind: state.urgeKind ?? "check",

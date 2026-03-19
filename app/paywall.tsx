@@ -161,24 +161,6 @@ export default function PaywallScreen(): React.ReactElement {
 				</Text>
 			</View>
 
-			{/* Feature list */}
-			<View style={styles.featureList}>
-				{FEATURES.map((feature) => (
-					<View key={feature.label} style={styles.featureRow}>
-						<View style={styles.featureIconWrap}>
-							<MaterialCommunityIcons
-								name={feature.icon as never}
-								size={20}
-								color={colors.primary}
-							/>
-						</View>
-						<Text variant="bodyMedium" style={styles.featureLabel}>
-							{feature.label}
-						</Text>
-					</View>
-				))}
-			</View>
-
 			{/* Price comparison callout */}
 			<View style={styles.priceCompareWrap}>
 				<View style={styles.priceCompareBadge}>
@@ -197,60 +179,82 @@ export default function PaywallScreen(): React.ReactElement {
 				</View>
 			</View>
 
+			{/* Feature list */}
+			<View style={styles.featureList}>
+				{FEATURES.map((feature) => (
+					<View key={feature.label} style={styles.featureRow}>
+						<View style={styles.featureIconWrap}>
+							<MaterialCommunityIcons
+								name={feature.icon as never}
+								size={20}
+								color={colors.primary}
+							/>
+						</View>
+						<Text variant="bodyMedium" style={styles.featureLabel}>
+							{feature.label}
+						</Text>
+					</View>
+				))}
+			</View>
+
 			{/* CTA */}
 			{isTrialOffer ? (
-				<>
-					<Button
-						mode="contained"
-						onPress={() => {
-							void handlePurchase();
-						}}
-						loading={isPurchasing}
-						disabled={isPurchasing}
-						style={styles.ctaButton}
-						contentStyle={styles.ctaButtonContent}
-						labelStyle={styles.ctaButtonLabel}
-						accessibilityLabel="Try 7 Days for Free"
-						accessibilityRole="button"
-						accessibilityState={{ disabled: isPurchasing, busy: isPurchasing }}
-					>
-						Try 7 Days for Free
-					</Button>
-				</>
+				<Button
+					mode="contained"
+					onPress={() => {
+						void handlePurchase();
+					}}
+					loading={isPurchasing}
+					disabled={isPurchasing}
+					style={styles.ctaButton}
+					contentStyle={styles.ctaButtonContent}
+					labelStyle={styles.ctaButtonLabel}
+					accessibilityLabel="Try 7 Days for Free"
+					accessibilityRole="button"
+					accessibilityState={{ disabled: isPurchasing, busy: isPurchasing }}
+				>
+					Try 7 Days for Free
+				</Button>
 			) : (
-				<>
-					<Button
-						mode="contained"
-						onPress={() => {
-							void handlePurchase();
-						}}
-						loading={isPurchasing}
-						disabled={isPurchasing}
-						style={styles.ctaButton}
-						contentStyle={styles.ctaButtonContent}
-						labelStyle={styles.ctaButtonLabel}
-						accessibilityLabel="Subscribe — $4.99/month"
-						accessibilityRole="button"
-						accessibilityState={{ disabled: isPurchasing, busy: isPurchasing }}
-					>
-						Subscribe — $4.99/month
-					</Button>
+				<Button
+					mode="contained"
+					onPress={() => {
+						void handlePurchase();
+					}}
+					loading={isPurchasing}
+					disabled={isPurchasing}
+					style={styles.ctaButton}
+					contentStyle={styles.ctaButtonContent}
+					labelStyle={styles.ctaButtonLabel}
+					accessibilityLabel="Subscribe — $4.99/month"
+					accessibilityRole="button"
+					accessibilityState={{ disabled: isPurchasing, busy: isPurchasing }}
+				>
+					Subscribe — $4.99/month
+				</Button>
+			)}
 
-					{/* Restore link */}
-					<Button
-						mode="text"
-						onPress={() => {
-							void handleRestore();
-						}}
-						textColor={colors.muted}
-						style={styles.restoreButton}
-						labelStyle={styles.restoreLabel}
-						accessibilityLabel="Restore previous purchase"
-						accessibilityRole="button"
-					>
-						Restore purchase
-					</Button>
-				</>
+			{/* Restore — visible in both modes */}
+			<Button
+				mode="text"
+				onPress={() => {
+					void handleRestore();
+				}}
+				textColor={colors.muted}
+				style={styles.restoreButton}
+				labelStyle={styles.restoreLabel}
+				accessibilityLabel="Restore previous purchase"
+				accessibilityRole="button"
+			>
+				Restore purchase
+			</Button>
+
+			{/* Auto-renewal terms (App Store guideline 3.1.2) */}
+			{isTrialOffer && (
+				<Text variant="bodySmall" style={styles.legalText}>
+					$4.99/month after free trial. Subscription auto-renews. Cancel anytime in
+					App Store settings at least 24 hours before renewal.
+				</Text>
 			)}
 
 			{/* Trust signals */}
@@ -399,6 +403,14 @@ const styles = StyleSheet.create({
 		fontSize: 13,
 		lineHeight: 18,
 		marginTop: -16,
+	},
+	// Legal text
+	legalText: {
+		color: colors.muted,
+		textAlign: "center",
+		fontSize: 11,
+		lineHeight: 16,
+		paddingHorizontal: 8,
 	},
 	// Trust signals
 	trustRow: {

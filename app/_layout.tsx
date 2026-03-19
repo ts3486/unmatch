@@ -214,7 +214,10 @@ function InnerLayout(): React.ReactElement {
 					name="progress/day/[date]"
 					options={{ title: "Day Detail", headerBackTitle: "Progress" }}
 				/>
-				<Stack.Screen name="checkin" options={{ title: "Daily Check-in" }} />
+				<Stack.Screen
+					name="checkin"
+					options={{ title: "Daily Check-in", headerBackTitle: "Back" }}
+				/>
 			</Stack>
 		</>
 	);

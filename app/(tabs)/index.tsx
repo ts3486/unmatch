@@ -1,99 +1,98 @@
-// Home tab screen.
-// Shows inline check-in hero, compact stat row, today's course card, and Reset CTA.
+// Home tab screen — breathing exercise with daily check-in footer.
 // TypeScript strict mode.
 
-import { CheckinOverlay } from "@/src/components/CheckinOverlay";
+import { BreathingExercise } from "@/src/components/BreathingExercise";
 import { CoachMarkOverlay } from "@/src/components/CoachMarkOverlay";
-import { InlineCheckin } from "@/src/components/InlineCheckin";
 import { Logo } from "@/src/components/Logo";
-import { MeditationRank } from "@/src/components/MeditationRank";
 import { PrivacyBadge } from "@/src/components/PrivacyBadge";
+import { BREATHING_DURATION_SECONDS } from "@/src/constants/config";
 import { colors } from "@/src/constants/theme";
 import { useAppState } from "@/src/contexts/AppStateContext";
-import { getCatalog } from "@/src/data/seed-loader";
 import { useCheckin } from "@/src/hooks/useCheckin";
 import { useCoachMarks } from "@/src/hooks/useCoachMarks";
-import { useContent } from "@/src/hooks/useContent";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import type React from "react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
 	type LayoutRectangle,
-	ScrollView,
 	StyleSheet,
+	TouchableOpacity,
 	View,
 } from "react-native";
-import { Button, Card, Chip, Text } from "react-native-paper";
+import { Button, Chip, Text } from "react-native-paper";
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
 export default function HomeScreen(): React.ReactElement {
-	const {
-		streak,
-		meditationRank,
-		meditationCount,
-		todaySuccess,
-		userProfile,
-		isLoading,
-	} = useAppState();
-
-	const {
-		allContent,
-		currentDayIndex,
-		isLoading: contentLoading,
-	} = useContent(userProfile?.created_at ?? null);
+	const { todaySuccess, isLoading } = useAppState();
 
 	const checkin = useCheckin();
-	const [checkinOverlayVisible, setCheckinOverlayVisible] = useState(false);
 
 	const coachMarks = useCoachMarks();
 
 	// Layout refs for coach mark spotlight targets.
-	const [resetButtonLayout, setResetButtonLayout] =
-		useState<LayoutRectangle | null>(null);
 	const [checkinLayout, setCheckinLayout] = useState<LayoutRectangle | null>(
 		null,
 	);
-	const [courseLayout, setCourseLayout] = useState<LayoutRectangle | null>(
-		null,
-	);
-	const resetButtonRef = useRef<View>(null);
+	const [breathingLayout, setBreathingLayout] =
+		useState<LayoutRectangle | null>(null);
 	const checkinRef = useRef<View>(null);
-	const courseRef = useRef<View>(null);
+	const breathingRef = useRef<View>(null);
 
-	// Map coach mark ID to its target layout.
 	const targetLayoutForMark = (markId: string): LayoutRectangle | null => {
 		switch (markId) {
 			case "reset_button":
-				return resetButtonLayout;
+				return breathingLayout;
 			case "checkin":
 				return checkinLayout;
-			case "course":
-				return courseLayout;
 			default:
 				return null;
 		}
 	};
 
-	const catalog = getCatalog();
-	const resetCtaLabel = catalog.copy.panicCta ?? "Reset now";
+	// ---------------------------------------------------------------------------
+	// Breathing timer — always running, loops continuously
+	// ---------------------------------------------------------------------------
 
-	// Today's content card (day_index matches current day in the course).
-	const todayContent =
-		allContent.find((c) => c.day_index === currentDayIndex) ?? null;
+	const [breathingTimeLeft, setBreathingTimeLeft] = useState<number>(
+		BREATHING_DURATION_SECONDS,
+	);
+	const [sessionTimeLeft, setSessionTimeLeft] = useState<number>(
+		BREATHING_DURATION_SECONDS,
+	);
+	const [sessionComplete, setSessionComplete] = useState(false);
+	const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-	const handleResetPress = useCallback((): void => {
-		router.push("/(tabs)/panic");
+	useEffect(() => {
+		const id = setInterval(() => {
+			setBreathingTimeLeft((prev) => {
+				if (prev <= 1) {
+					return BREATHING_DURATION_SECONDS;
+				}
+				return prev - 1;
+			});
+			setSessionTimeLeft((prev) => {
+				if (prev <= 1) {
+					setSessionComplete(true);
+					return 0;
+				}
+				return prev - 1;
+			});
+		}, 1_000);
+		timerRef.current = id;
+
+		return () => {
+			clearInterval(id);
+			timerRef.current = null;
+		};
 	}, []);
 
-	const handleCheckinExpand = useCallback((): void => {
-		setCheckinOverlayVisible(true);
-	}, []);
-
-	const handleCheckinClose = useCallback((): void => {
-		setCheckinOverlayVisible(false);
+	const handleRestartSession = useCallback(() => {
+		setSessionTimeLeft(BREATHING_DURATION_SECONDS);
+		setSessionComplete(false);
 	}, []);
 
 	// ---------------------------------------------------------------------------
@@ -116,11 +115,7 @@ export default function HomeScreen(): React.ReactElement {
 
 	return (
 		<View style={styles.root}>
-			<ScrollView
-				style={styles.scroll}
-				contentContainerStyle={styles.scrollContent}
-				showsVerticalScrollIndicator={false}
-			>
+			<View style={styles.content}>
 				{/* Header */}
 				<View style={styles.headerRow}>
 					<Logo markSize={28} layout="horizontal" />
@@ -138,75 +133,64 @@ export default function HomeScreen(): React.ReactElement {
 					</View>
 				</View>
 
-				{/* Inline check-in hero */}
+				{/* Breathing exercise — always visible */}
 				<View
-					ref={checkinRef}
-					onLayout={(e) => setCheckinLayout(e.nativeEvent.layout)}
+					ref={breathingRef}
+					style={styles.breathingArea}
+					onLayout={(e) => setBreathingLayout(e.nativeEvent.layout)}
 				>
-					<InlineCheckin checkin={checkin} onExpand={handleCheckinExpand} />
+					<BreathingExercise
+						timeLeft={breathingTimeLeft}
+						totalDuration={BREATHING_DURATION_SECONDS}
+						sessionTimeLeft={sessionTimeLeft}
+						sessionComplete={sessionComplete}
+						onRestart={handleRestartSession}
+					/>
 				</View>
-
-				{/* Today's course card */}
-				{!contentLoading && todayContent !== null && (
-					<View
-						ref={courseRef}
-						onLayout={(e) => setCourseLayout(e.nativeEvent.layout)}
-					>
-						<Card style={styles.courseCard} mode="contained">
-							<Card.Content>
-								<Text variant="labelSmall" style={styles.courseDayLabel}>
-									Day {currentDayIndex} of 7
-								</Text>
-								<Text variant="titleMedium" style={styles.courseTitle}>
-									{todayContent.title}
-								</Text>
-								<Text variant="bodySmall" style={styles.courseBody}>
-									{todayContent.body}
-								</Text>
-							</Card.Content>
-							<Card.Actions>
-								<Text variant="labelMedium" style={styles.courseAction}>
-									{todayContent.action_text}
-								</Text>
-							</Card.Actions>
-						</Card>
-					</View>
-				)}
-
-				<MeditationRank
-					level={meditationRank}
-					meditationCount={meditationCount}
-				/>
-
-				{/* Spacer to prevent content from hiding behind sticky CTA */}
-				<View style={styles.bottomSpacer} />
-			</ScrollView>
-
-			{/* Sticky bottom: Reset CTA */}
-			<View
-				ref={resetButtonRef}
-				style={styles.stickyBottom}
-				onLayout={(e) => setResetButtonLayout(e.nativeEvent.layout)}
-			>
-				<Button
-					mode="contained"
-					onPress={handleResetPress}
-					style={styles.resetButton}
-					contentStyle={styles.resetButtonContent}
-					labelStyle={styles.resetButtonLabel}
-					accessibilityLabel="Open the reset flow"
-					accessibilityHint="Starts the guided reset protocol"
-				>
-					{resetCtaLabel}
-				</Button>
 			</View>
 
-			{/* Full-screen daily check-in overlay */}
-			{checkinOverlayVisible && (
-				<CheckinOverlay checkin={checkin} onClose={handleCheckinClose} />
-			)}
+			{/* Sticky bottom: Daily check-in CTA */}
+			<View
+				ref={checkinRef}
+				style={styles.stickyBottom}
+				onLayout={(e) => setCheckinLayout(e.nativeEvent.layout)}
+			>
+				{checkin.isComplete ? (
+					<TouchableOpacity
+						onPress={() => router.push("/checkin")}
+						activeOpacity={0.7}
+						style={styles.checkinDoneRow}
+					>
+						<MaterialCommunityIcons
+							name="check-circle"
+							size={20}
+							color={colors.success}
+						/>
+						<Text variant="titleSmall" style={styles.checkinDoneText}>
+							Check-in done
+						</Text>
+						<MaterialCommunityIcons
+							name="chevron-right"
+							size={18}
+							color={colors.muted}
+						/>
+					</TouchableOpacity>
+				) : (
+					<Button
+						mode="contained"
+						onPress={() => router.push("/checkin")}
+						style={styles.checkinButton}
+						contentStyle={styles.checkinButtonContent}
+						labelStyle={styles.checkinButtonLabel}
+						accessibilityLabel="Open daily check-in"
+						accessibilityHint="Quick self-reflection — private and offline"
+					>
+						Daily check-in
+					</Button>
+				)}
+			</View>
 
-			{/* Coach mark walkthrough overlay — stable key prevents remount between steps */}
+			{/* Coach mark walkthrough overlay */}
 			{coachMarks.currentMark !== null && (
 				<CoachMarkOverlay
 					key="coach-overlay"
@@ -240,14 +224,10 @@ const styles = StyleSheet.create({
 	loadingText: {
 		color: colors.muted,
 	},
-	scroll: {
+	content: {
 		flex: 1,
-	},
-	scrollContent: {
 		paddingHorizontal: 16,
 		paddingTop: 56,
-		paddingBottom: 16,
-		gap: 16,
 	},
 	headerRow: {
 		flexDirection: "row",
@@ -269,40 +249,12 @@ const styles = StyleSheet.create({
 		color: colors.success,
 		fontSize: 12,
 	},
-	courseCard: {
-		backgroundColor: colors.surface,
-		borderRadius: 14,
-		borderWidth: 1,
-		borderColor: colors.border,
-	},
-	courseDayLabel: {
-		color: colors.primary,
-		textTransform: "uppercase",
-		letterSpacing: 1,
-		marginBottom: 6,
-	},
-	courseTitle: {
-		color: colors.text,
-		fontWeight: "600",
-		marginBottom: 8,
-	},
-	courseBody: {
-		color: colors.muted,
-		lineHeight: 20,
-	},
-	courseAction: {
-		color: colors.secondary,
+	breathingArea: {
 		flex: 1,
-		flexWrap: "wrap",
-	},
-	bottomSpacer: {
-		height: 80,
+		justifyContent: "center",
+		alignItems: "center",
 	},
 	stickyBottom: {
-		position: "absolute",
-		bottom: 0,
-		left: 0,
-		right: 0,
 		backgroundColor: colors.background,
 		paddingHorizontal: 16,
 		paddingTop: 12,
@@ -310,16 +262,29 @@ const styles = StyleSheet.create({
 		borderTopWidth: 1,
 		borderTopColor: colors.border,
 	},
-	resetButton: {
+	checkinButton: {
 		borderRadius: 14,
+		borderColor: colors.primary,
 		backgroundColor: colors.primary,
 	},
-	resetButtonContent: {
+	checkinButtonContent: {
 		paddingVertical: 8,
 	},
-	resetButtonLabel: {
+	checkinButtonLabel: {
 		fontSize: 16,
-		fontWeight: "700",
-		letterSpacing: 0.5,
+		fontWeight: "600",
+		letterSpacing: 0.3,
+		color: "#FFFFFF",
+	},
+	checkinDoneRow: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		gap: 8,
+		paddingVertical: 12,
+	},
+	checkinDoneText: {
+		color: colors.success,
+		fontWeight: "600",
 	},
 });
