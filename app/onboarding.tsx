@@ -12,7 +12,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import type React from "react";
 import { useCallback, useState } from "react";
-import { Alert, Platform, ScrollView, StyleSheet, View } from "react-native";
+import { Platform, ScrollView, StyleSheet, View } from "react-native";
 import { Button, Surface, Text } from "react-native-paper";
 
 // ---------------------------------------------------------------------------
@@ -213,13 +213,7 @@ export default function OnboardingScreen(): React.ReactElement {
 			});
 
 			// Request notification permissions (default is "normal")
-			const granted = await requestPermissions();
-			if (!granted) {
-				Alert.alert(
-					"Notifications Disabled",
-					"You can enable notifications in your device settings.",
-				);
-			}
+			await requestPermissions();
 
 			router.replace("/paywall");
 		} finally {

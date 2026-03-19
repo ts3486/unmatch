@@ -12,7 +12,7 @@ This document tracks feature-level requirements, screen specs, and implementatio
 - Back navigation on steps 2–4; progress dots across all steps
 - Goal requires explicit tap (no pre-selection); Continue disabled until selected
 - Budget setup deferred to post-onboarding (Settings or first spend-urge panic); notification preference defaults to "on" (changeable in Settings)
-- Notification permission requested after Ready CTA tap
+- Notification permission requested silently after Ready CTA tap (no alert on denial)
 
 ### /(tabs)/home
 - Logo + "Today done" chip
@@ -48,9 +48,10 @@ This document tracks feature-level requirements, screen specs, and implementatio
 
 ### /paywall
 - Two modes: trial offer (post-onboarding) vs. trial expired (conversion)
-- Trial offer mode: 7-day free trial CTA → auto-renews to $4.99/month
-- Trial expired mode: Subscribe $4.99/month CTA + Restore purchase link
-- Feature list with icons, price comparison callout, trust signals
+- Trial offer mode: 7-day free trial CTA → auto-renews to $4.99/month, auto-renewal terms displayed (App Store 3.1.2)
+- Trial expired mode: Subscribe $4.99/month CTA
+- Restore purchase link visible in both modes
+- Layout order: header → price comparison callout → feature list → CTA → legal text (trial) → trust signals
 - Connected to RevenueCat — real purchase flow via `purchasePackage()`, restore via `restorePurchases()`
 - Subscription sync on app foreground — keeps `isPremium` in sync with App Store
 
@@ -107,4 +108,5 @@ This document tracks feature-level requirements, screen specs, and implementatio
 - 2026-02-28: Wired paywall to RevenueCat (purchase + restore); added subscription sync on app foreground; fixed dailyTaskCompleted to query content_progress; added TimeSaved, MotivationCard, StatCards to Home; added "Why We Charge" + plan state handling to Settings; updated paywall model to $4.99/month + 7-day trial; renamed Resist Rank → Meditation Rank in SPEC; removed unused LifeTree components; fixed redundant ternary in panic screen
 - 2026-02-28: Implemented course unlock notification scheduling (8am, days 2–7); removed stealth notification mode; simplified onboarding notification step to On/Off with support text
 - 2026-02-28: RevenueCat IAP fix: added initPurchases() call on app mount; added subscription expiry enforcement with 3-day offline grace period; kept Android API key as placeholder
+- 2026-03-19: Phase 1 quick wins — removed notification denial alert from onboarding; moved price comparison callout above fold in paywall; made restore button visible in both trial and expired modes; added auto-renewal legal text for App Store compliance
 - 2026-02-27: Added UI/UX improvement specs (paywall redesign, onboarding demo reset, panic polish, home/progress enhancements, notifications, share, accessibility)

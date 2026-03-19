@@ -9,6 +9,7 @@ import {
 	BREATHING_INHALE,
 } from "@/src/constants/config";
 import { colors } from "@/src/constants/theme";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import type React from "react";
 import { useEffect } from "react";
@@ -34,6 +35,8 @@ interface BreathingCircleProps {
 	phase: BreathingPhase;
 	/** Seconds remaining in the current phase (for text countdown). */
 	phaseTimeLeft: number;
+	/** When true, shows a checkmark instead of the breathing animation. */
+	sessionComplete?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -72,6 +75,7 @@ const PHASE_TARGET_SCALE: Record<BreathingPhase, number> = {
 export function BreathingCircle({
 	phase,
 	phaseTimeLeft,
+	sessionComplete = false,
 }: BreathingCircleProps): React.ReactElement {
 	const reducedMotion = useReducedMotion();
 
@@ -141,6 +145,20 @@ export function BreathingCircle({
 			: phase === "Hold"
 				? colors.secondary
 				: colors.success;
+
+	if (sessionComplete) {
+		return (
+			<View style={styles.circleWrapper}>
+				<View style={styles.completedCircle}>
+					<MaterialCommunityIcons
+						name="check"
+						size={64}
+						color={colors.success}
+					/>
+				</View>
+			</View>
+		);
+	}
 
 	if (reducedMotion) {
 		return (
@@ -212,6 +230,16 @@ const styles = StyleSheet.create({
 	},
 	countdownText: {
 		fontWeight: "700",
+	},
+	completedCircle: {
+		width: CIRCLE_MIN_SIZE + (CIRCLE_MAX_SIZE - CIRCLE_MIN_SIZE) / 2,
+		height: CIRCLE_MIN_SIZE + (CIRCLE_MAX_SIZE - CIRCLE_MIN_SIZE) / 2,
+		borderRadius: (CIRCLE_MIN_RADIUS + CIRCLE_MAX_RADIUS) / 2,
+		borderWidth: 2,
+		borderColor: colors.success,
+		backgroundColor: "#1A3D2E",
+		alignItems: "center",
+		justifyContent: "center",
 	},
 	// Reduced-motion fallback
 	reducedMotionContainer: {

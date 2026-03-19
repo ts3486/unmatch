@@ -9,7 +9,8 @@ import {
 } from "@/src/constants/config";
 import { colors } from "@/src/constants/theme";
 import type React from "react";
-import { type AccessibilityRole, StyleSheet, View } from "react-native";
+import { useEffect, useRef } from "react";
+import { Animated, type AccessibilityRole, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 import { BreathingCircle, type BreathingPhase } from "./BreathingCircle";
 
@@ -18,6 +19,23 @@ import { BreathingCircle, type BreathingPhase } from "./BreathingCircle";
 // ---------------------------------------------------------------------------
 
 const CYCLE_DURATION = BREATHING_INHALE + BREATHING_HOLD + BREATHING_EXHALE; // 12s
+
+// ---------------------------------------------------------------------------
+// Affirmations — one per breathing cycle, rotating
+// ---------------------------------------------------------------------------
+
+const AFFIRMATIONS: string[] = [
+	"You don't need their validation.",
+	"Your time is worth more than a swipe.",
+	"Stop chasing matches. Start building yourself.",
+	"That boost won't make you happier.",
+	"You're here because you chose yourself.",
+	"Real connection starts within.",
+	"No app can fill what you already have.",
+	"Invest in yourself, not in likes.",
+	"You are enough without a match.",
+	"Let the urge pass. You're stronger than it.",
+];
 
 /**
  * Derives the current breathing phase and time remaining in that phase
@@ -57,14 +75,21 @@ function getPhase(
 // Phase display config
 // ---------------------------------------------------------------------------
 
-const PHASE_CONFIG: Record<
-	BreathingPhase,
-	{ color: string; instruction: string }
-> = {
-	Inhale: { color: colors.primary, instruction: "breathe in slowly" },
-	Hold: { color: colors.secondary, instruction: "hold gently" },
-	Exhale: { color: colors.success, instruction: "release slowly" },
+const PHASE_CONFIG: Record<BreathingPhase, { color: string }> = {
+	Inhale: { color: colors.primary },
+	Hold: { color: colors.secondary },
+	Exhale: { color: colors.success },
 };
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function formatElapsed(totalSeconds: number): string {
+	const mins = Math.floor(totalSeconds / 60);
+	const secs = totalSeconds % 60;
+	return `${mins}:${String(secs).padStart(2, "0")}`;
+}
 
 // ---------------------------------------------------------------------------
 // Props
@@ -75,6 +100,12 @@ interface BreathingExerciseProps {
 	timeLeft: number;
 	/** Total session duration in seconds (used to derive elapsed time). */
 	totalDuration: number;
+	/** Seconds remaining in the session countdown (1:00 → 0:00). */
+	sessionTimeLeft?: number;
+	/** Whether the session countdown has completed. */
+	sessionComplete?: boolean;
+	/** Called when the user taps restart. */
+	onRestart?: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -90,66 +121,189 @@ interface BreathingExerciseProps {
 export function BreathingExercise({
 	timeLeft,
 	totalDuration,
+	sessionTimeLeft,
+	sessionComplete,
+	onRestart,
 }: BreathingExerciseProps): React.ReactElement {
 	const { phase, phaseTimeLeft } = getPhase(timeLeft, totalDuration);
-	const config = PHASE_CONFIG[phase];
+	const phaseConfig = PHASE_CONFIG[phase];
 
-	const minutes = Math.floor(timeLeft / 60);
-	const seconds = timeLeft % 60;
-	const timerDisplay =
-		minutes > 0
-			? `${minutes}:${String(seconds).padStart(2, "0")}`
-			: `${seconds}s`;
+	// Derive which breathing cycle we're in (0-based) to pick an affirmation.
+	const elapsed = totalDuration - timeLeft;
+	const cycleIndex = Math.floor(elapsed / CYCLE_DURATION);
+	const affirmation =
+		AFFIRMATIONS[cycleIndex % AFFIRMATIONS.length] ?? AFFIRMATIONS[0];
+
+	// Affirmation animation — fade out + slide down, then fade in + slide up.
+	const affirmationOpacity = useRef(new Animated.Value(1)).current;
+	const affirmationTranslateY = useRef(new Animated.Value(0)).current;
+	const prevCycleIndex = useRef(cycleIndex);
+
+	useEffect(() => {
+		if (sessionComplete) return;
+		if (cycleIndex !== prevCycleIndex.current) {
+			prevCycleIndex.current = cycleIndex;
+			Animated.parallel([
+				Animated.timing(affirmationOpacity, {
+					toValue: 0,
+					duration: 300,
+					useNativeDriver: true,
+				}),
+				Animated.timing(affirmationTranslateY, {
+					toValue: 8,
+					duration: 300,
+					useNativeDriver: true,
+				}),
+			]).start(() => {
+				affirmationTranslateY.setValue(-8);
+				Animated.parallel([
+					Animated.timing(affirmationOpacity, {
+						toValue: 1,
+						duration: 400,
+						useNativeDriver: true,
+					}),
+					Animated.timing(affirmationTranslateY, {
+						toValue: 0,
+						duration: 400,
+						useNativeDriver: true,
+					}),
+				]).start();
+			});
+		}
+	}, [cycleIndex, affirmationOpacity, affirmationTranslateY, sessionComplete]);
+
+	// Phase label animation — scale pulse + opacity on phase change.
+	const phaseScale = useRef(new Animated.Value(1)).current;
+	const phaseOpacity = useRef(new Animated.Value(1)).current;
+	const prevPhase = useRef(phase);
+
+	useEffect(() => {
+		if (sessionComplete) return;
+		if (phase !== prevPhase.current) {
+			prevPhase.current = phase;
+			Animated.timing(phaseOpacity, {
+				toValue: 0,
+				duration: 150,
+				useNativeDriver: true,
+			}).start(() => {
+				phaseScale.setValue(0.85);
+				Animated.parallel([
+					Animated.spring(phaseScale, {
+						toValue: 1,
+						useNativeDriver: true,
+						speed: 20,
+						bounciness: 8,
+					}),
+					Animated.timing(phaseOpacity, {
+						toValue: 1,
+						duration: 200,
+						useNativeDriver: true,
+					}),
+				]).start();
+			});
+		}
+	}, [phase, phaseScale, phaseOpacity, sessionComplete]);
 
 	return (
 		<View style={styles.container}>
+			{/* Motivational text / completion message */}
+			{sessionComplete ? (
+				<View style={styles.affirmationContainer}>
+					<Text variant="headlineSmall" style={styles.completionText}>
+						Well done. You chose yourself.
+					</Text>
+				</View>
+			) : (
+				<Animated.View
+					style={[
+						styles.affirmationContainer,
+						{
+							opacity: affirmationOpacity,
+							transform: [{ translateY: affirmationTranslateY }],
+						},
+					]}
+				>
+					<Text variant="headlineSmall" style={styles.affirmationText}>
+						{affirmation}
+					</Text>
+				</Animated.View>
+			)}
+
 			{/* Animated circle with haptics */}
-			<BreathingCircle phase={phase} phaseTimeLeft={phaseTimeLeft} />
+			<BreathingCircle
+				phase={phase}
+				phaseTimeLeft={phaseTimeLeft}
+				sessionComplete={sessionComplete}
+			/>
 
-			{/* Phase label — accessibilityLiveRegion announces phase transitions to screen readers */}
-			<Text
-				variant="displaySmall"
-				style={[styles.phaseText, { color: config.color }]}
-				accessibilityLiveRegion="polite"
-				accessibilityLabel={`${phase} — ${config.instruction}`}
-				accessibilityRole={"text" as AccessibilityRole}
-			>
-				{phase}
-			</Text>
-			<Text variant="bodyMedium" style={styles.instructionText}>
-				{config.instruction}
-			</Text>
+			{/* Phase label — hidden when session complete */}
+			{!sessionComplete && (
+				<Animated.View
+					style={{
+						opacity: phaseOpacity,
+						transform: [{ scale: phaseScale }],
+					}}
+				>
+					<Text
+						variant="titleLarge"
+						style={[styles.phaseText, { color: phaseConfig.color }]}
+						accessibilityLiveRegion="polite"
+						accessibilityLabel={`${phase}`}
+						accessibilityRole={"text" as AccessibilityRole}
+					>
+						{phase}
+					</Text>
+				</Animated.View>
+			)}
 
-			{/* Overall timer */}
-			<View style={styles.timerContainer}>
-				<Text variant="labelMedium" style={styles.timerLabel}>
-					Session remaining
-				</Text>
-				<Text variant="headlineMedium" style={styles.timerText}>
-					{timerDisplay}
-				</Text>
-			</View>
+			{/* Session countdown */}
+			{sessionTimeLeft !== undefined && (
+				<View style={styles.sessionContainer}>
+					{sessionComplete ? (
+						onRestart !== undefined && (
+							<Text
+								variant="labelMedium"
+								style={styles.restartLink}
+								onPress={onRestart}
+							>
+								Restart session
+							</Text>
+						)
+					) : (
+						<>
+							<Text variant="labelMedium" style={styles.sessionLabel}>
+								Session
+							</Text>
+							<Text variant="headlineMedium" style={styles.sessionTime}>
+								{formatElapsed(sessionTimeLeft)}
+							</Text>
+						</>
+					)}
+				</View>
+			)}
 
-			{/* Cycle guide */}
+			{/* Cycle guide — freeze active states when session complete */}
+			{!sessionComplete && (
 			<View style={styles.cycleGuide}>
 				<CycleStep
 					label="Inhale"
 					duration={BREATHING_INHALE}
-					active={phase === "Inhale"}
+					active={!sessionComplete && phase === "Inhale"}
 				/>
 				<View style={styles.cycleDivider} />
 				<CycleStep
 					label="Hold"
 					duration={BREATHING_HOLD}
-					active={phase === "Hold"}
+					active={!sessionComplete && phase === "Hold"}
 				/>
 				<View style={styles.cycleDivider} />
 				<CycleStep
 					label="Exhale"
 					duration={BREATHING_EXHALE}
-					active={phase === "Exhale"}
+					active={!sessionComplete && phase === "Exhale"}
 				/>
 			</View>
+			)}
 		</View>
 	);
 }
@@ -204,24 +358,6 @@ const styles = StyleSheet.create({
 		fontWeight: "700",
 		letterSpacing: 1,
 	},
-	instructionText: {
-		color: colors.muted,
-		fontStyle: "italic",
-	},
-	timerContainer: {
-		alignItems: "center",
-		marginTop: 8,
-		gap: 2,
-	},
-	timerLabel: {
-		color: colors.muted,
-		textTransform: "uppercase",
-		letterSpacing: 1,
-	},
-	timerText: {
-		color: colors.text,
-		fontWeight: "600",
-	},
 	cycleGuide: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -250,5 +386,39 @@ const styles = StyleSheet.create({
 	},
 	cycleStepDurationActive: {
 		color: colors.muted,
+	},
+	sessionContainer: {
+		alignItems: "center",
+		marginTop: 4,
+		gap: 2,
+	},
+	sessionLabel: {
+		color: colors.muted,
+		textTransform: "uppercase",
+		letterSpacing: 1,
+	},
+	sessionTime: {
+		color: colors.text,
+		fontWeight: "600",
+	},
+	restartLink: {
+		color: colors.primary,
+		paddingVertical: 4,
+	},
+	affirmationContainer: {
+		paddingHorizontal: 16,
+		marginTop: 4,
+	},
+	affirmationText: {
+		color: colors.secondary,
+		textAlign: "center",
+		fontWeight: "600",
+		lineHeight: 30,
+	},
+	completionText: {
+		color: colors.success,
+		textAlign: "center",
+		fontWeight: "700",
+		lineHeight: 30,
 	},
 });
