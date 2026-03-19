@@ -1,15 +1,15 @@
 // Progress tab screen.
-// Shows a monthly calendar view and weekly stats.
+// Shows a streak ring display and weekly stats.
 // TypeScript strict mode.
 
 import { PersonalBestCard } from "@/src/components/PersonalBestCard";
 import { ShareStreakCard } from "@/src/components/ShareStreakCard";
+import { StreakRing } from "@/src/components/StreakRing";
 import { WeeklyInsightCard } from "@/src/components/WeeklyInsightCard";
 import { colors } from "@/src/constants/theme";
 import { useAppState } from "@/src/contexts/AppStateContext";
 import { useDatabaseContext } from "@/src/contexts/DatabaseContext";
 import {
-	countSuccessesByDate,
 	getUrgeCountByDayOfWeek,
 	getUrgeCountByTimeOfDay,
 	getUrgeEventsInRange,
@@ -17,30 +17,16 @@ import {
 import type { DayOfWeekCount, TimeOfDayCount } from "@/src/data/repositories";
 import { shareStreakCard } from "@/src/services/share";
 import { getDaysBetween, getLocalDateString } from "@/src/utils/date";
-import { format, getDay, getDaysInMonth, startOfMonth } from "date-fns";
-import { router } from "expo-router";
-import React, {
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { format } from "date-fns";
+import type React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, Card, Divider, Text } from "react-native-paper";
 import ViewShot from "react-native-view-shot";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
-
-interface DayCell {
-	dateStr: string; // YYYY-MM-DD
-	dayNum: number;
-	isSuccess: boolean;
-	isToday: boolean;
-	inMonth: boolean;
-}
 
 interface WeeklyStats {
 	successRate: number;
@@ -71,7 +57,7 @@ function getLastWeekRange(today: string): { start: string; end: string } {
 	const d = new Date(`${today}T00:00:00`);
 	const dow = d.getDay();
 	const monday = new Date(d);
-	monday.setDate(d.getDate() - ((dow + 6) % 7) - 7); // go back 7 more days
+	monday.setDate(d.getDate() - ((dow + 6) % 7) - 7);
 	const sunday = new Date(monday);
 	sunday.setDate(monday.getDate() + 6);
 	const fmt = (dt: Date): string => format(dt, "yyyy-MM-dd");
@@ -182,18 +168,6 @@ export default function ProgressScreen(): React.ReactElement {
 		setIsSharing(false);
 	}, [isSharing]);
 
-	// Current month display
-	const [viewYear, setViewYear] = useState<number>(() => {
-		const d = new Date(`${today}T00:00:00`);
-		return d.getFullYear();
-	});
-	const [viewMonth, setViewMonth] = useState<number>(() => {
-		const d = new Date(`${today}T00:00:00`);
-		return d.getMonth(); // 0-indexed
-	});
-
-	const [successDates, setSuccessDates] = useState<Set<string>>(new Set());
-
 	const zeroWeekStats: WeeklyStats = {
 		successRate: 0,
 		successDays: 0,
@@ -209,43 +183,8 @@ export default function ProgressScreen(): React.ReactElement {
 		useState<WeeklyStats>(zeroWeekStats);
 	const [bestStreak, setBestStreak] = useState<number>(0);
 	const [currentStreak, setCurrentStreak] = useState<number>(0);
-	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [dowCounts, setDowCounts] = useState<DayOfWeekCount[]>([]);
 	const [timeCounts, setTimeCounts] = useState<TimeOfDayCount[]>([]);
-
-	// ---------------------------------------------------------------------------
-	// Load success dates for current month
-	// ---------------------------------------------------------------------------
-
-	const loadMonthData = useCallback(async (): Promise<void> => {
-		setIsLoading(true);
-		try {
-			const firstDay = format(new Date(viewYear, viewMonth, 1), "yyyy-MM-dd");
-			const daysInMonth = getDaysInMonth(new Date(viewYear, viewMonth, 1));
-			const lastDay = format(
-				new Date(viewYear, viewMonth, daysInMonth),
-				"yyyy-MM-dd",
-			);
-
-			const allDays = getDaysBetween(firstDay, lastDay);
-			const results = await Promise.all(
-				allDays.map(async (d) => {
-					const count = await countSuccessesByDate(db, d);
-					return { date: d, success: count > 0 };
-				}),
-			);
-
-			const set = new Set<string>();
-			for (const r of results) {
-				if (r.success) {
-					set.add(r.date);
-				}
-			}
-			setSuccessDates(set);
-		} finally {
-			setIsLoading(false);
-		}
-	}, [db, viewYear, viewMonth]);
 
 	// ---------------------------------------------------------------------------
 	// Load weekly stats (this week + last week)
@@ -309,7 +248,7 @@ export default function ProgressScreen(): React.ReactElement {
 		).length;
 
 		setLastWeekStats({
-			successRate: 7 > 0 ? lastWeekSuccessDays / 7 : 0,
+			successRate: lastWeekSuccessDays / 7,
 			successDays: lastWeekSuccessDays,
 			totalDays: 7,
 			panicSuccessRate:
@@ -361,13 +300,11 @@ export default function ProgressScreen(): React.ReactElement {
 			if (current > longest) {
 				longest = current;
 			}
-			// Track current streak (last element's streak value)
 			if (i === sortedDates.length - 1) {
 				trailingCurrent = current;
 			}
 		}
 
-		// Only report current streak if the last success date is today or yesterday
 		const lastDate = sortedDates[sortedDates.length - 1];
 		if (lastDate !== undefined) {
 			const lastMs = new Date(`${lastDate}T00:00:00`).getTime();
@@ -399,10 +336,6 @@ export default function ProgressScreen(): React.ReactElement {
 	}, [db]);
 
 	useEffect(() => {
-		void loadMonthData();
-	}, [loadMonthData]);
-
-	useEffect(() => {
 		void loadWeeklyStats();
 	}, [loadWeeklyStats]);
 
@@ -413,69 +346,6 @@ export default function ProgressScreen(): React.ReactElement {
 	useEffect(() => {
 		void loadInsightData();
 	}, [loadInsightData]);
-
-	// ---------------------------------------------------------------------------
-	// Calendar grid
-	// ---------------------------------------------------------------------------
-
-	const calendarDays = useMemo((): DayCell[] => {
-		const firstOfMonth = startOfMonth(new Date(viewYear, viewMonth, 1));
-		const daysInMonth = getDaysInMonth(firstOfMonth);
-		// getDay returns 0=Sun; convert to Mon-start (0=Mon)
-		const startDow = (getDay(firstOfMonth) + 6) % 7;
-
-		const cells: DayCell[] = [];
-
-		// Leading empty cells
-		for (let i = 0; i < startDow; i++) {
-			cells.push({
-				dateStr: "",
-				dayNum: 0,
-				isSuccess: false,
-				isToday: false,
-				inMonth: false,
-			});
-		}
-
-		for (let d = 1; d <= daysInMonth; d++) {
-			const dateStr = format(new Date(viewYear, viewMonth, d), "yyyy-MM-dd");
-			cells.push({
-				dateStr,
-				dayNum: d,
-				isSuccess: successDates.has(dateStr),
-				isToday: dateStr === today,
-				inMonth: true,
-			});
-		}
-
-		return cells;
-	}, [viewYear, viewMonth, successDates, today]);
-
-	const monthLabel = format(new Date(viewYear, viewMonth, 1), "MMMM yyyy");
-
-	const prevMonth = useCallback((): void => {
-		if (viewMonth === 0) {
-			setViewMonth(11);
-			setViewYear((y) => y - 1);
-		} else {
-			setViewMonth((m) => m - 1);
-		}
-	}, [viewMonth]);
-
-	const nextMonth = useCallback((): void => {
-		if (viewMonth === 11) {
-			setViewMonth(0);
-			setViewYear((y) => y + 1);
-		} else {
-			setViewMonth((m) => m + 1);
-		}
-	}, [viewMonth]);
-
-	const handleDayPress = useCallback((dateStr: string): void => {
-		if (dateStr.length > 0) {
-			router.push(`/progress/day/${dateStr}`);
-		}
-	}, []);
 
 	const pctSuccess = Math.round(weeklyStats.successRate * 100);
 	const pctPanic = Math.round(weeklyStats.panicSuccessRate * 100);
@@ -494,203 +364,95 @@ export default function ProgressScreen(): React.ReactElement {
 				Progress
 			</Text>
 
+			{/* Streak ring display */}
+			<StreakRing streak={currentStreak} bestStreak={bestStreak} />
+
+			{/* Personal best highlight */}
+			<PersonalBestCard bestStreak={bestStreak} currentStreak={currentStreak} />
+
+			{/* Share streak button */}
+			<Button
+				mode="outlined"
+				onPress={() => void handleShare()}
+				loading={isSharing}
+				disabled={isSharing}
+				style={styles.shareButton}
+				contentStyle={styles.shareButtonContent}
+				textColor={colors.secondary}
+				accessibilityLabel="Share your streak"
+			>
+				Share your streak
+			</Button>
+
+			{/* Off-screen share card for capture */}
+			<View style={styles.offscreenCapture} pointerEvents="none">
+				<ViewShot ref={shareCardRef} options={{ format: "png", quality: 1 }}>
+					<ShareStreakCard
+						streak={streak}
+						meditationCount={totalMeditationCount}
+						meditationRank={meditationRank}
+					/>
+				</ViewShot>
+			</View>
+
+			{/* Week comparison */}
+			<WeekComparisonCard
+				thisWeekSuccessDays={weeklyStats.successDays}
+				lastWeekSuccessDays={lastWeekStats.successDays}
+				thisWeekResets={weeklyStats.panicSuccessCount}
+				lastWeekResets={lastWeekStats.panicSuccessCount}
+			/>
+
+			{/* Weekly insight cards */}
+			<WeeklyInsightCard
+				dowCounts={dowCounts}
+				timeCounts={timeCounts}
+				thisWeekResets={weeklyStats.panicSuccessCount}
+				lastWeekResets={lastWeekStats.panicSuccessCount}
+			/>
+
+			{/* Weekly stats */}
+			<Text variant="titleMedium" style={styles.sectionTitle}>
+				This Week
+			</Text>
+
 			<Card style={styles.card} mode="contained">
-						<Card.Content>
-							{/* Month navigation */}
-							<View style={styles.monthNav}>
-								<TouchableOpacity
-									onPress={prevMonth}
-									style={styles.navButton}
-									accessibilityLabel="Previous month"
-								>
-									<Text style={styles.navArrow}>{"<"}</Text>
-								</TouchableOpacity>
-								<Text variant="titleMedium" style={styles.monthLabel}>
-									{monthLabel}
-								</Text>
-								<TouchableOpacity
-									onPress={nextMonth}
-									style={styles.navButton}
-									accessibilityLabel="Next month"
-								>
-									<Text style={styles.navArrow}>{">"}</Text>
-								</TouchableOpacity>
-							</View>
-
-							{/* Weekday headers */}
-							<View style={styles.weekRow}>
-								{["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
-									<View key={i} style={styles.dayHeaderCell}>
-										<Text style={styles.dayHeader}>{d}</Text>
-									</View>
-								))}
-							</View>
-
-							{/* Day cells */}
-							{isLoading ? (
-								<View style={styles.calendarLoading}>
-									<Text style={styles.loadingText}>Loading...</Text>
-								</View>
-							) : (
-								<View style={styles.calendarGrid}>
-									{calendarDays.map((cell, idx) => {
-										if (!cell.inMonth) {
-											return (
-												<View key={`empty-${idx}`} style={styles.dayCell} />
-											);
-										}
-										return (
-											<TouchableOpacity
-												key={cell.dateStr}
-												style={[
-													styles.dayCell,
-													cell.isSuccess && styles.dayCellSuccess,
-													cell.isToday && styles.dayCellToday,
-												]}
-												onPress={() => {
-													handleDayPress(cell.dateStr);
-												}}
-												accessibilityLabel={`${cell.dateStr}${cell.isSuccess ? ", success day" : ""}`}
-											>
-												<Text
-													style={[
-														styles.dayNum,
-														cell.isSuccess && styles.dayNumSuccess,
-														cell.isToday && styles.dayNumToday,
-													]}
-												>
-													{cell.dayNum}
-												</Text>
-											</TouchableOpacity>
-										);
-									})}
-								</View>
-							)}
-
-							{/* Legend */}
-							<View style={styles.legend}>
-								<View style={styles.legendItem}>
-									<View
-										style={[
-											styles.legendDot,
-											{ backgroundColor: colors.success },
-										]}
-									/>
-									<Text style={styles.legendText}>Success day</Text>
-								</View>
-								<View style={styles.legendItem}>
-									<View
-										style={[
-											styles.legendDot,
-											{
-												backgroundColor: colors.border,
-												borderColor: colors.primary,
-												borderWidth: 2,
-											},
-										]}
-									/>
-									<Text style={styles.legendText}>Today</Text>
-								</View>
-							</View>
-						</Card.Content>
-					</Card>
-
-					{/* Personal best highlight */}
-					<PersonalBestCard
-						bestStreak={bestStreak}
-						currentStreak={currentStreak}
+				<Card.Content style={styles.statsContent}>
+					<StatRow
+						label="Personal best streak"
+						value={bestStreak > 0 ? `${bestStreak} days` : "Not yet"}
+						valueColor={bestStreak > 0 ? colors.primary : colors.muted}
 					/>
-
-					{/* Share streak button */}
-					<Button
-						mode="outlined"
-						onPress={() => void handleShare()}
-						loading={isSharing}
-						disabled={isSharing}
-						style={styles.shareButton}
-						contentStyle={styles.shareButtonContent}
-						textColor={colors.secondary}
-						accessibilityLabel="Share your streak"
-					>
-						Share your streak
-					</Button>
-
-					{/* Off-screen share card for capture */}
-					<View style={styles.offscreenCapture} pointerEvents="none">
-						<ViewShot
-							ref={shareCardRef}
-							options={{ format: "png", quality: 1 }}
-						>
-							<ShareStreakCard
-								streak={streak}
-								meditationCount={totalMeditationCount}
-								meditationRank={meditationRank}
-							/>
-						</ViewShot>
-					</View>
-
-					{/* Week comparison */}
-					<WeekComparisonCard
-						thisWeekSuccessDays={weeklyStats.successDays}
-						lastWeekSuccessDays={lastWeekStats.successDays}
-						thisWeekResets={weeklyStats.panicSuccessCount}
-						lastWeekResets={lastWeekStats.panicSuccessCount}
+					<Divider style={styles.divider} />
+					<StatRow
+						label="Success days"
+						value={`${weeklyStats.successDays} / ${weeklyStats.totalDays} (${pctSuccess}%)`}
+						valueColor={
+							weeklyStats.successDays > 0 ? colors.success : colors.muted
+						}
 					/>
-
-					{/* Weekly insight cards */}
-					<WeeklyInsightCard
-						dowCounts={dowCounts}
-						timeCounts={timeCounts}
-						thisWeekResets={weeklyStats.panicSuccessCount}
-						lastWeekResets={lastWeekStats.panicSuccessCount}
+					<Divider style={styles.divider} />
+					<StatRow
+						label="Urge resets succeeded"
+						value={
+							weeklyStats.panicTotalCount > 0
+								? `${weeklyStats.panicSuccessCount} / ${weeklyStats.panicTotalCount} (${pctPanic}%)`
+								: "None yet"
+						}
+						valueColor={
+							weeklyStats.panicSuccessCount > 0 ? colors.primary : colors.muted
+						}
 					/>
-
-					{/* Weekly stats */}
-					<Text variant="titleMedium" style={styles.sectionTitle}>
-						This Week
-					</Text>
-
-					<Card style={styles.card} mode="contained">
-						<Card.Content style={styles.statsContent}>
-							<StatRow
-								label="Personal best streak"
-								value={bestStreak > 0 ? `${bestStreak} days` : "Not yet"}
-								valueColor={bestStreak > 0 ? colors.primary : colors.muted}
-							/>
-							<Divider style={styles.divider} />
-							<StatRow
-								label="Success days"
-								value={`${weeklyStats.successDays} / ${weeklyStats.totalDays} (${pctSuccess}%)`}
-								valueColor={
-									weeklyStats.successDays > 0 ? colors.success : colors.muted
-								}
-							/>
-							<Divider style={styles.divider} />
-							<StatRow
-								label="Urge resets succeeded"
-								value={
-									weeklyStats.panicTotalCount > 0
-										? `${weeklyStats.panicSuccessCount} / ${weeklyStats.panicTotalCount} (${pctPanic}%)`
-										: "None yet"
-								}
-								valueColor={
-									weeklyStats.panicSuccessCount > 0
-										? colors.primary
-										: colors.muted
-								}
-							/>
-							<Divider style={styles.divider} />
-							<StatRow
-								label="Spend urges avoided"
-								value={String(weeklyStats.spendAvoidedCount)}
-								valueColor={
-									weeklyStats.spendAvoidedCount > 0
-										? colors.warning
-										: colors.muted
-								}
-							/>
-						</Card.Content>
-					</Card>
+					<Divider style={styles.divider} />
+					<StatRow
+						label="Spend urges avoided"
+						value={String(weeklyStats.spendAvoidedCount)}
+						valueColor={
+							weeklyStats.spendAvoidedCount > 0 ? colors.warning : colors.muted
+						}
+					/>
+				</Card.Content>
+			</Card>
 
 			<View style={styles.bottomSpacer} />
 		</ScrollView>
@@ -752,100 +514,6 @@ const styles = StyleSheet.create({
 		borderRadius: 14,
 		borderWidth: 1,
 		borderColor: colors.border,
-	},
-	monthNav: {
-		flexDirection: "row",
-		alignItems: "center",
-		justifyContent: "space-between",
-		marginBottom: 16,
-	},
-	navButton: {
-		padding: 8,
-	},
-	navArrow: {
-		color: colors.primary,
-		fontSize: 18,
-		fontWeight: "700",
-	},
-	monthLabel: {
-		color: colors.text,
-		fontWeight: "600",
-	},
-	weekRow: {
-		flexDirection: "row",
-		marginBottom: 8,
-	},
-	dayHeaderCell: {
-		flex: 1,
-		alignItems: "center",
-	},
-	dayHeader: {
-		color: colors.muted,
-		fontSize: 12,
-		fontWeight: "600",
-		textTransform: "uppercase",
-	},
-	calendarGrid: {
-		flexDirection: "row",
-		flexWrap: "wrap",
-	},
-	calendarLoading: {
-		height: 160,
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	loadingText: {
-		color: colors.muted,
-	},
-	dayCell: {
-		width: `${100 / 7}%`,
-		height: 40,
-		alignItems: "center",
-		justifyContent: "center",
-		borderWidth: 2,
-		borderColor: "transparent",
-		borderRadius: 8,
-	},
-	dayCellSuccess: {
-		backgroundColor: "rgba(71, 194, 139, 0.2)",
-	},
-	dayCellToday: {
-		borderColor: colors.primary,
-	},
-	dayNum: {
-		color: colors.text,
-		fontSize: 13,
-		fontWeight: "400",
-		lineHeight: 18,
-		textAlign: "center",
-	},
-	dayNumSuccess: {
-		color: colors.success,
-		fontWeight: "600",
-	},
-	dayNumToday: {
-		color: colors.primary,
-		fontWeight: "700",
-	},
-	legend: {
-		flexDirection: "row",
-		gap: 16,
-		marginTop: 12,
-		justifyContent: "flex-end",
-	},
-	legendItem: {
-		flexDirection: "row",
-		alignItems: "center",
-		gap: 6,
-	},
-	legendDot: {
-		width: 10,
-		height: 10,
-		borderRadius: 5,
-	},
-	legendText: {
-		color: colors.muted,
-		fontSize: 12,
 	},
 	sectionTitle: {
 		color: colors.text,

@@ -49,3 +49,9 @@ export {
 	recordMonthlySubscription,
 	getHasEverSubscribed,
 } from "./subscription-repository";
+
+export {
+	getSeenCoachMarks,
+	markCoachMarkSeen,
+	resetCoachMarks,
+} from "./coach-mark-repository";

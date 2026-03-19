@@ -3,6 +3,7 @@
 // TypeScript strict mode.
 
 import { CheckinOverlay } from "@/src/components/CheckinOverlay";
+import { CoachMarkOverlay } from "@/src/components/CoachMarkOverlay";
 import { InlineCheckin } from "@/src/components/InlineCheckin";
 import { Logo } from "@/src/components/Logo";
 import { MeditationRank } from "@/src/components/MeditationRank";
@@ -11,11 +12,17 @@ import { colors } from "@/src/constants/theme";
 import { useAppState } from "@/src/contexts/AppStateContext";
 import { getCatalog } from "@/src/data/seed-loader";
 import { useCheckin } from "@/src/hooks/useCheckin";
+import { useCoachMarks } from "@/src/hooks/useCoachMarks";
 import { useContent } from "@/src/hooks/useContent";
 import { router } from "expo-router";
 import type React from "react";
-import { useCallback, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { useCallback, useRef, useState } from "react";
+import {
+	type LayoutRectangle,
+	ScrollView,
+	StyleSheet,
+	View,
+} from "react-native";
 import { Button, Card, Chip, Text } from "react-native-paper";
 
 // ---------------------------------------------------------------------------
@@ -40,6 +47,35 @@ export default function HomeScreen(): React.ReactElement {
 
 	const checkin = useCheckin();
 	const [checkinOverlayVisible, setCheckinOverlayVisible] = useState(false);
+
+	const coachMarks = useCoachMarks();
+
+	// Layout refs for coach mark spotlight targets.
+	const [resetButtonLayout, setResetButtonLayout] =
+		useState<LayoutRectangle | null>(null);
+	const [checkinLayout, setCheckinLayout] = useState<LayoutRectangle | null>(
+		null,
+	);
+	const [courseLayout, setCourseLayout] = useState<LayoutRectangle | null>(
+		null,
+	);
+	const resetButtonRef = useRef<View>(null);
+	const checkinRef = useRef<View>(null);
+	const courseRef = useRef<View>(null);
+
+	// Map coach mark ID to its target layout.
+	const targetLayoutForMark = (markId: string): LayoutRectangle | null => {
+		switch (markId) {
+			case "reset_button":
+				return resetButtonLayout;
+			case "checkin":
+				return checkinLayout;
+			case "course":
+				return courseLayout;
+			default:
+				return null;
+		}
+	};
 
 	const catalog = getCatalog();
 	const resetCtaLabel = catalog.copy.panicCta ?? "Reset now";
@@ -103,28 +139,38 @@ export default function HomeScreen(): React.ReactElement {
 				</View>
 
 				{/* Inline check-in hero */}
-				<InlineCheckin checkin={checkin} onExpand={handleCheckinExpand} />
+				<View
+					ref={checkinRef}
+					onLayout={(e) => setCheckinLayout(e.nativeEvent.layout)}
+				>
+					<InlineCheckin checkin={checkin} onExpand={handleCheckinExpand} />
+				</View>
 
 				{/* Today's course card */}
 				{!contentLoading && todayContent !== null && (
-					<Card style={styles.courseCard} mode="contained">
-						<Card.Content>
-							<Text variant="labelSmall" style={styles.courseDayLabel}>
-								Day {currentDayIndex} of 7
-							</Text>
-							<Text variant="titleMedium" style={styles.courseTitle}>
-								{todayContent.title}
-							</Text>
-							<Text variant="bodySmall" style={styles.courseBody}>
-								{todayContent.body}
-							</Text>
-						</Card.Content>
-						<Card.Actions>
-							<Text variant="labelMedium" style={styles.courseAction}>
-								{todayContent.action_text}
-							</Text>
-						</Card.Actions>
-					</Card>
+					<View
+						ref={courseRef}
+						onLayout={(e) => setCourseLayout(e.nativeEvent.layout)}
+					>
+						<Card style={styles.courseCard} mode="contained">
+							<Card.Content>
+								<Text variant="labelSmall" style={styles.courseDayLabel}>
+									Day {currentDayIndex} of 7
+								</Text>
+								<Text variant="titleMedium" style={styles.courseTitle}>
+									{todayContent.title}
+								</Text>
+								<Text variant="bodySmall" style={styles.courseBody}>
+									{todayContent.body}
+								</Text>
+							</Card.Content>
+							<Card.Actions>
+								<Text variant="labelMedium" style={styles.courseAction}>
+									{todayContent.action_text}
+								</Text>
+							</Card.Actions>
+						</Card>
+					</View>
 				)}
 
 				<MeditationRank
@@ -137,7 +183,11 @@ export default function HomeScreen(): React.ReactElement {
 			</ScrollView>
 
 			{/* Sticky bottom: Reset CTA */}
-			<View style={styles.stickyBottom}>
+			<View
+				ref={resetButtonRef}
+				style={styles.stickyBottom}
+				onLayout={(e) => setResetButtonLayout(e.nativeEvent.layout)}
+			>
 				<Button
 					mode="contained"
 					onPress={handleResetPress}
@@ -154,6 +204,19 @@ export default function HomeScreen(): React.ReactElement {
 			{/* Full-screen daily check-in overlay */}
 			{checkinOverlayVisible && (
 				<CheckinOverlay checkin={checkin} onClose={handleCheckinClose} />
+			)}
+
+			{/* Coach mark walkthrough overlay — stable key prevents remount between steps */}
+			{coachMarks.currentMark !== null && (
+				<CoachMarkOverlay
+					key="coach-overlay"
+					mark={coachMarks.currentMark}
+					step={coachMarks.currentStep}
+					totalSteps={coachMarks.totalSteps}
+					targetLayout={targetLayoutForMark(coachMarks.currentMark.id)}
+					onNext={coachMarks.next}
+					onSkip={coachMarks.skipAll}
+				/>
 			)}
 		</View>
 	);

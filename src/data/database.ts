@@ -113,6 +113,11 @@ const MIGRATE_SUBSCRIPTION_TRIAL_ENDS = `
 ALTER TABLE subscription_state ADD COLUMN trial_ends_at TEXT;
 `.trim();
 
+// Migration: add coach_marks_seen column to user_profile.
+const MIGRATE_USER_PROFILE_COACH_MARKS = `
+ALTER TABLE user_profile ADD COLUMN coach_marks_seen TEXT;
+`.trim();
+
 /**
  * Opens the database, enables WAL mode, and creates all tables.
  * Must be called once at app startup before any repository is used.
@@ -152,6 +157,12 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
 
   try {
     await db.execAsync(MIGRATE_SUBSCRIPTION_TRIAL_ENDS);
+  } catch {
+    // Column already exists — safe to ignore.
+  }
+
+  try {
+    await db.execAsync(MIGRATE_USER_PROFILE_COACH_MARKS);
   } catch {
     // Column already exists — safe to ignore.
   }
