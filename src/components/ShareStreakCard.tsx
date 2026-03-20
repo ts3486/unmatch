@@ -63,8 +63,8 @@ export function ShareStreakCard({
 
 			{/* Main headline */}
 			<Text style={styles.headline}>
-				Taking back my time for{" "}
-				<Text style={styles.headlineAccent}>{streakLabel}</Text>
+				Checked in for{" "}
+				<Text style={styles.headlineAccent}>{streakLabel}</Text> straight
 			</Text>
 
 			{/* Stats row */}

@@ -7,7 +7,7 @@ import { useDatabaseContext } from "@/src/contexts/DatabaseContext";
 import {
 	countSuccessesByDate,
 	createUrgeEvent,
-	getAllProgressDates,
+	getAllCheckinDates,
 	getLatestProgress,
 	upsertProgress,
 } from "@/src/data/repositories";
@@ -249,16 +249,13 @@ export function usePanicFlow(): UsePanicFlowReturn {
 			const newMeditationRank = calculateMeditationRank(newMeditationTotal);
 			const rankLeveledUp = newMeditationRank > prevMeditationRank;
 
-			// Build streak from all success dates.
-			const allDates = await getAllProgressDates(db);
+			// Build streak from daily check-in dates.
+			const checkinDates = await getAllCheckinDates(db);
 			const panicSuccessCount = await countSuccessesByDate(db, today);
 			// panicSuccessCount already includes the event we just logged
 			// because countSuccessesByDate queries the DB.
 			const daySuccess = isDaySuccess(panicSuccessCount, false);
-			const successDates = daySuccess
-				? Array.from(new Set([...allDates, today]))
-				: allDates;
-			const newStreak = calculateStreak(successDates, today);
+			const newStreak = calculateStreak(checkinDates, today);
 
 			await upsertProgress(db, {
 				date_local: today,

@@ -408,6 +408,8 @@ const styles = StyleSheet.create({
 	affirmationContainer: {
 		paddingHorizontal: 16,
 		marginTop: 4,
+		height: 60,
+		justifyContent: "center",
 	},
 	affirmationText: {
 		color: colors.secondary,
