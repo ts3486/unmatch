@@ -198,6 +198,7 @@ function InnerLayout(): React.ReactElement {
 					headerTintColor: "#E6EDF7",
 					headerShadowVisible: false,
 					headerBackTitle: "Back",
+					animation: "simple_push",
 				}}
 			>
 				<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
