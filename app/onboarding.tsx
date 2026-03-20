@@ -14,7 +14,6 @@ import { DAILY_MOTIVATION_MESSAGES } from "@/src/constants/notification-content"
 import { colors } from "@/src/constants/theme";
 import { useAnalytics } from "@/src/contexts/AnalyticsContext";
 import { useAppState } from "@/src/contexts/AppStateContext";
-import { requestPermissions } from "@/src/services/notifications";
 import { router } from "expo-router";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -320,8 +319,6 @@ export default function OnboardingScreen(): React.ReactElement {
 					has_budget: false,
 				},
 			});
-
-			await requestPermissions();
 
 			router.replace("/paywall");
 		} finally {
