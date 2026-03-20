@@ -1,0 +1,236 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 1242px;
+    height: 2788px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #2d1050;
+  }
+  .ss {
+    width: 1242px;
+    height: 2788px;
+    background: linear-gradient(160deg, #0B1220 0%, #121C2E 40%, #1a1040 70%, #2d1050 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .sparkle {
+    position: absolute;
+    bottom: 200px;
+    right: 80px;
+    width: 60px;
+    height: 60px;
+    opacity: 0.6;
+  }
+  .sparkle svg { width: 100%; height: 100%; }
+  .headline-area {
+    padding-top: 0;
+    padding-bottom: 30px;
+    text-align: center;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+  .headline {
+    font-size: 76px;
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1.12;
+    letter-spacing: -1px;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  .subheadline {
+    font-size: 44px;
+    font-weight: 400;
+    color: #A7B3C7;
+    line-height: 1.4;
+    margin-top: 28px;
+    max-width: 850px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .phone-frame {
+    width: 780px;
+    height: 1600px;
+    background: #000;
+    border-radius: 100px;
+    border: 6px solid #333;
+    position: relative;
+    overflow: hidden;
+    margin-top: 20px;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 0 2px rgba(255,255,255,0.05);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  .dynamic-island {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 240px;
+    height: 70px;
+    background: #000;
+    border-radius: 40px;
+    z-index: 10;
+  }
+  .status-bar {
+    height: 110px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 60px 10px;
+    color: #fff;
+    font-size: 32px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .status-time { font-weight: 700; }
+  .status-icons { display: flex; gap: 12px; align-items: center; }
+  .status-icons svg { width: 32px; height: 32px; }
+  .screen-content {
+    flex: 1;
+    padding: 20px 44px;
+    display: flex;
+    flex-direction: column;
+    background: #0B1220;
+    overflow: hidden;
+  }
+  .tab-bar {
+    height: 140px;
+    background: #0B1220;
+    border-top: 2px solid #223049;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 30px 30px;
+    flex-shrink: 0;
+  }
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .tab-item svg { width: 44px; height: 44px; }
+  .tab-label {
+    font-size: 20px;
+    font-weight: 500;
+    color: #A7B3C7;
+  }
+  .tab-item.active .tab-label { color: #4C8DFF; }
+  .home-indicator {
+    width: 260px;
+    height: 8px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+    margin: 0 auto 16px;
+    flex-shrink: 0;
+  }
+  .glow-blue {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(76,141,255,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .glow-purple {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+</style></head><body>
+<div class="ss">
+  <div class="glow-blue" style="top:500px;left:-200px;"></div>
+  <div class="glow-purple" style="bottom:300px;right:-200px;"></div>
+  <div class="headline-area">
+    <div class="headline">Check In With<br>Yourself Daily</div>
+    <div class="subheadline">Track your mood, urges,<br>and wins — all private and offline.</div>
+  </div>
+  <div class="phone-frame">
+    <div class="dynamic-island"></div>
+    
+<div class="status-bar">
+  <span class="status-time">9:41</span>
+  <div class="status-icons">
+    <svg viewBox="0 0 24 24" fill="white"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+    <svg viewBox="0 0 24 24" fill="white"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+  </div>
+</div>
+    <div class="screen-content">
+      <div style="padding-top:20px;flex:1;display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="#4C8DFF"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        </div>
+        <div style="font-size:48px;font-weight:700;color:#E6EDF7;margin-bottom:8px;">Daily check-in</div>
+        <div style="font-size:28px;color:#A7B3C7;margin-bottom:36px;">How are you feeling today?</div>
+
+        <div style="margin-bottom:36px;">
+          <div style="font-size:28px;font-weight:600;color:#E6EDF7;margin-bottom:16px;">Mood</div>
+          <div style="display:flex;gap:14px;">
+            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Low</span></div>
+            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Meh</span></div>
+            <div style="flex:1;border:2px solid #4C8DFF;border-radius:20px;padding:16px 8px;text-align:center;background:rgba(76,141,255,0.15);"><span style="font-size:22px;color:#4C8DFF;font-weight:600;">Okay</span></div>
+            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Good</span></div>
+            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Great</span></div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:36px;">
+          <div style="font-size:28px;font-weight:600;color:#E6EDF7;margin-bottom:16px;">Fatigue level</div>
+          <div style="display:flex;gap:14px;">
+            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Fine</span></div>
+            <div style="flex:1;border:2px solid #4C8DFF;border-radius:20px;padding:16px 8px;text-align:center;background:rgba(76,141,255,0.15);"><span style="font-size:22px;color:#4C8DFF;font-weight:600;">Mild</span></div>
+            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Tired</span></div>
+            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:20px;color:#A7B3C7;">Drained</span></div>
+            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:20px;color:#A7B3C7;">Wrecked</span></div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:36px;">
+          <div style="font-size:28px;font-weight:600;color:#E6EDF7;margin-bottom:16px;">Urge level</div>
+          <div style="display:flex;gap:14px;">
+            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Calm</span></div>
+            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Low</span></div>
+            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:20px;color:#A7B3C7;">Medium</span></div>
+            <div style="flex:1;border:2px solid #4C8DFF;border-radius:20px;padding:16px 8px;text-align:center;background:rgba(76,141,255,0.15);"><span style="font-size:22px;color:#4C8DFF;font-weight:600;">Strong</span></div>
+            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Max</span></div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:28px 0;border-bottom:2px solid #223049;">
+          <div style="font-size:28px;color:#E6EDF7;max-width:480px;">Opened a dating app late at night?</div>
+          <div style="width:80px;height:44px;border-radius:22px;background:#223049;position:relative;"><div style="width:36px;height:36px;border-radius:50%;background:#fff;position:absolute;top:4px;left:4px;"></div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:28px 0;border-bottom:2px solid #223049;">
+          <div style="font-size:28px;color:#E6EDF7;max-width:480px;">Spent money on dating apps today?</div>
+          <div style="width:80px;height:44px;border-radius:22px;background:#223049;position:relative;"><div style="width:36px;height:36px;border-radius:50%;background:#fff;position:absolute;top:4px;left:4px;"></div></div>
+        </div>
+
+        <div style="margin-top:36px;">
+          <div style="font-size:28px;font-weight:600;color:#E6EDF7;margin-bottom:12px;">Personal note (optional)</div>
+          <div style="background:#121C2E;border:2px solid #223049;border-radius:20px;padding:24px;color:#A7B3C7;font-size:26px;min-height:100px;">Feeling better about not checking...</div>
+        </div>
+
+        <div style="background:#4C8DFF;border-radius:28px;padding:28px 0;text-align:center;width:100%;margin-top:32px;"><span style="color:#fff;font-size:30px;font-weight:600;">Save check-in</span></div>
+      </div>
+    </div>
+    <div class="home-indicator"></div>
+  </div>
+  
+<div class="sparkle">
+  <svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.5)"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+</div>
+</div></body></html>
