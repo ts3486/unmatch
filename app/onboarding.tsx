@@ -1,105 +1,38 @@
-// Onboarding screen — streamlined 4-step flow.
-// Steps: Welcome → Personalize (goal) → Features (value props) → Ready.
+// Onboarding screen — 4-step flow + paywall.
+// Steps: Opening → Meditation → Daily Checkin → Notifications → navigate to /paywall.
+// Each feature step uses actual app components for an honest preview.
 // TypeScript strict mode.
 
+import { BreathingExercise } from "@/src/components/BreathingExercise";
 import { Logo } from "@/src/components/Logo";
+import {
+	MOOD_LABELS,
+	RatingChips,
+	URGE_LABELS,
+} from "@/src/components/RatingChips";
 import { colors } from "@/src/constants/theme";
 import { useAnalytics } from "@/src/contexts/AnalyticsContext";
 import { useAppState } from "@/src/contexts/AppStateContext";
-import type { GoalType } from "@/src/domain/types";
 import { requestPermissions } from "@/src/services/notifications";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import type React from "react";
-import { useCallback, useState } from "react";
-import { Platform, ScrollView, StyleSheet, View } from "react-native";
-import { Button, Surface, Text } from "react-native-paper";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Animated, Easing, Platform, ScrollView, StyleSheet, View } from "react-native";
+import { Button, Card, Chip, Divider, Text } from "react-native-paper";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-type Step = "welcome" | "personalize" | "features" | "ready";
-
-interface GoalOption {
-	id: GoalType;
-	label: string;
-	description: string;
-}
+type Step = "welcome" | "meditation" | "checkin" | "notifications";
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 
-const STEPS: Step[] = ["welcome", "personalize", "features", "ready"];
+const STEPS: Step[] = ["welcome", "meditation", "checkin", "notifications"];
 
-const GOAL_OPTIONS: GoalOption[] = [
-	{
-		id: "reduce_swipe",
-		label: "Reduce swiping",
-		description: "Spend less time swiping through profiles.",
-	},
-	{
-		id: "reduce_open",
-		label: "Open apps less",
-		description: "Limit how often you open dating apps.",
-	},
-	{
-		id: "reduce_night_check",
-		label: "Stop late-night checking",
-		description: "Avoid checking apps before bed.",
-	},
-	{
-		id: "reduce_spend",
-		label: "Spend less",
-		description: "Reduce in-app spending and related costs.",
-	},
-];
-
-const GOAL_AFFIRMATIONS: Record<GoalType, string> = {
-	reduce_swipe: "Less swiping, more living",
-	reduce_open: "Less checking, more living.",
-	reduce_night_check: "Choose other activities before bed.",
-	reduce_spend: "Save money for things that truly matter.",
-};
-
-interface FeatureShowcase {
-	icon: string;
-	title: string;
-	description: string;
-	color: string;
-}
-
-const FEATURE_SHOWCASES: FeatureShowcase[] = [
-	{
-		icon: "meditation",
-		title: "Guided exercises",
-		description:
-			"When the urge hits, a 60-second breathing session helps you ride it out — no willpower needed.",
-		color: colors.primary,
-	},
-	{
-		icon: "bell-ring-outline",
-		title: "Smart reminders",
-		description:
-			"Timely nudges in the evening, streak alerts, and weekly summaries keep you on track without being annoying.",
-		color: colors.warning,
-	},
-	{
-		icon: "chart-timeline-variant",
-		title: "Progress you can see",
-		description:
-			"Track your streaks, see which days you resisted, and watch your Meditation Rank climb as you build the habit.",
-		color: colors.success,
-	},
-	{
-		icon: "book-open-page-variant-outline",
-		title: "7-day starter course",
-		description:
-			"Short daily lessons on the psychology behind dating app habits — understand your patterns to change them.",
-		color: colors.secondary,
-	},
-];
+const BREATHING_DEMO_SECONDS = 60;
 
 // ---------------------------------------------------------------------------
 // Sub-components
@@ -154,6 +87,191 @@ function BackButton({ onPress }: { onPress: () => void }): React.ReactElement {
 }
 
 // ---------------------------------------------------------------------------
+// Demo: Meditation — uses actual BreathingExercise component
+// ---------------------------------------------------------------------------
+
+function MeditationDemo(): React.ReactElement {
+	const [timeLeft, setTimeLeft] = useState(BREATHING_DEMO_SECONDS);
+
+	useEffect(() => {
+		if (timeLeft <= 0) return;
+		const id = setInterval(() => {
+			setTimeLeft((t) => Math.max(0, t - 1));
+		}, 1000);
+		return () => clearInterval(id);
+	}, [timeLeft]);
+
+	return (
+		<BreathingExercise
+			timeLeft={timeLeft}
+			totalDuration={BREATHING_DEMO_SECONDS}
+		/>
+	);
+}
+
+// ---------------------------------------------------------------------------
+// Demo: Daily check-in — uses actual RatingChips + Chip components
+// ---------------------------------------------------------------------------
+
+function CheckinDemo(): React.ReactElement {
+	return (
+		<Card style={demoStyles.card} mode="contained">
+			<Card.Content style={demoStyles.cardContent}>
+				<RatingChips
+					label="Mood"
+					value={4}
+					onChange={() => {}}
+					readonly
+					labelMap={MOOD_LABELS}
+					subtitle="How are you feeling right now?"
+				/>
+				<Divider style={demoStyles.divider} />
+				<RatingChips
+					label="Urge level"
+					value={2}
+					onChange={() => {}}
+					readonly
+					labelMap={URGE_LABELS}
+				/>
+				<Divider style={demoStyles.divider} />
+				<View style={demoStyles.yesNoRow}>
+					<Text variant="labelLarge" style={demoStyles.ratingLabel}>
+						Opened a dating app late at night?
+					</Text>
+					<View style={demoStyles.chipRow}>
+						<Chip
+							selected={false}
+							style={demoStyles.ratingChip}
+							textStyle={demoStyles.ratingChipText}
+							compact
+						>
+							Yes
+						</Chip>
+						<Chip
+							selected
+							style={[demoStyles.ratingChip, demoStyles.chipSelected]}
+							textStyle={[
+								demoStyles.ratingChipText,
+								demoStyles.chipTextSelected,
+							]}
+							compact
+						>
+							No
+						</Chip>
+					</View>
+				</View>
+			</Card.Content>
+		</Card>
+	);
+}
+
+// ---------------------------------------------------------------------------
+// Demo: Notifications — iOS-style banners with app logo
+// ---------------------------------------------------------------------------
+
+interface MockNotifProps {
+	title: string;
+	body: string;
+	time: string;
+}
+
+const MOCK_NOTIFS: MockNotifProps[] = [
+	{
+		title: "Feeling the urge?",
+		body: "Open Unmatch for a 60-second reset.",
+		time: "9:00 PM",
+	},
+	{
+		title: "Your 5-day streak is still going.",
+		body: "Keep it alive?",
+		time: "8:00 PM",
+	},
+	{
+		title: "Your week in review",
+		body: "3 meditations, 45 min saved. View progress.",
+		time: "Sun 7 PM",
+	},
+];
+
+function AnimatedNotifBanner({
+	title,
+	body,
+	time,
+	delay,
+}: MockNotifProps & { delay: number }): React.ReactElement {
+	const translateY = useRef(new Animated.Value(-40)).current;
+	const opacity = useRef(new Animated.Value(0)).current;
+	const scale = useRef(new Animated.Value(0.92)).current;
+
+	useEffect(() => {
+		const timeout = setTimeout(() => {
+			Animated.parallel([
+				Animated.spring(translateY, {
+					toValue: 0,
+					speed: 8,
+					bounciness: 6,
+					useNativeDriver: true,
+				}),
+				Animated.timing(opacity, {
+					toValue: 1,
+					duration: 350,
+					easing: Easing.out(Easing.ease),
+					useNativeDriver: true,
+				}),
+				Animated.spring(scale, {
+					toValue: 1,
+					speed: 10,
+					bounciness: 4,
+					useNativeDriver: true,
+				}),
+			]).start();
+		}, delay);
+
+		return () => clearTimeout(timeout);
+	}, [translateY, opacity, scale, delay]);
+
+	return (
+		<Animated.View
+			style={[
+				demoStyles.notifBanner,
+				{
+					opacity,
+					transform: [{ translateY }, { scale }],
+				},
+			]}
+		>
+			<Logo markSize={24} layout="mark-only" />
+			<View style={demoStyles.notifTextWrap}>
+				<View style={demoStyles.notifHeaderRow}>
+					<Text style={demoStyles.notifAppName}>Unmatch</Text>
+					<Text style={demoStyles.notifTime}>{time}</Text>
+				</View>
+				<Text style={demoStyles.notifTitle} numberOfLines={1}>
+					{title}
+				</Text>
+				<Text style={demoStyles.notifBody} numberOfLines={1}>
+					{body}
+				</Text>
+			</View>
+		</Animated.View>
+	);
+}
+
+function NotificationsDemo(): React.ReactElement {
+	return (
+		<View style={demoStyles.notifList}>
+			{MOCK_NOTIFS.map((notif, i) => (
+				<AnimatedNotifBanner
+					key={notif.title}
+					{...notif}
+					delay={400 + i * 800}
+				/>
+			))}
+		</View>
+	);
+}
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
@@ -161,13 +279,7 @@ export default function OnboardingScreen(): React.ReactElement {
 	const { completeOnboarding } = useAppState();
 	const analytics = useAnalytics();
 
-	// Step state
 	const [step, setStep] = useState<Step>("welcome");
-
-	// Personalize state
-	const [selectedGoal, setSelectedGoal] = useState<GoalType | null>(null);
-
-	// Submission state
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
 	// ---------------------------------------------------------------------------
@@ -175,21 +287,17 @@ export default function OnboardingScreen(): React.ReactElement {
 	// ---------------------------------------------------------------------------
 
 	const goBack = useCallback((): void => {
-		if (step === "personalize") {
+		if (step === "meditation") {
 			setStep("welcome");
-		} else if (step === "features") {
-			setStep("personalize");
-		} else if (step === "ready") {
-			setStep("features");
+		} else if (step === "checkin") {
+			setStep("meditation");
+		} else if (step === "notifications") {
+			setStep("checkin");
 		}
 	}, [step]);
 
-	// ---------------------------------------------------------------------------
-	// Submit (called from Ready screen)
-	// ---------------------------------------------------------------------------
-
-	const handleStart = useCallback(async (): Promise<void> => {
-		if (isSubmitting || selectedGoal === null) return;
+	const handleFinish = useCallback(async (): Promise<void> => {
+		if (isSubmitting) return;
 		setIsSubmitting(true);
 
 		try {
@@ -197,7 +305,7 @@ export default function OnboardingScreen(): React.ReactElement {
 				locale: "en",
 				notification_style: "normal",
 				plan_selected: "starter_7d",
-				goal_type: selectedGoal,
+				goal_type: "reduce_swipe",
 				spending_budget_weekly: null,
 				spending_budget_daily: null,
 				spending_limit_mode: null,
@@ -206,23 +314,22 @@ export default function OnboardingScreen(): React.ReactElement {
 			analytics.track({
 				name: "onboarding_completed",
 				props: {
-					goal_type: selectedGoal,
+					goal_type: "reduce_swipe",
 					trigger_count: 0,
 					has_budget: false,
 				},
 			});
 
-			// Request notification permissions (default is "normal")
 			await requestPermissions();
 
 			router.replace("/paywall");
 		} finally {
 			setIsSubmitting(false);
 		}
-	}, [isSubmitting, selectedGoal, completeOnboarding, analytics]);
+	}, [isSubmitting, completeOnboarding, analytics]);
 
 	// ---------------------------------------------------------------------------
-	// Step: Welcome
+	// Step 1: Opening screen
 	// ---------------------------------------------------------------------------
 
 	if (step === "welcome") {
@@ -245,7 +352,7 @@ export default function OnboardingScreen(): React.ReactElement {
 					<Button
 						mode="contained"
 						onPress={() => {
-							setStep("personalize");
+							setStep("meditation");
 						}}
 						style={styles.primaryButton}
 						contentStyle={styles.primaryButtonContent}
@@ -260,78 +367,41 @@ export default function OnboardingScreen(): React.ReactElement {
 	}
 
 	// ---------------------------------------------------------------------------
-	// Step: Personalize (Goal + Triggers + Course)
+	// Step 2: Meditation feature
 	// ---------------------------------------------------------------------------
 
-	if (step === "personalize") {
+	if (step === "meditation") {
 		return (
 			<View style={styles.root}>
-				<ProgressDots steps={STEPS} current="personalize" />
+				<ProgressDots steps={STEPS} current="meditation" />
 				<BackButton onPress={goBack} />
 				<ScrollView
 					style={styles.scroll}
 					contentContainerStyle={styles.scrollContent}
 					showsVerticalScrollIndicator={false}
 				>
-					{/* Goal selection */}
-					<Text variant="headlineMedium" style={styles.stepTitle}>
-						What would feel like a win to you?
-					</Text>
-					<View style={styles.goalList}>
-						{GOAL_OPTIONS.map((option) => (
-							<Surface
-								key={option.id}
-								style={[
-									styles.goalCard,
-									selectedGoal === option.id && styles.goalCardSelected,
-								]}
-								elevation={selectedGoal === option.id ? 3 : 1}
-							>
-								<Button
-									mode="text"
-									onPress={() => {
-										setSelectedGoal(option.id);
-									}}
-									style={styles.goalCardButton}
-									contentStyle={styles.goalCardButtonContent}
-									testID={`goal-${option.id}`}
-								>
-									<View style={styles.goalCardInner}>
-										<Text
-											variant="titleMedium"
-											style={[
-												styles.goalCardTitle,
-												selectedGoal === option.id &&
-													styles.goalCardTitleSelected,
-											]}
-										>
-											{option.label}
-										</Text>
-										<Text variant="bodySmall" style={styles.goalCardDesc}>
-											{option.description}
-										</Text>
-									</View>
-								</Button>
-							</Surface>
-						))}
-					</View>
-					{selectedGoal !== null && (
-						<Text variant="bodySmall" style={styles.goalAffirmation}>
-							{GOAL_AFFIRMATIONS[selectedGoal]}
+					<View style={styles.stepHeader}>
+						<Text variant="headlineMedium" style={styles.stepTitle}>
+							Urge hits? Breathe it out.
 						</Text>
-					)}
+						<Text variant="bodyMedium" style={styles.stepSubtitle}>
+							A 60-second guided session that actually works. No willpower
+							required — just breathe with the circle.
+						</Text>
+					</View>
+
+					<MeditationDemo />
 				</ScrollView>
 				<View style={styles.bottomActions}>
 					<Button
 						mode="contained"
 						onPress={() => {
-							setStep("features");
+							setStep("checkin");
 						}}
-						disabled={selectedGoal === null}
 						style={styles.primaryButton}
 						contentStyle={styles.primaryButtonContent}
 						labelStyle={styles.primaryButtonLabel}
-						testID="personalize-continue"
+						testID="meditation-continue"
 					>
 						Continue
 					</Button>
@@ -341,69 +411,41 @@ export default function OnboardingScreen(): React.ReactElement {
 	}
 
 	// ---------------------------------------------------------------------------
-	// Step: Features (value proposition showcase)
+	// Step 3: Daily check-in feature
 	// ---------------------------------------------------------------------------
 
-	if (step === "features") {
+	if (step === "checkin") {
 		return (
 			<View style={styles.root}>
-				<ProgressDots steps={STEPS} current="features" />
+				<ProgressDots steps={STEPS} current="checkin" />
 				<BackButton onPress={goBack} />
 				<ScrollView
 					style={styles.scroll}
 					contentContainerStyle={styles.scrollContent}
 					showsVerticalScrollIndicator={false}
 				>
-					<Text variant="headlineMedium" style={styles.stepTitle}>
-						Control your dating app urges with Unmatch
-					</Text>
-					<Text variant="bodyLarge" style={styles.featuresSubtitle}>
-						Unmatch gives you real tools — not just advice.
-					</Text>
-
-					<View style={styles.featureCardList}>
-						{FEATURE_SHOWCASES.map((feature) => (
-							<Surface
-								key={feature.title}
-								style={styles.featureCard}
-								elevation={1}
-							>
-								<View
-									style={[
-										styles.featureCardIcon,
-										{ backgroundColor: `${feature.color}18` },
-									]}
-								>
-									<MaterialCommunityIcons
-										name={
-											feature.icon as keyof typeof MaterialCommunityIcons.glyphMap
-										}
-										size={28}
-										color={feature.color}
-									/>
-								</View>
-								<View style={styles.featureCardText}>
-									<Text variant="titleMedium" style={styles.featureCardTitle}>
-										{feature.title}
-									</Text>
-									<Text variant="bodySmall" style={styles.featureCardDesc}>
-										{feature.description}
-									</Text>
-								</View>
-							</Surface>
-						))}
+					<View style={styles.stepHeader}>
+						<Text variant="headlineMedium" style={styles.stepTitle}>
+							One minute to know yourself better
+						</Text>
+						<Text variant="bodyMedium" style={styles.stepSubtitle}>
+							Track your mood and urges daily. Small reflections reveal patterns
+							you'd never notice otherwise.
+						</Text>
 					</View>
+
+					<CheckinDemo />
 				</ScrollView>
 				<View style={styles.bottomActions}>
 					<Button
 						mode="contained"
 						onPress={() => {
-							setStep("ready");
+							setStep("notifications");
 						}}
 						style={styles.primaryButton}
 						contentStyle={styles.primaryButtonContent}
 						labelStyle={styles.primaryButtonLabel}
-						testID="features-continue"
+						testID="checkin-continue"
 					>
 						Continue
 					</Button>
@@ -413,49 +455,45 @@ export default function OnboardingScreen(): React.ReactElement {
 	}
 
 	// ---------------------------------------------------------------------------
-	// Step: Ready (personalized CTA)
+	// Step 4: Notification reminders
 	// ---------------------------------------------------------------------------
 
-	if (step === "ready") {
+	if (step === "notifications") {
 		return (
 			<View style={styles.root}>
-				<ProgressDots steps={STEPS} current="ready" />
+				<ProgressDots steps={STEPS} current="notifications" />
 				<BackButton onPress={goBack} />
-				<View style={styles.centeredContent}>
-					<View style={styles.readyIconContainer}>
-						<MaterialCommunityIcons
-							name="rocket-launch-outline"
-							size={64}
-							color={colors.primary}
-						/>
+				<ScrollView
+					style={styles.scroll}
+					contentContainerStyle={styles.scrollContent}
+					showsVerticalScrollIndicator={false}
+				>
+					<View style={styles.stepHeader}>
+						<Text variant="headlineMedium" style={styles.stepTitle}>
+							We've got your back
+						</Text>
+						<Text variant="bodyMedium" style={styles.stepSubtitle}>
+							Gentle evening nudges, streak reminders, and weekly recaps. Just
+							enough to keep your momentum — never annoying.
+						</Text>
 					</View>
-					<Text variant="headlineMedium" style={styles.readyTitle}>
-						You're all set.
-					</Text>
-					<Text variant="bodyLarge" style={styles.readyBody}>
-						{selectedGoal !== null
-							? GOAL_AFFIRMATIONS[selectedGoal]
-							: "Small wins add up."}
-					</Text>
-					<Text variant="bodyMedium" style={styles.readyDetail}>
-						Your 7-day starter course to reduce your dating app usage begins today. We'll send you a nudge each
-						evening to keep you on track.
-					</Text>
-				</View>
+
+					<NotificationsDemo />
+				</ScrollView>
 				<View style={styles.bottomActions}>
 					<Button
 						mode="contained"
 						onPress={() => {
-							void handleStart();
+							void handleFinish();
 						}}
 						loading={isSubmitting}
 						disabled={isSubmitting}
 						style={styles.primaryButton}
 						contentStyle={styles.primaryButtonContent}
 						labelStyle={styles.primaryButtonLabel}
-						testID="ready-continue"
+						testID="notifications-continue"
 					>
-						{isSubmitting ? "Setting up..." : "Start my pause"}
+						{isSubmitting ? "Setting up..." : "Continue"}
 					</Button>
 				</View>
 			</View>
@@ -467,7 +505,7 @@ export default function OnboardingScreen(): React.ReactElement {
 }
 
 // ---------------------------------------------------------------------------
-// Styles
+// Styles — main layout
 // ---------------------------------------------------------------------------
 
 const styles = StyleSheet.create({
@@ -475,7 +513,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: colors.background,
 	},
-	// Progress dots
 	progressRow: {
 		flexDirection: "row",
 		justifyContent: "center",
@@ -499,7 +536,6 @@ const styles = StyleSheet.create({
 	progressDotDone: {
 		backgroundColor: colors.secondary,
 	},
-	// Back button
 	backButtonRow: {
 		paddingHorizontal: 8,
 		paddingBottom: 4,
@@ -507,7 +543,6 @@ const styles = StyleSheet.create({
 	backButton: {
 		alignSelf: "flex-start",
 	},
-	// Welcome
 	welcomeSafeArea: {
 		height: Platform.OS === "ios" ? 56 : 36,
 	},
@@ -533,141 +568,26 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 		lineHeight: 26,
 	},
-	// Scroll
 	scroll: {
 		flex: 1,
 	},
 	scrollContent: {
 		paddingHorizontal: 20,
-		paddingTop: 12,
+		paddingTop: 8,
 		paddingBottom: 16,
-		gap: 16,
+	},
+	stepHeader: {
+		gap: 8,
+		marginBottom: 8,
 	},
 	stepTitle: {
 		color: colors.text,
 		fontWeight: "700",
-		marginBottom: 4,
 	},
 	stepSubtitle: {
 		color: colors.muted,
-		marginBottom: 8,
 		lineHeight: 22,
 	},
-	// Goal
-	goalList: {
-		gap: 12,
-	},
-	goalCard: {
-		borderRadius: 14,
-		borderWidth: 1,
-		borderColor: colors.border,
-		backgroundColor: colors.surface,
-		overflow: "hidden",
-	},
-	goalCardSelected: {
-		borderColor: colors.primary,
-		backgroundColor: "#0F1D3A",
-	},
-	goalCardButton: {
-		width: "100%",
-		borderRadius: 14,
-	},
-	goalCardButtonContent: {
-		justifyContent: "flex-start",
-		paddingVertical: 8,
-		paddingHorizontal: 4,
-	},
-	goalCardInner: {
-		flex: 1,
-		alignItems: "flex-start",
-		gap: 4,
-	},
-	goalCardTitle: {
-		color: colors.text,
-		fontWeight: "600",
-	},
-	goalCardTitleSelected: {
-		color: colors.primary,
-	},
-	goalCardDesc: {
-		color: colors.muted,
-		lineHeight: 20,
-		flexWrap: "wrap",
-	},
-	goalAffirmation: {
-		color: colors.secondary,
-		textAlign: "center",
-		fontStyle: "italic",
-		marginTop: 4,
-	},
-	// Features showcase
-	featuresSubtitle: {
-		color: colors.muted,
-		lineHeight: 24,
-		marginBottom: 4,
-	},
-	featureCardList: {
-		gap: 12,
-	},
-	featureCard: {
-		borderRadius: 14,
-		borderWidth: 1,
-		borderColor: colors.border,
-		backgroundColor: colors.surface,
-		flexDirection: "row",
-		padding: 16,
-		gap: 14,
-		alignItems: "flex-start",
-	},
-	featureCardIcon: {
-		width: 48,
-		height: 48,
-		borderRadius: 14,
-		alignItems: "center",
-		justifyContent: "center",
-		flexShrink: 0,
-	},
-	featureCardText: {
-		flex: 1,
-		gap: 4,
-	},
-	featureCardTitle: {
-		color: colors.text,
-		fontWeight: "600",
-	},
-	featureCardDesc: {
-		color: colors.muted,
-		lineHeight: 20,
-	},
-	// Ready
-	readyIconContainer: {
-		width: 120,
-		height: 120,
-		borderRadius: 60,
-		backgroundColor: "#0F1D3A",
-		alignItems: "center",
-		justifyContent: "center",
-		marginBottom: 16,
-	},
-	readyTitle: {
-		color: colors.text,
-		fontWeight: "700",
-		textAlign: "center",
-	},
-	readyBody: {
-		color: colors.secondary,
-		textAlign: "center",
-		fontSize: 18,
-		fontStyle: "italic",
-		lineHeight: 26,
-	},
-	readyDetail: {
-		color: colors.muted,
-		textAlign: "center",
-		lineHeight: 24,
-		paddingHorizontal: 8,
-	},
-	// Shared bottom actions
 	bottomActions: {
 		paddingHorizontal: 20,
 		paddingTop: 12,
@@ -687,5 +607,108 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: "700",
 		letterSpacing: 0.5,
+	},
+});
+
+// ---------------------------------------------------------------------------
+// Styles — demo previews
+// ---------------------------------------------------------------------------
+
+const demoStyles = StyleSheet.create({
+	// Check-in demo (matches actual checkin.tsx Card styling)
+	card: {
+		backgroundColor: colors.surface,
+		borderRadius: 14,
+		borderWidth: 1,
+		borderColor: colors.border,
+	},
+	cardContent: {
+		paddingVertical: 4,
+		gap: 2,
+	},
+	divider: {
+		backgroundColor: colors.border,
+	},
+	yesNoRow: {
+		paddingVertical: 12,
+		gap: 10,
+	},
+	ratingLabel: {
+		color: colors.text,
+		fontWeight: "500",
+	},
+	chipRow: {
+		flexDirection: "row",
+		gap: 8,
+		flexWrap: "wrap",
+	},
+	ratingChip: {
+		backgroundColor: colors.background,
+		borderColor: colors.border,
+		borderWidth: 1,
+		minWidth: 44,
+	},
+	ratingChipText: {
+		color: colors.muted,
+	},
+	chipSelected: {
+		backgroundColor: "#0F1D3A",
+		borderColor: colors.primary,
+	},
+	chipTextSelected: {
+		color: colors.text,
+		fontWeight: "600",
+	},
+
+	// Notification banners (iOS-style)
+	notifList: {
+		gap: 10,
+		marginTop: 8,
+	},
+	notifBanner: {
+		flexDirection: "row",
+		alignItems: "flex-start",
+		backgroundColor: "#1C2840",
+		borderRadius: 16,
+		padding: 14,
+		gap: 12,
+		// Subtle shadow for depth
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.3,
+		shadowRadius: 6,
+		elevation: 4,
+	},
+	notifTextWrap: {
+		flex: 1,
+		gap: 1,
+	},
+	notifHeaderRow: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		marginBottom: 2,
+	},
+	notifAppName: {
+		color: colors.muted,
+		fontSize: 12,
+		fontWeight: "500",
+		textTransform: "uppercase",
+		letterSpacing: 0.5,
+	},
+	notifTime: {
+		color: colors.muted,
+		fontSize: 11,
+	},
+	notifTitle: {
+		color: colors.text,
+		fontSize: 14,
+		fontWeight: "600",
+		lineHeight: 18,
+	},
+	notifBody: {
+		color: colors.muted,
+		fontSize: 13,
+		lineHeight: 17,
 	},
 });

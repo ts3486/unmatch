@@ -10,6 +10,8 @@ import { colors } from "@/src/constants/theme";
 import { useAppState } from "@/src/contexts/AppStateContext";
 import { useDatabaseContext } from "@/src/contexts/DatabaseContext";
 import {
+	getAllCheckinDates,
+	getCheckinsInRange,
 	getUrgeCountByDayOfWeek,
 	getUrgeCountByTimeOfDay,
 	getUrgeEventsInRange,
@@ -104,7 +106,7 @@ function WeekComparisonCard({
 				<View style={styles.comparisonRow}>
 					<View style={styles.comparisonCol}>
 						<Text variant="labelSmall" style={styles.comparisonColHeader}>
-							Success days
+							Check-in days
 						</Text>
 						<Text variant="titleLarge" style={styles.comparisonThis}>
 							{thisWeekSuccessDays}
@@ -195,16 +197,13 @@ export default function ProgressScreen(): React.ReactElement {
 		const { start, end } = getWeekRange(today);
 		const weekDays = getDaysBetween(start, end);
 		const events = await getUrgeEventsInRange(db, start, end);
+		const checkins = await getCheckinsInRange(db, start, end);
 
-		const successDaySet = new Set<string>();
-		for (const ev of events) {
-			if (ev.outcome === "success") {
-				successDaySet.add(ev.started_at.slice(0, 10));
-			}
-		}
+		// Count check-in days (days where a daily check-in was completed)
+		const checkinDaySet = new Set<string>(checkins.map((c) => c.date_local));
 
 		const totalDays = weekDays.length;
-		const successDays = successDaySet.size;
+		const successDays = checkinDaySet.size;
 		const panicTotal = events.filter((e) => e.outcome !== "ongoing").length;
 		const panicSuccess = events.filter((e) => e.outcome === "success").length;
 		const spendAvoided = events.filter(
@@ -228,15 +227,17 @@ export default function ProgressScreen(): React.ReactElement {
 			lastWeekRange.start,
 			lastWeekRange.end,
 		);
+		const lastWeekCheckins = await getCheckinsInRange(
+			db,
+			lastWeekRange.start,
+			lastWeekRange.end,
+		);
 
-		const lastWeekSuccessDaySet = new Set<string>();
-		for (const ev of lastWeekEvents) {
-			if (ev.outcome === "success") {
-				lastWeekSuccessDaySet.add(ev.started_at.slice(0, 10));
-			}
-		}
+		const lastWeekCheckinDaySet = new Set<string>(
+			lastWeekCheckins.map((c) => c.date_local),
+		);
 
-		const lastWeekSuccessDays = lastWeekSuccessDaySet.size;
+		const lastWeekSuccessDays = lastWeekCheckinDaySet.size;
 		const lastWeekPanicTotal = lastWeekEvents.filter(
 			(e) => e.outcome !== "ongoing",
 		).length;
@@ -264,20 +265,8 @@ export default function ProgressScreen(): React.ReactElement {
 	// ---------------------------------------------------------------------------
 
 	const loadBestStreak = useCallback(async (): Promise<void> => {
-		const twoYearsAgo = format(
-			new Date(new Date().getFullYear() - 2, 0, 1),
-			"yyyy-MM-dd",
-		);
-		const allEvents = await getUrgeEventsInRange(db, twoYearsAgo, today);
-
-		const successDateSet = new Set<string>();
-		for (const ev of allEvents) {
-			if (ev.outcome === "success") {
-				successDateSet.add(ev.started_at.slice(0, 10));
-			}
-		}
-
-		const sortedDates = Array.from(successDateSet).sort();
+		// Use check-in dates for streak calculation
+		const sortedDates = await getAllCheckinDates(db);
 
 		let longest = 0;
 		let current = 0;
@@ -419,13 +408,13 @@ export default function ProgressScreen(): React.ReactElement {
 			<Card style={styles.card} mode="contained">
 				<Card.Content style={styles.statsContent}>
 					<StatRow
-						label="Personal best streak"
+						label="Best check-in streak"
 						value={bestStreak > 0 ? `${bestStreak} days` : "Not yet"}
 						valueColor={bestStreak > 0 ? colors.primary : colors.muted}
 					/>
 					<Divider style={styles.divider} />
 					<StatRow
-						label="Success days"
+						label="Check-in days"
 						value={`${weeklyStats.successDays} / ${weeklyStats.totalDays} (${pctSuccess}%)`}
 						valueColor={
 							weeklyStats.successDays > 0 ? colors.success : colors.muted

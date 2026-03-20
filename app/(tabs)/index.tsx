@@ -2,25 +2,133 @@
 // TypeScript strict mode.
 
 import { BreathingExercise } from "@/src/components/BreathingExercise";
-import { CoachMarkOverlay } from "@/src/components/CoachMarkOverlay";
 import { Logo } from "@/src/components/Logo";
-import { PrivacyBadge } from "@/src/components/PrivacyBadge";
+
 import { BREATHING_DURATION_SECONDS } from "@/src/constants/config";
 import { colors } from "@/src/constants/theme";
 import { useAppState } from "@/src/contexts/AppStateContext";
 import { useCheckin } from "@/src/hooks/useCheckin";
-import { useCoachMarks } from "@/src/hooks/useCoachMarks";
+import { useDismissedTips } from "@/src/hooks/useDismissedTips";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-	type LayoutRectangle,
-	StyleSheet,
-	TouchableOpacity,
-	View,
-} from "react-native";
+import { Animated, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Chip, Text } from "react-native-paper";
+
+// ---------------------------------------------------------------------------
+// Guide steps
+// ---------------------------------------------------------------------------
+
+const GUIDE_STEPS = [
+	{
+		title: "Breathing exercise",
+		text: "Breathe with the circle when you feel the urge to open a dating app. It runs continuously — just follow along.",
+	},
+	{
+		title: "Daily check-in",
+		text: "Tap the button at the bottom to log how you're feeling today. A quick daily check-in counts as a success for the day.",
+	},
+] as const;
+
+// ---------------------------------------------------------------------------
+// Guide overlay — centered modal with step indicator
+// ---------------------------------------------------------------------------
+
+function GuideOverlay({
+	visible,
+	step,
+	totalSteps,
+	title,
+	text,
+	onNext,
+}: {
+	visible: boolean;
+	step: number;
+	totalSteps: number;
+	title: string;
+	text: string;
+	onNext: () => void;
+}): React.ReactElement | null {
+	const anim = useRef(new Animated.Value(0)).current;
+	const [mounted, setMounted] = useState(false);
+
+	useEffect(() => {
+		if (visible) {
+			setMounted(true);
+			Animated.spring(anim, {
+				toValue: 1,
+				useNativeDriver: true,
+				tension: 50,
+				friction: 9,
+			}).start();
+		} else if (mounted) {
+			Animated.timing(anim, {
+				toValue: 0,
+				duration: 200,
+				useNativeDriver: true,
+			}).start(({ finished }) => {
+				if (finished) setMounted(false);
+			});
+		}
+	}, [visible, anim, mounted]);
+
+	if (!mounted) return null;
+
+	const scale = anim.interpolate({
+		inputRange: [0, 1],
+		outputRange: [0.95, 1],
+	});
+
+	const isLast = step === totalSteps - 1;
+
+	return (
+		<View style={styles.overlayBackdrop} pointerEvents="box-none">
+			<Animated.View
+				style={[
+					styles.overlayCard,
+					{ opacity: anim, transform: [{ scale }] },
+				]}
+			>
+				<MaterialCommunityIcons
+					name="information-outline"
+					size={24}
+					color={colors.primary}
+				/>
+				<Text variant="titleSmall" style={styles.overlayTitle}>
+					{title}
+				</Text>
+				<Text variant="bodyMedium" style={styles.overlayText}>
+					{text}
+				</Text>
+
+				{/* Step dots */}
+				<View style={styles.stepDots}>
+					{Array.from({ length: totalSteps }, (_, i) => (
+						<View
+							key={i}
+							style={[
+								styles.dot,
+								i === step ? styles.dotActive : styles.dotInactive,
+							]}
+						/>
+					))}
+				</View>
+
+				<TouchableOpacity
+					onPress={onNext}
+					style={styles.overlayButton}
+					activeOpacity={0.7}
+					accessibilityLabel={isLast ? "Got it" : "Next"}
+				>
+					<Text variant="labelMedium" style={styles.overlayButtonText}>
+						{isLast ? "Got it" : "Next"}
+					</Text>
+				</TouchableOpacity>
+			</Animated.View>
+		</View>
+	);
+}
 
 // ---------------------------------------------------------------------------
 // Component
@@ -30,28 +138,39 @@ export default function HomeScreen(): React.ReactElement {
 	const { todaySuccess, isLoading } = useAppState();
 
 	const checkin = useCheckin();
+	const tips = useDismissedTips();
 
-	const coachMarks = useCoachMarks();
+	// Guide state: which step we're on, or null if not showing
+	const [guideStep, setGuideStep] = useState<number | null>(null);
 
-	// Layout refs for coach mark spotlight targets.
-	const [checkinLayout, setCheckinLayout] = useState<LayoutRectangle | null>(
-		null,
-	);
-	const [breathingLayout, setBreathingLayout] =
-		useState<LayoutRectangle | null>(null);
-	const checkinRef = useRef<View>(null);
-	const breathingRef = useRef<View>(null);
-
-	const targetLayoutForMark = (markId: string): LayoutRectangle | null => {
-		switch (markId) {
-			case "reset_button":
-				return breathingLayout;
-			case "checkin":
-				return checkinLayout;
-			default:
-				return null;
+	// Auto-show guide on first visit (when tips haven't been dismissed yet)
+	const autoShownRef = useRef(false);
+	useEffect(() => {
+		if (
+			tips.isLoaded &&
+			!autoShownRef.current &&
+			!tips.dismissed.has("tip_guide_complete")
+		) {
+			autoShownRef.current = true;
+			setGuideStep(0);
 		}
-	};
+	}, [tips.isLoaded, tips.dismissed]);
+
+	const handleNextStep = useCallback(() => {
+		setGuideStep((prev) => {
+			if (prev === null) return null;
+			if (prev >= GUIDE_STEPS.length - 1) {
+				// Last step — mark guide as done
+				tips.dismiss("tip_guide_complete");
+				return null;
+			}
+			return prev + 1;
+		});
+	}, [tips]);
+
+	const handleShowGuide = useCallback(() => {
+		setGuideStep(0);
+	}, []);
 
 	// ---------------------------------------------------------------------------
 	// Breathing timer — always running, loops continuously
@@ -113,6 +232,8 @@ export default function HomeScreen(): React.ReactElement {
 	// Render
 	// ---------------------------------------------------------------------------
 
+	const currentStep = guideStep !== null ? GUIDE_STEPS[guideStep] : null;
+
 	return (
 		<View style={styles.root}>
 			<View style={styles.content}>
@@ -120,7 +241,18 @@ export default function HomeScreen(): React.ReactElement {
 				<View style={styles.headerRow}>
 					<Logo markSize={28} layout="horizontal" />
 					<View style={styles.headerRight}>
-						<PrivacyBadge />
+						<TouchableOpacity
+							onPress={handleShowGuide}
+							hitSlop={8}
+							accessibilityLabel="Show guide"
+							style={styles.helpButton}
+						>
+							<MaterialCommunityIcons
+								name="help-circle-outline"
+								size={22}
+								color={colors.muted}
+							/>
+						</TouchableOpacity>
 						{todaySuccess && (
 							<Chip
 								compact
@@ -134,11 +266,7 @@ export default function HomeScreen(): React.ReactElement {
 				</View>
 
 				{/* Breathing exercise — always visible */}
-				<View
-					ref={breathingRef}
-					style={styles.breathingArea}
-					onLayout={(e) => setBreathingLayout(e.nativeEvent.layout)}
-				>
+				<View style={styles.breathingArea}>
 					<BreathingExercise
 						timeLeft={breathingTimeLeft}
 						totalDuration={BREATHING_DURATION_SECONDS}
@@ -150,11 +278,7 @@ export default function HomeScreen(): React.ReactElement {
 			</View>
 
 			{/* Sticky bottom: Daily check-in CTA */}
-			<View
-				ref={checkinRef}
-				style={styles.stickyBottom}
-				onLayout={(e) => setCheckinLayout(e.nativeEvent.layout)}
-			>
+			<View style={styles.stickyBottom}>
 				{checkin.isComplete ? (
 					<TouchableOpacity
 						onPress={() => router.push("/checkin")}
@@ -190,16 +314,15 @@ export default function HomeScreen(): React.ReactElement {
 				)}
 			</View>
 
-			{/* Coach mark walkthrough overlay */}
-			{coachMarks.currentMark !== null && (
-				<CoachMarkOverlay
-					key="coach-overlay"
-					mark={coachMarks.currentMark}
-					step={coachMarks.currentStep}
-					totalSteps={coachMarks.totalSteps}
-					targetLayout={targetLayoutForMark(coachMarks.currentMark.id)}
-					onNext={coachMarks.next}
-					onSkip={coachMarks.skipAll}
+			{/* Guide overlay */}
+			{currentStep != null && (
+				<GuideOverlay
+					visible={guideStep !== null}
+					step={guideStep ?? 0}
+					totalSteps={GUIDE_STEPS.length}
+					title={currentStep.title}
+					text={currentStep.text}
+					onNext={handleNextStep}
 				/>
 			)}
 		</View>
@@ -239,6 +362,9 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		alignItems: "center",
 		gap: 8,
+	},
+	helpButton: {
+		padding: 2,
 	},
 	successChip: {
 		backgroundColor: "#1A3D2E",
@@ -285,6 +411,62 @@ const styles = StyleSheet.create({
 	},
 	checkinDoneText: {
 		color: colors.success,
+		fontWeight: "600",
+	},
+	// Overlay
+	overlayBackdrop: {
+		...StyleSheet.absoluteFillObject,
+		justifyContent: "center",
+		alignItems: "center",
+		backgroundColor: "rgba(0,0,0,0.5)",
+		paddingHorizontal: 28,
+		zIndex: 100,
+	},
+	overlayCard: {
+		backgroundColor: colors.surface,
+		borderRadius: 16,
+		borderWidth: 1,
+		borderColor: colors.border,
+		padding: 24,
+		alignItems: "center",
+		gap: 12,
+		width: "100%",
+		maxWidth: 340,
+	},
+	overlayTitle: {
+		color: colors.text,
+		fontWeight: "700",
+	},
+	overlayText: {
+		color: colors.muted,
+		lineHeight: 22,
+		textAlign: "center",
+	},
+	stepDots: {
+		flexDirection: "row",
+		gap: 8,
+		marginTop: 4,
+	},
+	dot: {
+		width: 8,
+		height: 8,
+		borderRadius: 4,
+	},
+	dotActive: {
+		backgroundColor: colors.primary,
+	},
+	dotInactive: {
+		backgroundColor: colors.border,
+	},
+	overlayButton: {
+		backgroundColor: colors.primary,
+		borderRadius: 12,
+		paddingVertical: 10,
+		paddingHorizontal: 32,
+		marginTop: 4,
+	},
+	overlayButtonText: {
+		color: "#FFFFFF",
 		fontWeight: "600",
 	},
 });

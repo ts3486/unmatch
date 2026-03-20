@@ -197,6 +197,7 @@ function InnerLayout(): React.ReactElement {
 					headerStyle: { backgroundColor: "#0B1220" },
 					headerTintColor: "#E6EDF7",
 					headerShadowVisible: false,
+					headerBackTitle: "Back",
 				}}
 			>
 				<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -216,7 +217,7 @@ function InnerLayout(): React.ReactElement {
 				/>
 				<Stack.Screen
 					name="checkin"
-					options={{ title: "Daily Check-in", headerBackTitle: "Back" }}
+					options={{ title: "Daily Check-in" }}
 				/>
 			</Stack>
 		</>

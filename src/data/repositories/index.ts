@@ -24,6 +24,7 @@ export {
 	createCheckin,
 	getCheckinByDate,
 	getCheckinsInRange,
+	getAllCheckinDates,
 } from "./checkin-repository";
 
 export {
@@ -49,9 +50,3 @@ export {
 	recordMonthlySubscription,
 	getHasEverSubscribed,
 } from "./subscription-repository";
-
-export {
-	getSeenCoachMarks,
-	markCoachMarkSeen,
-	resetCoachMarks,
-} from "./coach-mark-repository";

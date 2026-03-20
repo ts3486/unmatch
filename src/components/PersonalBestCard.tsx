@@ -72,7 +72,7 @@ export function PersonalBestCard({
 								NEW PERSONAL BEST
 							</Text>
 							<Text variant="titleMedium" style={styles.headline}>
-								{bestStreak} day streak
+								{bestStreak} day check-in streak
 							</Text>
 							<Text variant="bodySmall" style={styles.sub}>
 								Keep going — you're on a roll.

@@ -125,7 +125,7 @@ export function StreakRing({
 
 			{/* Center text overlay */}
 			<View style={styles.centerContent}>
-				<Text style={styles.daysCleanLabel}>DAYS CLEAN</Text>
+				<Text style={styles.daysCleanLabel}>CHECK-INS</Text>
 				<Text style={styles.streakNumber}>{streakLabel}</Text>
 				<Text style={styles.title}>{title}</Text>
 			</View>

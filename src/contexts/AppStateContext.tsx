@@ -5,7 +5,7 @@
 import {
 	countSuccessesByDate,
 	createUserProfile,
-	getAllProgressDates,
+	getAllCheckinDates,
 	getLatestProgress,
 	getUserProfile,
 	hasContentCompletedOnDate,
@@ -127,9 +127,9 @@ export function AppStateProvider({
 		// Meditation rank is derived purely from total meditation count.
 		setMeditationRank(calculateMeditationRank(totalMeditations));
 
-		// Streak: gather all progress dates that were success days.
-		const allDates = await getAllProgressDates(db);
-		setStreak(calculateStreak(allDates, today));
+		// Streak: based on consecutive daily check-in dates.
+		const checkinDates = await getAllCheckinDates(db);
+		setStreak(calculateStreak(checkinDates, today));
 
 		// Today success: at least one panic success OR daily task completed.
 		const panicSuccessCount = await countSuccessesByDate(db, today);

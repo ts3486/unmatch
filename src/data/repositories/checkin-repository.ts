@@ -106,3 +106,17 @@ export async function getCheckinsInRange(
 
 	return rows.map(rowToCheckin);
 }
+
+/**
+ * Returns all distinct date_local values from the daily_checkin table,
+ * ordered ascending. Used for streak calculation based on check-ins.
+ */
+export async function getAllCheckinDates(
+	db: SQLiteDatabase,
+): Promise<string[]> {
+	const rows = await db.getAllAsync<{ date_local: string }>(
+		"SELECT DISTINCT date_local FROM daily_checkin ORDER BY date_local ASC;",
+	);
+
+	return rows.map((r) => r.date_local);
+}

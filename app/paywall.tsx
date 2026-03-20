@@ -7,6 +7,7 @@ import { colors } from "@/src/constants/theme";
 import { useAnalytics } from "@/src/contexts/AnalyticsContext";
 import { useAppState } from "@/src/contexts/AppStateContext";
 import { useDatabaseContext } from "@/src/contexts/DatabaseContext";
+import type { GoalType } from "@/src/domain/types";
 import {
 	getOfferings,
 	isPremiumFromCustomerInfo,
@@ -30,11 +31,31 @@ interface FeatureItem {
 	label: string;
 }
 
-const FEATURES: FeatureItem[] = [
+const ALL_FEATURES: FeatureItem[] = [
 	{ icon: "timer-outline", label: "60-second panic meditation — anytime, offline" },
 	{ icon: "credit-card-off-outline", label: "Spend delay cards — think before you boost" },
 	{ icon: "chart-line", label: "Progress tracking — streaks, rank & insights" },
 ];
+
+const GOAL_HEADLINES: Record<GoalType, string> = {
+	reduce_swipe: "Stop mindless swiping",
+	reduce_open: "Break the checking habit",
+	reduce_night_check: "Rest without the scroll",
+	reduce_spend: "Stop spending on boosts",
+};
+
+// Feature order prioritized by goal — first item is most relevant
+const GOAL_FEATURE_ORDER: Record<GoalType, number[]> = {
+	reduce_swipe: [0, 2, 1],
+	reduce_open: [0, 2, 1],
+	reduce_night_check: [0, 2, 1],
+	reduce_spend: [1, 0, 2],
+};
+
+function getOrderedFeatures(goal: GoalType | null): FeatureItem[] {
+	if (goal === null) return ALL_FEATURES;
+	return GOAL_FEATURE_ORDER[goal].map((i) => ALL_FEATURES[i]);
+}
 
 // ---------------------------------------------------------------------------
 // Component
@@ -42,7 +63,9 @@ const FEATURES: FeatureItem[] = [
 
 export default function PaywallScreen(): React.ReactElement {
 	const analytics = useAnalytics();
-	const { isPremium, hasEverSubscribed, refreshPremiumStatus, unlockPremium } = useAppState();
+	const { isPremium, hasEverSubscribed, refreshPremiumStatus, unlockPremium, userProfile } = useAppState();
+	const goalType: GoalType | null = userProfile?.goal_type ?? null;
+	const features = getOrderedFeatures(goalType);
 	const { db } = useDatabaseContext();
 
 	const [isPurchasing, setIsPurchasing] = useState<boolean>(false);
@@ -153,7 +176,7 @@ export default function PaywallScreen(): React.ReactElement {
 				<Logo markSize={48} layout="vertical" />
 				<Text variant="headlineMedium" style={styles.headline}>
 					{isTrialOffer
-						? "Pause from dating apps"
+						? (goalType !== null ? GOAL_HEADLINES[goalType] : "Pause from dating apps")
 						: "Continue with Unmatch"}
 				</Text>
 				<Text variant="bodyLarge" style={styles.subtext}>
@@ -181,7 +204,7 @@ export default function PaywallScreen(): React.ReactElement {
 
 			{/* Feature list */}
 			<View style={styles.featureList}>
-				{FEATURES.map((feature) => (
+				{features.map((feature) => (
 					<View key={feature.label} style={styles.featureRow}>
 						<View style={styles.featureIconWrap}>
 							<MaterialCommunityIcons
