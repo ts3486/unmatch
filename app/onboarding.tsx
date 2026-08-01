@@ -1,5 +1,5 @@
-// Onboarding screen — 4-step flow + paywall.
-// Steps: Opening → Meditation → Daily Checkin → Notifications → navigate to /paywall.
+// Onboarding screen — 4-step flow.
+// Steps: Opening → Meditation → Daily Checkin → Notifications → navigate to Home.
 // Each feature step uses actual app components for an honest preview.
 // TypeScript strict mode.
 
@@ -320,7 +320,7 @@ export default function OnboardingScreen(): React.ReactElement {
 				},
 			});
 
-			router.replace("/paywall");
+			router.replace("/(tabs)");
 		} finally {
 			setIsSubmitting(false);
 		}
