@@ -5,7 +5,7 @@ This document tracks feature-level requirements, screen specs, and implementatio
 ## Screens
 
 ### /onboarding
-- Streamlined 4-step flow: Welcome → Personalize → Features → Ready → Paywall
+- Streamlined 4-step flow: Welcome → Personalize → Features → Ready → Home (app is free — no paywall step)
 - **Personalize** — goal selection (single scrollable screen); Continue disabled until a goal is selected
 - **Features** — value proposition showcase with 4 feature cards (guided exercises, smart reminders, progress tracking, 7-day course); each card has a color-coded icon, title, and description
 - **Ready** — personalized "You're all set" screen with goal affirmation and course/notification preview; CTA: "Start my pause"
@@ -43,17 +43,11 @@ This document tracks feature-level requirements, screen specs, and implementatio
 - Notification style toggle
 - Blocker guide link
 - Privacy/data export link
-- "Why We Charge" section — expandable row with explanation content
-- "Unlock Unmatch" row — visible for non-premium users (trial expired or free)
+- No "Why We Charge" / "Unlock Unmatch" rows — app is free, no upsell surface in Settings
 
 ### /paywall
-- Two modes: trial offer (post-onboarding) vs. trial expired (conversion)
-- Trial offer mode: 7-day free trial CTA → auto-renews to $4.99/month, auto-renewal terms displayed (App Store 3.1.2)
-- Trial expired mode: Subscribe $4.99/month CTA
-- Restore purchase link visible in both modes
-- Layout order: header → price comparison callout → feature list → CTA → legal text (trial) → trust signals
-- Connected to RevenueCat — real purchase flow via `purchasePackage()`, restore via `restorePurchases()`
-- Subscription sync on app foreground — keeps `isPremium` in sync with App Store
+- App is currently free — this route is dormant/unreached (not linked from onboarding or the tab gate) but kept in place along with the RevenueCat plumbing (`subscription-service.ts`, `subscription-repository.ts`, `subscription_state` table, `isPremium` context) for a future freemium feature
+- Screen content unchanged for now (two modes: trial offer vs. trial expired) — will be redesigned when freemium gating is defined
 
 ### /settings/blocker-guide
 - Device blocker setup guide (unchanged)
@@ -73,9 +67,7 @@ This document tracks feature-level requirements, screen specs, and implementatio
 - Once success that day, later fails don't remove it
 - Urge kinds: swipe, check, spend
 - Spend categories: iap, date, gift, tipping, transport, other
-- Subscription gating: `isPremium` is the single gate. True during active trial or paid subscription. False when trial expires without subscribing or subscription lapses. Non-premium users are redirected to paywall.
-- RevenueCat SDK initialization: `initPurchases()` called once on app mount before any RC operations. Handles init failure gracefully (no crash).
-- Subscription expiry enforcement: On foreground, after `getCustomerInfo()`, if RC reports no active entitlement and local `expires_at` is past, mark `is_premium = false`, `status = 'expired'`. Offline fallback: if RC call fails, check local `expires_at` + 3-day grace period before marking expired.
+- App access: free for all users. The `(tabs)` navigator no longer gates on `isPremium` — no redirect to paywall.
 
 ## Data
 - Seed: `data/seed/catalog.json` (triggers, actions, spend delay cards)
@@ -90,9 +82,7 @@ This document tracks feature-level requirements, screen specs, and implementatio
   - Weekly summary (Sunday evening)
   - Course unlock notification (8am daily, days 2–7, if lesson not yet completed)
 - Analytics (no free-text, no spend_amount, no notes)
-- Subscription/paywall (IAP — $4.99/month with 7-day free trial, via RevenueCat)
-  - RevenueCat SDK init on app launch (platform-gated API key)
-  - Subscription expiry enforcement with 3-day offline grace period
+- Subscription/paywall (IAP via RevenueCat) — dormant. App is free; RC SDK is not initialized on launch and the tab navigator no longer gates on `isPremium`. Service/repository/DB table/paywall screen are kept in place, unused, for a future freemium feature.
 - Share service — generate shareable streak card image via native share sheet
 
 ## Accessibility
@@ -102,6 +92,7 @@ This document tracks feature-level requirements, screen specs, and implementatio
 - Gender-neutral, inclusive language (maintained)
 
 ## Changelog
+- 2026-08-01: Made the app completely free — removed the `isPremium` gate from `(tabs)/_layout.tsx`, dropped the onboarding→paywall redirect (Ready CTA now goes straight to Home), removed the "Unlock Unmatch"/"Why We Charge" rows from Settings, and stopped RevenueCat SDK init/foreground sync on app launch. Kept `/paywall` screen, `subscription-service.ts`, `subscription-repository.ts`, and the `subscription_state` table in place, unused, for a future freemium feature.
 - 2026-02-28: Removed MotivationCard, TimeSavedCard, and useWeeklySuccessCount from Home screen; removed TIME_SAVED_PER_MEDITATION_MINUTES constant; cleaned up [NEW]/[DONE] status tags — all items now reflect implemented state; updated day detail spec to match implementation (summary badges, full check-in fields, timeline with coping actions); removed daily motivation messages from Data section
 - 2026-02-28: Replaced onboarding breathing demo with value proposition showcase; new flow: Welcome → Personalize → Features (4 value-prop cards) → Ready (personalized CTA); removed breathing timer/state; "Start my pause" CTA
 - 2026-02-28: Streamlined onboarding from 10-12 screens to 4 steps; merged Goal+Triggers+Course into single screen; added back navigation; removed demo check-in/action dump; deferred budget setup and notification preference to post-onboarding

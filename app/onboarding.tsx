@@ -1,5 +1,5 @@
-// Onboarding screen — 4-step flow + paywall.
-// Steps: Opening → Meditation → Daily Checkin → Notifications → navigate to /paywall.
+// Onboarding screen — 4-step flow.
+// Steps: Opening → Meditation → Daily Checkin → Notifications → navigate to Home.
 // Each feature step uses actual app components for an honest preview.
 // TypeScript strict mode.
 
@@ -10,10 +10,10 @@ import {
 	RatingChips,
 	URGE_LABELS,
 } from "@/src/components/RatingChips";
+import { DAILY_MOTIVATION_MESSAGES } from "@/src/constants/notification-content";
 import { colors } from "@/src/constants/theme";
 import { useAnalytics } from "@/src/contexts/AnalyticsContext";
 import { useAppState } from "@/src/contexts/AppStateContext";
-import { requestPermissions } from "@/src/services/notifications";
 import { router } from "expo-router";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -177,19 +177,19 @@ interface MockNotifProps {
 
 const MOCK_NOTIFS: MockNotifProps[] = [
 	{
-		title: "Feeling the urge?",
-		body: "Open Unmatch for a 60-second reset.",
-		time: "9:00 PM",
+		title: DAILY_MOTIVATION_MESSAGES[0].title,
+		body: DAILY_MOTIVATION_MESSAGES[0].body,
+		time: "9:00 AM",
+	},
+	{
+		title: DAILY_MOTIVATION_MESSAGES[4].title,
+		body: DAILY_MOTIVATION_MESSAGES[4].body,
+		time: "2:00 PM",
 	},
 	{
 		title: "Your 5-day streak is still going.",
 		body: "Keep it alive?",
 		time: "8:00 PM",
-	},
-	{
-		title: "Your week in review",
-		body: "3 meditations, 45 min saved. View progress.",
-		time: "Sun 7 PM",
 	},
 ];
 
@@ -320,9 +320,7 @@ export default function OnboardingScreen(): React.ReactElement {
 				},
 			});
 
-			await requestPermissions();
-
-			router.replace("/paywall");
+			router.replace("/(tabs)");
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -473,8 +471,9 @@ export default function OnboardingScreen(): React.ReactElement {
 							We've got your back
 						</Text>
 						<Text variant="bodyMedium" style={styles.stepSubtitle}>
-							Gentle evening nudges, streak reminders, and weekly recaps. Just
-							enough to keep your momentum — never annoying.
+							Daily motivation to stay focused on yourself, streak reminders,
+							and a nudge to breathe. Just enough to keep your momentum —
+							never annoying.
 						</Text>
 					</View>
 

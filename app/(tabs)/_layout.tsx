@@ -9,7 +9,7 @@ import { Redirect, Tabs } from "expo-router";
 import type React from "react";
 
 export default function TabsLayout(): React.ReactElement {
-	const { isOnboarded, isLoading, isPremium } = useAppState();
+	const { isOnboarded, isLoading } = useAppState();
 
 	// While the database and profile are loading, render nothing to avoid flash.
 	if (isLoading) {
@@ -18,10 +18,6 @@ export default function TabsLayout(): React.ReactElement {
 
 	if (!isOnboarded) {
 		return <Redirect href="/onboarding" />;
-	}
-
-	if (!isPremium) {
-		return <Redirect href="/paywall" />;
 	}
 
 	return (

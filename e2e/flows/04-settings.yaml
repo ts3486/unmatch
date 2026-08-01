@@ -13,7 +13,6 @@ appId: com.quittr.app
 - assertVisible: "Your Notifications"
 - assertVisible: "Tools"
 - assertVisible: "Your Data"
-- assertVisible: "Plan"
 
 # Notification style cycles: Normal → Stealth → Off → Normal
 - tapOn: "Notification style"
@@ -41,10 +40,4 @@ appId: com.quittr.app
     startX: 5%
     startY: 50%
 
-# Open Paywall sub-screen
-- tapOn: "Manage subscription"
-- swipe:
-    direction: LEFT
-    startX: 5%
-    startY: 50%
 - assertVisible: "Settings"

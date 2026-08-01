@@ -30,18 +30,9 @@ import {
 	useAnalytics,
 } from "@/src/contexts/AnalyticsContext";
 import { AppStateProvider, useAppState } from "@/src/contexts/AppStateContext";
-import {
-	DatabaseProvider,
-	useDatabaseContext,
-} from "@/src/contexts/DatabaseContext";
+import { DatabaseProvider } from "@/src/contexts/DatabaseContext";
 import { useContent } from "@/src/hooks/useContent";
 import { rescheduleAll } from "@/src/services/notifications";
-import {
-	enforceSubscriptionExpiry,
-	getCustomerInfo,
-	initPurchases,
-	syncSubscriptionToDb,
-} from "@/src/services/subscription-service";
 import { PaperProvider } from "react-native-paper";
 
 // ---------------------------------------------------------------------------
@@ -50,15 +41,8 @@ import { PaperProvider } from "react-native-paper";
 // ---------------------------------------------------------------------------
 
 function InnerLayout(): React.ReactElement {
-	const {
-		userProfile,
-		streak,
-		todaySuccess,
-		meditationCount,
-		isOnboarded,
-		refreshPremiumStatus,
-	} = useAppState();
-	const { db } = useDatabaseContext();
+	const { userProfile, streak, todaySuccess, meditationCount, isOnboarded } =
+		useAppState();
 	const analytics = useAnalytics();
 	const router = useRouter();
 	const appStateRef = useRef<AppStateStatus>(AppState.currentState);
@@ -76,20 +60,6 @@ function InnerLayout(): React.ReactElement {
 			todayItems.every((c) => completedIds.has(c.content_id))
 		);
 	}, [allContent, completedIds, currentDayIndex]);
-
-	// Initialize RevenueCat SDK once on mount (before any RC operations).
-	const rcInitializedRef = useRef(false);
-	useEffect(() => {
-		if (rcInitializedRef.current) return;
-		rcInitializedRef.current = true;
-		void (async () => {
-			try {
-				await initPurchases();
-			} catch {
-				// Log-only — don't crash if RC init fails (offline / bad key).
-			}
-		})();
-	}, []);
 
 	useEffect(() => {
 		// Only schedule after onboarding is complete and state is loaded.
@@ -116,23 +86,6 @@ function InnerLayout(): React.ReactElement {
 				const isActive = nextAppState === "active";
 
 				if (wasBackground && isActive) {
-					// Sync subscription status with App Store on foreground.
-					void (async () => {
-						try {
-							const info = await getCustomerInfo();
-							await syncSubscriptionToDb(db, info);
-							await refreshPremiumStatus();
-						} catch {
-							// RC unreachable — enforce expiry locally with grace period.
-							try {
-								await enforceSubscriptionExpiry(db);
-								await refreshPremiumStatus();
-							} catch {
-								// Silent — DB may also be unavailable.
-							}
-						}
-					})();
-
 					if (userProfile !== null) {
 						void rescheduleAll(userProfile, {
 							streak,
@@ -159,8 +112,6 @@ function InnerLayout(): React.ReactElement {
 		meditationCount,
 		currentDayIndex,
 		todayContentCompleted,
-		db,
-		refreshPremiumStatus,
 	]);
 
 	// Handle notification taps — track analytics and navigate to the correct screen.

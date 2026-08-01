@@ -8,6 +8,7 @@ import { useAnalytics } from "@/src/contexts/AnalyticsContext";
 import { useAppState } from "@/src/contexts/AppStateContext";
 import { useDatabaseContext } from "@/src/contexts/DatabaseContext";
 import type { GoalType } from "@/src/domain/types";
+import { requestPermissions } from "@/src/services/notifications";
 import {
 	getOfferings,
 	isPremiumFromCustomerInfo,
@@ -100,6 +101,7 @@ export default function PaywallScreen(): React.ReactElement {
 			if (!offering || !offering.monthly) {
 				if (__DEV__) {
 					console.log("[Paywall] DEV mode — bypassing purchase, unlocking premium");
+					await requestPermissions();
 					await unlockPremium("dev_monthly_sandbox", "monthly");
 					return;
 				}
@@ -114,6 +116,7 @@ export default function PaywallScreen(): React.ReactElement {
 			console.log("[Paywall] CustomerInfo:", JSON.stringify(customerInfo, null, 2));
 			await syncSubscriptionToDb(db, customerInfo);
 			console.log("[Paywall] Synced to DB");
+			await requestPermissions();
 			await refreshPremiumStatus();
 			console.log("[Paywall] Refreshed premium status");
 			const productId = offering.monthly.product.identifier;
@@ -125,6 +128,7 @@ export default function PaywallScreen(): React.ReactElement {
 			console.log("[Paywall] Purchase error:", JSON.stringify(err, null, 2));
 			if (__DEV__) {
 				console.log("[Paywall] DEV mode — bypassing purchase error, unlocking premium");
+				await requestPermissions();
 				await unlockPremium("dev_monthly_sandbox", "monthly");
 				return;
 			}
@@ -150,6 +154,7 @@ export default function PaywallScreen(): React.ReactElement {
 		try {
 			const customerInfo = await restorePurchases();
 			await syncSubscriptionToDb(db, customerInfo);
+			await requestPermissions();
 			await refreshPremiumStatus();
 			if (!isPremiumFromCustomerInfo(customerInfo)) {
 				setFeedbackMessage("No previous purchases found.");

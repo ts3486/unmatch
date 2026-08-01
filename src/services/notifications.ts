@@ -9,6 +9,10 @@
 // No default exports. TypeScript strict mode.
 
 import type { NotificationStyle, UserProfile } from "@/src/domain/types";
+import {
+	DAILY_MOTIVATION_MESSAGES,
+	NOTIFICATION_SCHEDULE,
+} from "@/src/constants/notification-content";
 import * as ExpoNotifications from "expo-notifications";
 
 // ---------------------------------------------------------------------------
@@ -38,6 +42,29 @@ export function buildEveningNudgeContent(
 		title: "Feeling the urge?",
 		body: "Open Unmatch for a 60-second reset.",
 	};
+}
+
+// ---------------------------------------------------------------------------
+// Pure helper: daily motivation content (2 distinct messages)
+// ---------------------------------------------------------------------------
+
+/**
+ * Picks two distinct random messages from DAILY_MOTIVATION_MESSAGES.
+ * Returns null when style is 'off'.
+ */
+export function pickDailyMotivationPair(
+	style: NotificationStyle,
+): [NotificationContent, NotificationContent] | null {
+	if (style === "off") {
+		return null;
+	}
+	const messages = DAILY_MOTIVATION_MESSAGES;
+	const firstIndex = Math.floor(Math.random() * messages.length);
+	let secondIndex = Math.floor(Math.random() * (messages.length - 1));
+	if (secondIndex >= firstIndex) {
+		secondIndex += 1;
+	}
+	return [messages[firstIndex], messages[secondIndex]];
 }
 
 // ---------------------------------------------------------------------------
@@ -354,6 +381,79 @@ export async function scheduleCourseUnlock(
 }
 
 // ---------------------------------------------------------------------------
+// Side-effectful: daily motivation (morning + afternoon)
+// ---------------------------------------------------------------------------
+
+/**
+ * Schedules two motivational notifications: one at 9 AM, one at 2 PM.
+ * Each uses a distinct randomly picked message.
+ */
+export async function scheduleDailyMotivation(
+	notificationStyle: NotificationStyle,
+): Promise<void> {
+	const pair = pickDailyMotivationPair(notificationStyle);
+	if (pair === null) {
+		return;
+	}
+
+	const now = new Date();
+
+	const morningTrigger = new Date(now);
+	morningTrigger.setHours(
+		NOTIFICATION_SCHEDULE.DAILY_MOTIVATION_MORNING_HOUR,
+		NOTIFICATION_SCHEDULE.DAILY_MOTIVATION_MORNING_MINUTE,
+		0,
+		0,
+	);
+
+	const afternoonTrigger = new Date(now);
+	afternoonTrigger.setHours(
+		NOTIFICATION_SCHEDULE.DAILY_MOTIVATION_AFTERNOON_HOUR,
+		NOTIFICATION_SCHEDULE.DAILY_MOTIVATION_AFTERNOON_MINUTE,
+		0,
+		0,
+	);
+
+	const schedules: Promise<string>[] = [];
+
+	if (morningTrigger > now) {
+		schedules.push(
+			ExpoNotifications.scheduleNotificationAsync({
+				content: {
+					title: pair[0].title,
+					body: pair[0].body,
+					sound: true,
+				},
+				trigger: {
+					type: ExpoNotifications.SchedulableTriggerInputTypes.DATE,
+					date: morningTrigger,
+				},
+				identifier: "daily-motivation-morning",
+			}),
+		);
+	}
+
+	if (afternoonTrigger > now) {
+		schedules.push(
+			ExpoNotifications.scheduleNotificationAsync({
+				content: {
+					title: pair[1].title,
+					body: pair[1].body,
+					sound: true,
+				},
+				trigger: {
+					type: ExpoNotifications.SchedulableTriggerInputTypes.DATE,
+					date: afternoonTrigger,
+				},
+				identifier: "daily-motivation-afternoon",
+			}),
+		);
+	}
+
+	await Promise.all(schedules);
+}
+
+// ---------------------------------------------------------------------------
 // Master scheduler
 // ---------------------------------------------------------------------------
 
@@ -393,6 +493,7 @@ export async function rescheduleAll(
 	// Schedule each notification type — each guard-checks internally.
 	const style = userProfile.notification_style;
 	await Promise.all([
+		scheduleDailyMotivation(style),
 		scheduleEveningNudge(style, appState.todaySuccess),
 		scheduleStreakNudge(appState.streak, appState.todaySuccess, style),
 		scheduleWeeklySummary(appState.meditationCount, minutesSaved, style),

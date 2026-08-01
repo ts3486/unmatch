@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unmatch — App Store Screenshots (1242×2688)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+  }
+
+  h1 {
+    color: #fff;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  .instructions {
+    color: #aaa;
+    text-align: center;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  .grid {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .screenshot-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .screenshot-label {
+    color: #888;
+    font-size: 13px;
+  }
+
+  /* Each screenshot is 1242×2688 but we scale down for preview */
+  .screenshot {
+    width: 1242px;
+    height: 2688px;
+    transform: scale(0.22);
+    transform-origin: top left;
+    position: relative;
+    overflow: hidden;
+  }
+  .screenshot-wrapper {
+    width: calc(1242px * 0.22);
+    height: calc(2688px * 0.22);
+    position: relative;
+  }
+  .screenshot-wrapper .screenshot {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  /* ---- Shared screenshot styles ---- */
+  .ss {
+    width: 1242px;
+    height: 2688px;
+    background: linear-gradient(160deg, #0B1220 0%, #121C2E 40%, #1a1040 70%, #2d1050 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Decorative sparkle */
+  .sparkle {
+    position: absolute;
+    bottom: 100px;
+    right: 100px;
+    width: 60px;
+    height: 60px;
+    opacity: 0.6;
+  }
+  .sparkle svg { width: 100%; height: 100%; }
+
+  /* Headline area */
+  .headline-area {
+    padding-top: 120px;
+    padding-bottom: 40px;
+    text-align: center;
+    z-index: 2;
+  }
+  .headline {
+    font-size: 80px;
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .subheadline {
+    font-size: 44px;
+    font-weight: 400;
+    color: #A7B3C7;
+    line-height: 1.4;
+    margin-top: 28px;
+    max-width: 850px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* iPhone frame */
+  .phone-frame {
+    width: 780px;
+    height: 1600px;
+    background: #000;
+    border-radius: 100px;
+    border: 6px solid #333;
+    position: relative;
+    overflow: hidden;
+    margin-top: 20px;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 0 2px rgba(255,255,255,0.05);
+    z-index: 2;
+  }
+
+  /* Dynamic Island */
+  .dynamic-island {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 240px;
+    height: 70px;
+    background: #000;
+    border-radius: 40px;
+    z-index: 10;
+  }
+
+  /* Status bar */
+  .status-bar {
+    height: 110px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 60px 10px;
+    color: #fff;
+    font-size: 32px;
+    font-weight: 600;
+  }
+  .status-time { font-weight: 700; }
+  .status-icons { display: flex; gap: 12px; align-items: center; }
+  .status-icons svg { width: 32px; height: 32px; }
+
+  /* Screen content area */
+  .screen-content {
+    flex: 1;
+    padding: 20px 44px;
+    display: flex;
+    flex-direction: column;
+    background: #0B1220;
+  }
+
+  /* Tab bar */
+  .tab-bar {
+    height: 140px;
+    background: #0B1220;
+    border-top: 2px solid #223049;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 30px 30px;
+  }
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .tab-item svg { width: 44px; height: 44px; }
+  .tab-label {
+    font-size: 20px;
+    font-weight: 500;
+    color: #A7B3C7;
+  }
+  .tab-item.active .tab-label { color: #4C8DFF; }
+  .tab-item.active svg { color: #4C8DFF; }
+
+  /* Home indicator */
+  .home-indicator {
+    width: 260px;
+    height: 8px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+    margin: 0 auto 16px;
+  }
+
+  /* ============ SCREEN 1: Home/Breathing ============ */
+  .home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-top: 8px;
+  }
+  .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .logo-heart {
+    width: 52px;
+    height: 52px;
+  }
+  .logo-text {
+    font-size: 36px;
+    font-weight: 700;
+    color: #E6EDF7;
+  }
+  .today-chip {
+    background: #1A3D2E;
+    border: 2px solid #47C28B;
+    border-radius: 32px;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .today-chip span {
+    color: #47C28B;
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .breathing-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+  }
+  .affirmation {
+    font-size: 40px;
+    font-weight: 600;
+    color: #7AA7FF;
+    text-align: center;
+    line-height: 1.4;
+    padding: 0 20px;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+  }
+  .breathing-circle-outer {
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    border: 4px solid #47C28B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .breathing-circle-inner {
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 40%, rgba(71, 194, 139, 0.35), rgba(71, 194, 139, 0.12) 70%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .breathing-countdown {
+    font-size: 72px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .phase-label {
+    font-size: 42px;
+    font-weight: 700;
+    color: #47C28B;
+    letter-spacing: 2px;
+  }
+  .session-block {
+    text-align: center;
+    margin-top: 8px;
+  }
+  .session-label {
+    font-size: 22px;
+    font-weight: 600;
+    color: #A7B3C7;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+  }
+  .session-time {
+    font-size: 52px;
+    font-weight: 600;
+    color: #E6EDF7;
+    margin-top: 4px;
+  }
+  .cycle-guide {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-top: 20px;
+  }
+  .cycle-step {
+    text-align: center;
+  }
+  .cycle-step-label {
+    font-size: 24px;
+    font-weight: 500;
+    color: #A7B3C7;
+  }
+  .cycle-step-label.active {
+    color: #E6EDF7;
+    font-weight: 700;
+  }
+  .cycle-step-dur {
+    font-size: 20px;
+    color: #223049;
+    margin-top: 2px;
+  }
+  .cycle-step-dur.active {
+    color: #A7B3C7;
+  }
+  .cycle-divider {
+    width: 40px;
+    height: 2px;
+    background: #223049;
+  }
+
+  .checkin-btn-area {
+    border-top: 2px solid #223049;
+    padding: 24px 0 8px;
+  }
+  .checkin-btn {
+    background: #4C8DFF;
+    border-radius: 28px;
+    padding: 28px 0;
+    text-align: center;
+    width: 100%;
+  }
+  .checkin-btn span {
+    color: #fff;
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  /* ============ SCREEN 2: Check-in ============ */
+  .checkin-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: #E6EDF7;
+    margin-top: 16px;
+    margin-bottom: 8px;
+  }
+  .checkin-subtitle {
+    font-size: 28px;
+    color: #A7B3C7;
+    margin-bottom: 36px;
+  }
+  .rating-section {
+    margin-bottom: 36px;
+  }
+  .rating-label {
+    font-size: 28px;
+    font-weight: 600;
+    color: #E6EDF7;
+    margin-bottom: 16px;
+  }
+  .rating-chips {
+    display: flex;
+    gap: 14px;
+  }
+  .chip {
+    flex: 1;
+    border: 2px solid #223049;
+    border-radius: 20px;
+    padding: 16px 8px;
+    text-align: center;
+    background: #121C2E;
+  }
+  .chip.selected {
+    border-color: #4C8DFF;
+    background: rgba(76, 141, 255, 0.15);
+  }
+  .chip-text {
+    font-size: 22px;
+    color: #A7B3C7;
+    font-weight: 500;
+  }
+  .chip.selected .chip-text {
+    color: #4C8DFF;
+    font-weight: 600;
+  }
+
+  .toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px 0;
+    border-bottom: 2px solid #223049;
+  }
+  .toggle-text {
+    font-size: 28px;
+    color: #E6EDF7;
+    max-width: 480px;
+  }
+  .toggle-switch {
+    width: 80px;
+    height: 44px;
+    border-radius: 22px;
+    background: #223049;
+    position: relative;
+  }
+  .toggle-switch.on {
+    background: #4C8DFF;
+  }
+  .toggle-knob {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    transition: left 0.2s;
+  }
+  .toggle-switch.on .toggle-knob {
+    left: 40px;
+  }
+  .note-area {
+    margin-top: 36px;
+  }
+  .note-label {
+    font-size: 28px;
+    font-weight: 600;
+    color: #E6EDF7;
+    margin-bottom: 12px;
+  }
+  .note-input {
+    background: #121C2E;
+    border: 2px solid #223049;
+    border-radius: 20px;
+    padding: 24px;
+    color: #A7B3C7;
+    font-size: 26px;
+    min-height: 120px;
+  }
+  .submit-btn {
+    background: #4C8DFF;
+    border-radius: 28px;
+    padding: 28px 0;
+    text-align: center;
+    width: 100%;
+    margin-top: 40px;
+  }
+  .submit-btn span {
+    color: #fff;
+    font-size: 30px;
+    font-weight: 600;
+  }
+
+  /* ============ SCREEN 3: Progress ============ */
+  .progress-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    gap: 32px;
+  }
+  .streak-ring-container {
+    position: relative;
+    width: 420px;
+    height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .streak-ring-bg {
+    position: absolute;
+    width: 420px;
+    height: 420px;
+  }
+  .streak-center {
+    text-align: center;
+    z-index: 1;
+  }
+  .streak-label {
+    font-size: 22px;
+    font-weight: 600;
+    color: #A7B3C7;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+  }
+  .streak-number {
+    font-size: 100px;
+    font-weight: 800;
+    color: #E6EDF7;
+    line-height: 1;
+  }
+  .streak-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #A7B3C7;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+
+  .personal-best-card {
+    background: #1A3D2E;
+    border: 2px solid #47C28B;
+    border-radius: 24px;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+  }
+  .pb-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(71,194,139,0.2);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+  }
+  .pb-text-block {}
+  .pb-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #47C28B;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  .pb-detail {
+    font-size: 26px;
+    color: #E6EDF7;
+    margin-top: 4px;
+  }
+
+  .share-btn {
+    border: 2px solid #7AA7FF;
+    border-radius: 28px;
+    padding: 22px 60px;
+    text-align: center;
+  }
+  .share-btn span {
+    color: #7AA7FF;
+    font-size: 28px;
+    font-weight: 600;
+  }
+
+  .week-card {
+    background: #121C2E;
+    border: 2px solid #223049;
+    border-radius: 24px;
+    padding: 32px;
+    width: 100%;
+  }
+  .week-card-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #E6EDF7;
+    margin-bottom: 24px;
+  }
+  .week-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 0;
+  }
+  .week-col {
+    flex: 1;
+    text-align: center;
+  }
+  .week-col-label {
+    font-size: 22px;
+    color: #A7B3C7;
+    margin-bottom: 8px;
+  }
+  .week-col-value {
+    font-size: 44px;
+    font-weight: 700;
+    color: #E6EDF7;
+  }
+  .week-delta {
+    font-size: 22px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .delta-up { color: #47C28B; }
+  .delta-same { color: #A7B3C7; }
+
+  .stats-card {
+    background: #121C2E;
+    border: 2px solid #223049;
+    border-radius: 24px;
+    padding: 32px;
+    width: 100%;
+  }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 0;
+    border-bottom: 2px solid #223049;
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-name {
+    font-size: 26px;
+    color: #A7B3C7;
+  }
+  .stat-value {
+    font-size: 26px;
+    font-weight: 700;
+    color: #E6EDF7;
+  }
+
+  /* ============ SCREEN 4: Onboarding/Paywall ============ */
+  .paywall-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 40px;
+    gap: 32px;
+  }
+  .paywall-logo {
+    text-align: center;
+  }
+  .paywall-heart {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 16px;
+  }
+  .paywall-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: #E6EDF7;
+    text-align: center;
+  }
+  .paywall-subtitle {
+    font-size: 28px;
+    color: #A7B3C7;
+    text-align: center;
+    max-width: 580px;
+    line-height: 1.5;
+    margin-top: 8px;
+  }
+  .price-badge {
+    background: rgba(242, 193, 78, 0.15);
+    border: 2px solid #F2C14E;
+    border-radius: 40px;
+    padding: 12px 32px;
+    display: inline-block;
+  }
+  .price-badge span {
+    color: #F2C14E;
+    font-size: 22px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .price-card {
+    background: #121C2E;
+    border: 2px solid #223049;
+    border-radius: 24px;
+    padding: 36px;
+    width: 100%;
+    text-align: center;
+  }
+  .price-amount {
+    font-size: 52px;
+    font-weight: 800;
+    color: #E6EDF7;
+  }
+  .price-context {
+    font-size: 24px;
+    color: #A7B3C7;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+  .feature-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .feature-icon {
+    width: 64px;
+    height: 64px;
+    background: #0F1D3A;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .feature-icon svg {
+    width: 32px;
+    height: 32px;
+    color: #4C8DFF;
+  }
+  .feature-text {
+    font-size: 28px;
+    color: #E6EDF7;
+    line-height: 1.4;
+  }
+  .trial-btn {
+    background: #4C8DFF;
+    border-radius: 28px;
+    padding: 28px 0;
+    text-align: center;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .trial-btn span {
+    color: #fff;
+    font-size: 30px;
+    font-weight: 700;
+  }
+  .restore-link {
+    color: #A7B3C7;
+    font-size: 24px;
+    text-decoration: underline;
+  }
+  .trust-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .trust-text {
+    font-size: 22px;
+    color: #A7B3C7;
+  }
+
+  /* Glow effects */
+  .glow-blue {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(76,141,255,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .glow-purple {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<h1>Unmatch — App Store Screenshots (1242 &times; 2688px)</h1>
+<p class="instructions">Right-click each screenshot and "Save as image", or use browser DevTools to export at full resolution.<br>
+Tip: Open each screenshot link individually and use Ctrl/Cmd+Shift+S to save at native 1242&times;2688 resolution.</p>
+
+<div class="grid">
+
+<!-- ==================== SCREENSHOT 1: Home / Breathing ==================== -->
+<div class="screenshot-wrapper">
+  <div class="screenshot">
+    <div class="ss" id="ss1">
+      <!-- Decorative glows -->
+      <div class="glow-blue" style="top: 300px; right: -200px;"></div>
+      <div class="glow-purple" style="bottom: 200px; left: -150px;"></div>
+
+      <!-- Headline -->
+      <div class="headline-area">
+        <div class="headline">Breathe Through<br>the Urge</div>
+        <div class="subheadline">A guided 60-second reset<br>when dating apps pull you in.</div>
+      </div>
+
+      <!-- Phone -->
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg viewBox="0 0 24 24" fill="white"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+            <svg viewBox="0 0 24 24" fill="white"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+          </div>
+        </div>
+        <div class="screen-content">
+          <!-- Home header -->
+          <div class="home-header">
+            <div class="logo-row">
+              <svg class="logo-heart" viewBox="0 0 100 100">
+                <path d="M35 20 C15 20, 5 45, 35 75 L50 90" fill="#7AA7FF" opacity="0.9"/>
+                <path d="M65 20 C85 20, 95 45, 65 75 L50 90" fill="#FF8FAB" opacity="0.85"/>
+              </svg>
+              <span class="logo-text">Unmatch</span>
+            </div>
+            <div class="today-chip">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="#47C28B"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+              <span>Today done</span>
+            </div>
+          </div>
+
+          <!-- Breathing center -->
+          <div class="breathing-center">
+            <div class="affirmation">You don't need their validation.</div>
+            <div class="breathing-circle-outer">
+              <div class="breathing-circle-inner">
+                <span class="breathing-countdown">5</span>
+              </div>
+            </div>
+            <div class="phase-label">Exhale</div>
+            <div class="session-block">
+              <div class="session-label">Session</div>
+              <div class="session-time">0:41</div>
+            </div>
+            <div class="cycle-guide">
+              <div class="cycle-step">
+                <div class="cycle-step-label">Inhale</div>
+                <div class="cycle-step-dur">4s</div>
+              </div>
+              <div class="cycle-divider"></div>
+              <div class="cycle-step">
+                <div class="cycle-step-label">Hold</div>
+                <div class="cycle-step-dur">2s</div>
+              </div>
+              <div class="cycle-divider"></div>
+              <div class="cycle-step">
+                <div class="cycle-step-label active">Exhale</div>
+                <div class="cycle-step-dur active">6s</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Check-in button -->
+          <div class="checkin-btn-area">
+            <div class="checkin-btn"><span>Daily check-in</span></div>
+          </div>
+        </div>
+
+        <!-- Tab bar -->
+        <div class="tab-bar">
+          <div class="tab-item active">
+            <svg viewBox="0 0 24 24" fill="#4C8DFF"><path d="M12 4c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2m0 14c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4m0-12C9.79 6 8 7.79 8 10s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4"/></svg>
+            <span class="tab-label">Home</span>
+          </div>
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="#A7B3C7"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+            <span class="tab-label">Progress</span>
+          </div>
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="#A7B3C7"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>
+            <span class="tab-label">Learn</span>
+          </div>
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="#A7B3C7"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            <span class="tab-label">Settings</span>
+          </div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+
+      <!-- Sparkle -->
+      <div class="sparkle">
+        <svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.5)"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="screenshot-label">1 — Home / Breathing</div>
+</div>
+
+<!-- ==================== SCREENSHOT 2: Daily Check-in ==================== -->
+<div class="screenshot-wrapper">
+  <div class="screenshot">
+    <div class="ss" id="ss2">
+      <div class="glow-blue" style="top: 500px; left: -200px;"></div>
+      <div class="glow-purple" style="bottom: 300px; right: -200px;"></div>
+
+      <div class="headline-area">
+        <div class="headline">Know Yourself<br>Better</div>
+        <div class="subheadline">A daily check-in to track<br>your mood, urges, and wins.</div>
+      </div>
+
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg viewBox="0 0 24 24" fill="white"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+            <svg viewBox="0 0 24 24" fill="white"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+          </div>
+        </div>
+        <div class="screen-content">
+          <div style="padding-top: 20px;">
+            <!-- Back button -->
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="#4C8DFF"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+            </div>
+
+            <div class="checkin-title">Daily check-in</div>
+            <div class="checkin-subtitle">How are you feeling today?</div>
+
+            <!-- Mood -->
+            <div class="rating-section">
+              <div class="rating-label">Mood</div>
+              <div class="rating-chips">
+                <div class="chip"><span class="chip-text">Low</span></div>
+                <div class="chip"><span class="chip-text">Meh</span></div>
+                <div class="chip selected"><span class="chip-text">Okay</span></div>
+                <div class="chip"><span class="chip-text">Good</span></div>
+                <div class="chip"><span class="chip-text">Great</span></div>
+              </div>
+            </div>
+
+            <!-- Fatigue -->
+            <div class="rating-section">
+              <div class="rating-label">Fatigue level</div>
+              <div class="rating-chips">
+                <div class="chip"><span class="chip-text">Fine</span></div>
+                <div class="chip selected"><span class="chip-text">Mild</span></div>
+                <div class="chip"><span class="chip-text">Tired</span></div>
+                <div class="chip"><span class="chip-text">Drained</span></div>
+                <div class="chip"><span class="chip-text">Wrecked</span></div>
+              </div>
+            </div>
+
+            <!-- Urge -->
+            <div class="rating-section">
+              <div class="rating-label">Urge level</div>
+              <div class="rating-chips">
+                <div class="chip"><span class="chip-text">Calm</span></div>
+                <div class="chip"><span class="chip-text">Low</span></div>
+                <div class="chip"><span class="chip-text">Medium</span></div>
+                <div class="chip selected"><span class="chip-text">Strong</span></div>
+                <div class="chip"><span class="chip-text">Max</span></div>
+              </div>
+            </div>
+
+            <!-- Toggles -->
+            <div class="toggle-row">
+              <div class="toggle-text">Opened a dating app late at night?</div>
+              <div class="toggle-switch">
+                <div class="toggle-knob"></div>
+              </div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-text">Spent money on dating apps today?</div>
+              <div class="toggle-switch">
+                <div class="toggle-knob"></div>
+              </div>
+            </div>
+
+            <!-- Note -->
+            <div class="note-area">
+              <div class="note-label">Personal note (optional)</div>
+              <div class="note-input">Feeling better about not checking...</div>
+            </div>
+
+            <div class="submit-btn"><span>Save check-in</span></div>
+          </div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+
+      <div class="sparkle">
+        <svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.5)"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="screenshot-label">2 — Daily Check-in</div>
+</div>
+
+<!-- ==================== SCREENSHOT 3: Progress ==================== -->
+<div class="screenshot-wrapper">
+  <div class="screenshot">
+    <div class="ss" id="ss3">
+      <div class="glow-blue" style="top: 400px; right: -250px;"></div>
+      <div class="glow-purple" style="bottom: 100px; left: -200px;"></div>
+
+      <div class="headline-area">
+        <div class="headline">Celebrate Every<br>Resist</div>
+        <div class="subheadline">Track your progress and<br>watch your streak grow.</div>
+      </div>
+
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg viewBox="0 0 24 24" fill="white"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+            <svg viewBox="0 0 24 24" fill="white"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+          </div>
+        </div>
+        <div class="screen-content">
+          <div class="progress-content">
+            <!-- Streak Ring -->
+            <div class="streak-ring-container">
+              <svg class="streak-ring-bg" viewBox="0 0 200 200">
+                <!-- Background ring -->
+                <circle cx="100" cy="100" r="85" fill="none" stroke="#223049" stroke-width="10" />
+                <!-- Progress arc — ~5/30 ≈ 60° -->
+                <circle cx="100" cy="100" r="85" fill="none" stroke="url(#streakGrad)" stroke-width="10"
+                  stroke-dasharray="534" stroke-dashoffset="445" stroke-linecap="round"
+                  transform="rotate(-90 100 100)" />
+                <defs>
+                  <linearGradient id="streakGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#4C8DFF" />
+                    <stop offset="100%" stop-color="#A855F7" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="streak-center">
+                <div class="streak-label">Check-ins</div>
+                <div class="streak-number">5d</div>
+                <div class="streak-title">Gaining Strength</div>
+              </div>
+            </div>
+
+            <!-- Personal Best -->
+            <div class="personal-best-card">
+              <div class="pb-icon">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="#47C28B"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+              </div>
+              <div class="pb-text-block">
+                <div class="pb-title">New Personal Best</div>
+                <div class="pb-detail">5 day check-in streak</div>
+              </div>
+            </div>
+
+            <!-- Share -->
+            <div class="share-btn"><span>Share your streak</span></div>
+
+            <!-- Week comparison -->
+            <div class="week-card">
+              <div class="week-row">
+                <div class="week-col">
+                  <div class="week-col-label">Check-in days</div>
+                  <div class="week-col-value">5</div>
+                  <div class="week-delta delta-up">+2 vs last week</div>
+                </div>
+                <div style="width: 2px; background: #223049;"></div>
+                <div class="week-col">
+                  <div class="week-col-label">Resets succeeded</div>
+                  <div class="week-col-value">3</div>
+                  <div class="week-delta delta-up">+1 vs last week</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-card">
+              <div class="stat-row">
+                <span class="stat-name">Best check-in streak</span>
+                <span class="stat-value">5 days</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-name">Check-in days</span>
+                <span class="stat-value">5 / 7</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-name">Urge resets succeeded</span>
+                <span class="stat-value">3 / 4</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-name">Spend urges avoided</span>
+                <span class="stat-value">2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-bar">
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="#A7B3C7"><path d="M12 4c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2m0 14c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4m0-12C9.79 6 8 7.79 8 10s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4"/></svg>
+            <span class="tab-label">Home</span>
+          </div>
+          <div class="tab-item active">
+            <svg viewBox="0 0 24 24" fill="#4C8DFF"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+            <span class="tab-label">Progress</span>
+          </div>
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="#A7B3C7"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>
+            <span class="tab-label">Learn</span>
+          </div>
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="#A7B3C7"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            <span class="tab-label">Settings</span>
+          </div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+
+      <div class="sparkle">
+        <svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.5)"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="screenshot-label">3 — Progress</div>
+</div>
+
+<!-- ==================== SCREENSHOT 4: Paywall ==================== -->
+<div class="screenshot-wrapper">
+  <div class="screenshot">
+    <div class="ss" id="ss4">
+      <div class="glow-blue" style="top: 600px; left: -200px;"></div>
+      <div class="glow-purple" style="bottom: 400px; right: -200px;"></div>
+
+      <div class="headline-area">
+        <div class="headline">Less Than a<br>Single Boost</div>
+        <div class="subheadline">Everything you need to break<br>the dating app cycle.</div>
+      </div>
+
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg viewBox="0 0 24 24" fill="white"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+            <svg viewBox="0 0 24 24" fill="white"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+          </div>
+        </div>
+        <div class="screen-content">
+          <div class="paywall-content">
+            <!-- Logo -->
+            <div class="paywall-logo">
+              <svg class="paywall-heart" viewBox="0 0 100 100">
+                <path d="M35 20 C15 20, 5 45, 35 75 L50 90" fill="#7AA7FF" opacity="0.9"/>
+                <path d="M65 20 C85 20, 95 45, 65 75 L50 90" fill="#FF8FAB" opacity="0.85"/>
+              </svg>
+              <div class="paywall-title">Stop mindless swiping</div>
+              <div class="paywall-subtitle">Everything you need to be intentional about dating apps</div>
+            </div>
+
+            <!-- Price badge -->
+            <div class="price-badge"><span>Cheaper than one Tinder boost</span></div>
+
+            <!-- Price card -->
+            <div class="price-card">
+              <div class="price-amount">$4.99/month</div>
+              <div class="price-context">A single boost costs $5.99...<br>Unmatch costs less — and works all month</div>
+            </div>
+
+            <!-- Features -->
+            <div class="feature-list">
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <svg viewBox="0 0 24 24" fill="#4C8DFF"><circle cx="12" cy="12" r="3"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>
+                </div>
+                <span class="feature-text">60-second panic meditation — anytime, offline</span>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <svg viewBox="0 0 24 24" fill="#4C8DFF"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg>
+                </div>
+                <span class="feature-text">Spend delay cards — think before you boost</span>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <svg viewBox="0 0 24 24" fill="#4C8DFF"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+                </div>
+                <span class="feature-text">Progress tracking — streaks, rank & insights</span>
+              </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="trial-btn"><span>Try 7 Days for Free</span></div>
+
+            <!-- Secondary -->
+            <span class="restore-link">Restore purchase</span>
+
+            <div class="trust-row">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="#A7B3C7"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>
+              <span class="trust-text">Private & on-device · No account required</span>
+            </div>
+          </div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+
+      <div class="sparkle">
+        <svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.5)"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="screenshot-label">4 — Paywall</div>
+</div>
+
+</div>
+
+<!-- Individual full-size pages for easy export -->
+<script>
+// Add a button to open each screenshot in a new tab at full size
+document.querySelectorAll('.screenshot-wrapper').forEach((wrapper, i) => {
+  const btn = document.createElement('button');
+  btn.textContent = `Open full size in new tab`;
+  btn.style.cssText = 'margin-top: 8px; padding: 8px 16px; background: #4C8DFF; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px;';
+  btn.onclick = () => {
+    const ss = wrapper.querySelector('.ss');
+    const win = window.open('', '_blank');
+    win.document.write(`<!DOCTYPE html><html><head><title>Screenshot ${i+1}</title><style>
+      body { margin: 0; padding: 0; background: #000; display: flex; justify-content: center; }
+      .export { width: 1242px; height: 2688px; }
+    </style>
+    ${document.querySelector('style').outerHTML}
+    </head><body><div class="export">${ss.outerHTML}</div></body></html>`);
+    win.document.close();
+  };
+  wrapper.appendChild(btn);
+});
+</script>
+
+</body>
+</html>
