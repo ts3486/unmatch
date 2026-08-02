@@ -134,7 +134,7 @@ function CheckinDemo(): React.ReactElement {
 			<Card.Content style={demoStyles.cardContent}>
 				<RatingChips
 					label={t("onboarding.checkin.demo.moodLabel")}
-					value={4}
+					value={3}
 					onChange={() => {}}
 					readonly
 					labelMap={moodLabels}
@@ -345,7 +345,7 @@ export default function OnboardingScreen(): React.ReactElement {
 		} finally {
 			setIsSubmitting(false);
 		}
-	}, [isSubmitting, completeOnboarding, analytics]);
+	}, [isSubmitting, completeOnboarding, analytics, i18n.language]);
 
 	// ---------------------------------------------------------------------------
 	// Step 1: Opening screen
@@ -508,7 +508,9 @@ export default function OnboardingScreen(): React.ReactElement {
 						labelStyle={styles.primaryButtonLabel}
 						testID="notifications-continue"
 					>
-						{isSubmitting ? t("onboarding.notifications.settingUp") : t("common.continue")}
+						{isSubmitting
+							? t("onboarding.notifications.settingUp")
+							: t("common.continue")}
 					</Button>
 				</View>
 			</View>

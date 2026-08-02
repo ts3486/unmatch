@@ -64,9 +64,9 @@
 		}
 	},
 	"ratingChips": {
-		"mood": { "1": "Low", "2": "Okay", "3": "Good", "4": "Great", "5": "Amazing" },
-		"fatigue": { "1": "Fine", "2": "Tired", "3": "Drained", "4": "Exhausted", "5": "Wrecked" },
-		"urge": { "1": "Calm", "2": "Mild", "3": "Strong", "4": "Intense", "5": "Overwhelming" }
+		"mood": { "1": "Low", "2": "Okay", "3": "Great" },
+		"fatigue": { "1": "Fine", "2": "Tired", "3": "Exhausted" },
+		"urge": { "1": "Calm", "2": "Strong", "3": "Overwhelming" }
 	},
 	"navHeaders": {
 		"blockerGuide": "Blocker Guide",
@@ -91,7 +91,13 @@
 		"spentOnApps": "Spent on dating apps",
 		"nothing": "Nothing",
 		"appOpens": "Opened dating apps",
-		"appOpensLabels": { "1": "None", "2": "Once", "3": "A few", "4": "Many", "5": "Too many" },
+		"appOpensLabels": {
+			"1": "None",
+			"2": "Once",
+			"3": "A few",
+			"4": "Many",
+			"5": "Too many"
+		},
 		"approxAmount": "Approximate amount (optional)",
 		"amount": "Amount (optional)",
 		"amountNote": "Amount is stored locally and never shared.",
@@ -234,11 +240,26 @@
 	},
 	"pushNotifications": {
 		"dailyMotivation": [
-			{ "title": "You come first", "body": "Put the apps down and invest that energy in yourself today." },
-			{ "title": "Your time is yours", "body": "Every minute off dating apps is a minute you spend on what really matters — you." },
-			{ "title": "Stay present", "body": "Real life is happening right now. Keep your focus where it counts." },
-			{ "title": "You're doing great", "body": "Choosing yourself over endless swiping is a win. Keep it up." },
-			{ "title": "Reset your mind", "body": "Take a breath inside Unmatch to clear your head and stay focused." }
+			{
+				"title": "You come first",
+				"body": "Put the apps down and invest that energy in yourself today."
+			},
+			{
+				"title": "Your time is yours",
+				"body": "Every minute off dating apps is a minute you spend on what really matters — you."
+			},
+			{
+				"title": "Stay present",
+				"body": "Real life is happening right now. Keep your focus where it counts."
+			},
+			{
+				"title": "You're doing great",
+				"body": "Choosing yourself over endless swiping is a win. Keep it up."
+			},
+			{
+				"title": "Reset your mind",
+				"body": "Take a breath inside Unmatch to clear your head and stay focused."
+			}
 		],
 		"streakNudgeBody": "Don't break your streak! Complete today's check-in before midnight.",
 		"courseUnlockBody": "A new lesson is available. Check it out to keep your progress going!",
@@ -315,8 +336,14 @@
 		"resetsThisWeek": "{{count}} resets this week — great start",
 		"resetThisWeek": "1 reset this week — great start",
 		"dow": {
-			"0": "Sunday", "1": "Monday", "2": "Tuesday", "3": "Wednesday",
-			"4": "Thursday", "5": "Friday", "6": "Saturday", "default": "weekdays"
+			"0": "Sunday",
+			"1": "Monday",
+			"2": "Tuesday",
+			"3": "Wednesday",
+			"4": "Thursday",
+			"5": "Friday",
+			"6": "Saturday",
+			"default": "weekdays"
 		},
 		"timeOfDay": {
 			"morning": "morning (5am–noon)",

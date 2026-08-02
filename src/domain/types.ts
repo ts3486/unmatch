@@ -7,32 +7,32 @@
 // ---------------------------------------------------------------------------
 
 export type GoalType =
-  | 'reduce_swipe'
-  | 'reduce_open'
-  | 'reduce_night_check'
-  | 'reduce_spend';
+	| "reduce_swipe"
+	| "reduce_open"
+	| "reduce_night_check"
+	| "reduce_spend";
 
-export type NotificationStyle = 'normal' | 'off';
+export type NotificationStyle = "normal" | "off";
 
-export type UrgeKind = 'swipe' | 'check' | 'spend';
+export type UrgeKind = "swipe" | "check" | "spend";
 
 export type SpendCategory =
-  | 'iap'
-  | 'date'
-  | 'gift'
-  | 'tipping'
-  | 'transport'
-  | 'other';
+	| "iap"
+	| "date"
+	| "gift"
+	| "tipping"
+	| "transport"
+	| "other";
 
-export type SpendItemType = 'boost' | 'like_pack' | 'premium' | 'other';
+export type SpendItemType = "boost" | "like_pack" | "premium" | "other";
 
-export type UrgeOutcome = 'success' | 'fail' | 'ongoing';
+export type UrgeOutcome = "success" | "fail" | "ongoing";
 
-export type SpendingLimitMode = 'soft' | 'pledge';
+export type SpendingLimitMode = "soft" | "pledge";
 
-export type SubscriptionStatus = 'active' | 'expired' | 'none' | 'lifetime';
+export type SubscriptionStatus = "active" | "expired" | "none" | "lifetime";
 
-export type SubscriptionPeriod = 'monthly' | 'lifetime';
+export type SubscriptionPeriod = "monthly" | "lifetime";
 
 // ---------------------------------------------------------------------------
 // DB-backed entity interfaces
@@ -44,34 +44,34 @@ export type SubscriptionPeriod = 'monthly' | 'lifetime';
  * (nullable when not set).
  */
 export interface UserProfile {
-  id: string;
-  created_at: string; // ISO-8601 UTC
-  locale: string;
-  notification_style: NotificationStyle;
-  plan_selected: string;
-  goal_type: GoalType;
-  spending_budget_weekly: number | null; // V2 — not yet populated; budget setup UI planned for a future release
-  spending_budget_daily: number | null; // V2 — not yet populated
-  spending_limit_mode: SpendingLimitMode | null; // V2 — not yet populated
+	id: string;
+	created_at: string; // ISO-8601 UTC
+	locale: string;
+	notification_style: NotificationStyle;
+	plan_selected: string;
+	goal_type: GoalType;
+	spending_budget_weekly: number | null; // V2 — not yet populated; budget setup UI planned for a future release
+	spending_budget_daily: number | null; // V2 — not yet populated
+	spending_limit_mode: SpendingLimitMode | null; // V2 — not yet populated
 }
 
 /**
  * Mirrors daily_checkin table.
  * date_local is YYYY-MM-DD in the device's local timezone.
- * Numeric mood/fatigue/urge fields are 1-5 Likert scale integers.
+ * Numeric mood/fatigue/urge fields are 1-3 Likert scale integers.
  * note is excluded from analytics payloads (private).
  * spent_amount is stored as integer cents; never sent to analytics.
  */
 export interface DailyCheckin {
-  id: string;
-  date_local: string; // YYYY-MM-DD
-  mood: number;
-  fatigue: number;
-  urge: number;
-  note: string | null;
-  opened_at_night: number | null; // 0 | 1
-  spent_today: number | null; // 0 | 1
-  spent_amount: number | null; // integer cents, never sent to analytics
+	id: string;
+	date_local: string; // YYYY-MM-DD
+	mood: number;
+	fatigue: number;
+	urge: number;
+	note: string | null;
+	opened_at_night: number | null; // 0 | 1
+	spent_today: number | null; // 0 | 1
+	spent_amount: number | null; // integer cents, never sent to analytics
 }
 
 /**
@@ -79,19 +79,19 @@ export interface DailyCheckin {
  * spend_amount is integer cents and is never sent to analytics.
  */
 export interface UrgeEvent {
-  id: string;
-  started_at: string; // ISO-8601 UTC
-  from_screen: string;
-  urge_level: number; // 1-10
-  protocol_completed: number; // 0 | 1
-  urge_kind: UrgeKind;
-  action_type: string;
-  action_id: string;
-  outcome: UrgeOutcome;
-  trigger_tag: string | null;
-  spend_category: SpendCategory | null;
-  spend_item_type: SpendItemType | null;
-  spend_amount: number | null; // integer cents, never sent to analytics
+	id: string;
+	started_at: string; // ISO-8601 UTC
+	from_screen: string;
+	urge_level: number; // 1-10
+	protocol_completed: number; // 0 | 1
+	urge_kind: UrgeKind;
+	action_type: string;
+	action_id: string;
+	outcome: UrgeOutcome;
+	trigger_tag: string | null;
+	spend_category: SpendCategory | null;
+	spend_item_type: SpendItemType | null;
+	spend_amount: number | null; // integer cents, never sent to analytics
 }
 
 /**
@@ -99,12 +99,12 @@ export interface UrgeEvent {
  * date_local is the primary key in YYYY-MM-DD format.
  */
 export interface Progress {
-  date_local: string; // YYYY-MM-DD (PK)
-  streak_current: number;
-  meditation_count_total: number;
-  tree_level: number; // 1-30
-  last_success_date: string | null; // YYYY-MM-DD
-  spend_avoided_count_total: number;
+	date_local: string; // YYYY-MM-DD (PK)
+	streak_current: number;
+	meditation_count_total: number;
+	tree_level: number; // 1-30
+	last_success_date: string | null; // YYYY-MM-DD
+	spend_avoided_count_total: number;
 }
 
 /**
@@ -112,12 +112,12 @@ export interface Progress {
  * Content items are read-only seed data loaded from starter_7d.json.
  */
 export interface Content {
-  content_id: string;
-  day_index: number;
-  title: string;
-  body: string;
-  action_text: string;
-  est_minutes: number;
+	content_id: string;
+	day_index: number;
+	title: string;
+	body: string;
+	action_text: string;
+	est_minutes: number;
 }
 
 /**
@@ -125,8 +125,8 @@ export interface Content {
  * Tracks per-user completion of content items.
  */
 export interface ContentProgress {
-  content_id: string; // PK, FK -> content.content_id
-  completed_at: string; // ISO-8601 UTC
+	content_id: string; // PK, FK -> content.content_id
+	completed_at: string; // ISO-8601 UTC
 }
 
 /**
@@ -134,15 +134,15 @@ export interface ContentProgress {
  * is_premium is true for lifetime purchases (status === 'lifetime') or active subscriptions.
  */
 export interface SubscriptionState {
-  id: string;
-  status: SubscriptionStatus;
-  product_id: string;
-  period: SubscriptionPeriod;
-  started_at: string; // ISO-8601 UTC
-  expires_at: string; // ISO-8601 UTC
-  is_premium: boolean;
-  trial_started_at: string; // ISO-8601 UTC, empty if no trial
-  trial_ends_at: string; // ISO-8601 UTC, empty if no trial
+	id: string;
+	status: SubscriptionStatus;
+	product_id: string;
+	period: SubscriptionPeriod;
+	started_at: string; // ISO-8601 UTC
+	expires_at: string; // ISO-8601 UTC
+	is_premium: boolean;
+	trial_started_at: string; // ISO-8601 UTC, empty if no trial
+	trial_ends_at: string; // ISO-8601 UTC, empty if no trial
 }
 
 // ---------------------------------------------------------------------------
@@ -154,8 +154,8 @@ export interface SubscriptionState {
  * Users select from these; no custom strings allowed.
  */
 export interface CatalogTrigger {
-  id: string;
-  label: string; // display label (English market)
+	id: string;
+	label: string; // display label (English market)
 }
 
 /**
@@ -163,35 +163,35 @@ export interface CatalogTrigger {
  * action_type categorises the action for analytics.
  */
 export interface CatalogAction {
-  id: string;
-  action_type: string;
-  title: string;
-  body: string;
-  est_seconds: number;
+	id: string;
+	action_type: string;
+	title: string;
+	body: string;
+	est_seconds: number;
 }
 
 /**
  * Preset urge kind definition used in catalog metadata.
  */
 export interface CatalogUrgeKind {
-  id: UrgeKind;
-  label: string;
+	id: UrgeKind;
+	label: string;
 }
 
 /**
  * Preset spend category definition used in catalog metadata.
  */
 export interface CatalogSpendCategory {
-  id: SpendCategory;
-  label: string;
+	id: SpendCategory;
+	label: string;
 }
 
 /**
  * Preset spend item type definition used in catalog metadata.
  */
 export interface CatalogSpendItemType {
-  id: SpendItemType;
-  label: string;
+	id: SpendItemType;
+	label: string;
 }
 
 /**
@@ -199,10 +199,10 @@ export interface CatalogSpendItemType {
  * References an action by action_id.
  */
 export interface CatalogSpendDelayCard {
-  id: string;
-  action_id: string;
-  title: string;
-  body: string;
+	id: string;
+	action_id: string;
+	title: string;
+	body: string;
 }
 
 /**
@@ -210,22 +210,22 @@ export interface CatalogSpendDelayCard {
  * Keys are dot-separated namespaced identifiers.
  */
 export interface CatalogCopy {
-  [key: string]: string;
+	[key: string]: string;
 }
 
 /**
  * Root shape of data/seed/catalog.json.
  */
 export interface Catalog {
-  triggers: CatalogTrigger[];
-  actions: CatalogAction[];
-  urge_kinds: CatalogUrgeKind[];
-  spend_categories: CatalogSpendCategory[];
-  spend_item_types: CatalogSpendItemType[];
-  spend_delay_cards: CatalogSpendDelayCard[];
-  copy: CatalogCopy;
-  /** Preset motivational messages for the daily motivation card. */
-  motivation_messages: string[];
+	triggers: CatalogTrigger[];
+	actions: CatalogAction[];
+	urge_kinds: CatalogUrgeKind[];
+	spend_categories: CatalogSpendCategory[];
+	spend_item_types: CatalogSpendItemType[];
+	spend_delay_cards: CatalogSpendDelayCard[];
+	copy: CatalogCopy;
+	/** Preset motivational messages for the daily motivation card. */
+	motivation_messages: string[];
 }
 
 // ---------------------------------------------------------------------------
@@ -237,18 +237,18 @@ export interface Catalog {
  * action_ids references CatalogAction.id values.
  */
 export interface StarterDay {
-  day_index: number; // 1-based
-  title: string;
-  body: string;
-  action_text: string;
-  est_minutes: number;
-  action_ids: string[];
+	day_index: number; // 1-based
+	title: string;
+	body: string;
+	action_text: string;
+	est_minutes: number;
+	action_ids: string[];
 }
 
 /**
  * Root shape of data/seed/starter_7d.json.
  */
 export interface StarterCourse {
-  course_id: string;
-  days: StarterDay[];
+	course_id: string;
+	days: StarterDay[];
 }

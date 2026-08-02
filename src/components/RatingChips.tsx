@@ -20,8 +20,6 @@ export function useMoodLabels(): Record<number, string> {
 			1: t("ratingChips.mood.1"),
 			2: t("ratingChips.mood.2"),
 			3: t("ratingChips.mood.3"),
-			4: t("ratingChips.mood.4"),
-			5: t("ratingChips.mood.5"),
 		}),
 		[t],
 	);
@@ -34,8 +32,6 @@ export function useFatigueLabels(): Record<number, string> {
 			1: t("ratingChips.fatigue.1"),
 			2: t("ratingChips.fatigue.2"),
 			3: t("ratingChips.fatigue.3"),
-			4: t("ratingChips.fatigue.4"),
-			5: t("ratingChips.fatigue.5"),
 		}),
 		[t],
 	);
@@ -48,8 +44,6 @@ export function useUrgeLabels(): Record<number, string> {
 			1: t("ratingChips.urge.1"),
 			2: t("ratingChips.urge.2"),
 			3: t("ratingChips.urge.3"),
-			4: t("ratingChips.urge.4"),
-			5: t("ratingChips.urge.5"),
 		}),
 		[t],
 	);
@@ -91,7 +85,7 @@ export function RatingChips({
 				</Text>
 			)}
 			<View style={styles.chipRow}>
-				{[1, 2, 3, 4, 5].map((n) => (
+				{[1, 2, 3].map((n) => (
 					<Chip
 						key={n}
 						selected={value === n}
