@@ -51,8 +51,6 @@ export function CheckinOverlay({
 			1: t("checkin.appOpensLabels.1"),
 			2: t("checkin.appOpensLabels.2"),
 			3: t("checkin.appOpensLabels.3"),
-			4: t("checkin.appOpensLabels.4"),
-			5: t("checkin.appOpensLabels.5"),
 		}),
 		[t],
 	);

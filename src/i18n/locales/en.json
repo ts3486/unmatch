@@ -94,9 +94,7 @@
 		"appOpensLabels": {
 			"1": "None",
 			"2": "Once",
-			"3": "A few",
-			"4": "Many",
-			"5": "Too many"
+			"3": "A few"
 		},
 		"approxAmount": "Approximate amount (optional)",
 		"amount": "Amount (optional)",
