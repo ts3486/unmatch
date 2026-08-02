@@ -241,7 +241,14 @@
 			{ "title": "心をリセット", "body": "Unmatchの中でひと呼吸して、頭をすっきりさせ、集中を取り戻しましょう。" }
 		],
 		"streakNudgeBody": "連続記録を途切れさせないで!今日のチェックインを、日付が変わる前に済ませましょう。",
-		"courseUnlockBody": "新しいレッスンが利用可能になりました。進捗を続けるために、チェックしてみましょう!"
+		"courseUnlockBody": "新しいレッスンが利用可能になりました。進捗を続けるために、チェックしてみましょう!",
+		"eveningNudgeTitle": "衝動を感じていますか?",
+		"eveningNudgeBody": "Unmatchを開いて、60秒のリセットをしましょう。",
+		"streakStillGoingTitle": "{{days}}日連続の記録が続いています。",
+		"keepItAlive": "続けますか?",
+		"weeklySummaryTitle": "今週の振り返り",
+		"weeklySummaryBody": "今週:瞑想を{{count}}回完了、{{minutes}}分を節約しました。進捗を確認しましょう。",
+		"courseUnlockStarterBody": "スターターコースに新しいレッスンが追加されました。"
 	},
 	"breathing": {
 		"affirmations": [
@@ -316,5 +323,32 @@
 			"afternoon": "午後(正午〜18時)",
 			"evening": "夜(18時以降)"
 		}
+	},
+	"paywall": {
+		"headlineDefault": "マッチングアプリから少し離れよう",
+		"headlineContinue": "Unmatchを続ける",
+		"goalHeadlines": {
+			"reduce_swipe": "無意識のスワイプをやめよう",
+			"reduce_open": "アプリを開く癖を断ち切ろう",
+			"reduce_night_check": "スクロールなしで休もう",
+			"reduce_spend": "ブーストへの課金をやめよう"
+		},
+		"subtext": "マッチングアプリと主体的に付き合うために必要なものすべて。",
+		"priceCompareBadge": "ブースト1回分より安い",
+		"priceComparePrice": "月額 $4.99",
+		"priceCompareContext": "ブースト1回は$5.99で、効果は30分だけ。\nUnmatchならもっと安く、1か月間ずっと使えます。",
+		"featurePanic": "60秒の緊急瞑想 — いつでも、オフラインで",
+		"featureSpendDelay": "課金ディレイカード — ブーストする前にひと呼吸",
+		"featureProgress": "進捗トラッキング — 連続記録・ランク・インサイト",
+		"ctaTrial": "7日間無料で試す",
+		"ctaSubscribe": "登録する — 月額$4.99",
+		"restorePurchase": "購入を復元",
+		"restorePurchaseA11y": "以前の購入を復元する",
+		"legalText": "無料期間終了後は月額$4.99。サブスクリプションは自動更新されます。更新の24時間前までにApp Store設定でいつでもキャンセルできます。",
+		"trustText": "プライバシー保護・端末内処理・アカウント登録不要",
+		"errorLoadOfferings": "サブスクリプションの読み込みに失敗しました。もう一度お試しください。",
+		"errorPurchaseFailed": "購入を完了できませんでした。もう一度お試しください。",
+		"errorNoPreviousPurchases": "以前の購入が見つかりませんでした。",
+		"errorRestoreFailed": "購入を復元できませんでした。もう一度お試しください。"
 	}
 }

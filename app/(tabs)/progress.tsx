@@ -22,6 +22,7 @@ import { getDaysBetween, getLocalDateString } from "@/src/utils/date";
 import { format } from "date-fns";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, Card, Divider, Text } from "react-native-paper";
 import ViewShot from "react-native-view-shot";
@@ -83,6 +84,7 @@ function WeekComparisonCard({
 	thisWeekResets,
 	lastWeekResets,
 }: WeekComparisonCardProps): React.ReactElement {
+	const { t } = useTranslation();
 	const daysDelta = thisWeekSuccessDays - lastWeekSuccessDays;
 	const resetsDelta = thisWeekResets - lastWeekResets;
 
@@ -101,12 +103,12 @@ function WeekComparisonCard({
 		<Card style={styles.card} mode="contained">
 			<Card.Content>
 				<Text variant="labelMedium" style={styles.comparisonTitle}>
-					This week vs. last week
+					{t("progress.thisWeekVsLastWeek")}
 				</Text>
 				<View style={styles.comparisonRow}>
 					<View style={styles.comparisonCol}>
 						<Text variant="labelSmall" style={styles.comparisonColHeader}>
-							Check-in days
+							{t("progress.checkinDays")}
 						</Text>
 						<Text variant="titleLarge" style={styles.comparisonThis}>
 							{thisWeekSuccessDays}
@@ -116,14 +118,14 @@ function WeekComparisonCard({
 							style={[styles.comparisonDelta, { color: deltaColor(daysDelta) }]}
 						>
 							{daysDelta === 0
-								? "— same"
-								: `${deltaStr(daysDelta)} vs last week`}
+								? t("progress.same")
+								: t("progress.deltaVsLastWeek", { delta: deltaStr(daysDelta) })}
 						</Text>
 					</View>
 					<View style={styles.comparisonDivider} />
 					<View style={styles.comparisonCol}>
 						<Text variant="labelSmall" style={styles.comparisonColHeader}>
-							Resets succeeded
+							{t("progress.resetsSucceeded")}
 						</Text>
 						<Text variant="titleLarge" style={styles.comparisonThis}>
 							{thisWeekResets}
@@ -136,8 +138,10 @@ function WeekComparisonCard({
 							]}
 						>
 							{resetsDelta === 0
-								? "— same"
-								: `${deltaStr(resetsDelta)} vs last week`}
+								? t("progress.same")
+								: t("progress.deltaVsLastWeek", {
+										delta: deltaStr(resetsDelta),
+									})}
 						</Text>
 					</View>
 				</View>
@@ -151,6 +155,7 @@ function WeekComparisonCard({
 // ---------------------------------------------------------------------------
 
 export default function ProgressScreen(): React.ReactElement {
+	const { t } = useTranslation();
 	const { db } = useDatabaseContext();
 	const {
 		meditationRank,
@@ -350,7 +355,7 @@ export default function ProgressScreen(): React.ReactElement {
 			showsVerticalScrollIndicator={false}
 		>
 			<Text variant="headlineMedium" style={styles.screenTitle}>
-				Progress
+				{t("progress.title")}
 			</Text>
 
 			{/* Streak ring display */}
@@ -368,9 +373,9 @@ export default function ProgressScreen(): React.ReactElement {
 				style={styles.shareButton}
 				contentStyle={styles.shareButtonContent}
 				textColor={colors.secondary}
-				accessibilityLabel="Share your streak"
+				accessibilityLabel={t("progress.shareYourStreak")}
 			>
-				Share your streak
+				{t("progress.shareYourStreak")}
 			</Button>
 
 			{/* Off-screen share card for capture */}
@@ -402,19 +407,23 @@ export default function ProgressScreen(): React.ReactElement {
 
 			{/* Weekly stats */}
 			<Text variant="titleMedium" style={styles.sectionTitle}>
-				This Week
+				{t("progress.thisWeek")}
 			</Text>
 
 			<Card style={styles.card} mode="contained">
 				<Card.Content style={styles.statsContent}>
 					<StatRow
-						label="Best check-in streak"
-						value={bestStreak > 0 ? `${bestStreak} days` : "Not yet"}
+						label={t("progress.bestCheckinStreak")}
+						value={
+							bestStreak > 0
+								? t("progress.daysCount", { count: bestStreak })
+								: t("progress.notYet")
+						}
 						valueColor={bestStreak > 0 ? colors.primary : colors.muted}
 					/>
 					<Divider style={styles.divider} />
 					<StatRow
-						label="Check-in days"
+						label={t("progress.checkinDays")}
 						value={`${weeklyStats.successDays} / ${weeklyStats.totalDays} (${pctSuccess}%)`}
 						valueColor={
 							weeklyStats.successDays > 0 ? colors.success : colors.muted
@@ -422,11 +431,11 @@ export default function ProgressScreen(): React.ReactElement {
 					/>
 					<Divider style={styles.divider} />
 					<StatRow
-						label="Urge resets succeeded"
+						label={t("progress.urgeResetsSucceeded")}
 						value={
 							weeklyStats.panicTotalCount > 0
 								? `${weeklyStats.panicSuccessCount} / ${weeklyStats.panicTotalCount} (${pctPanic}%)`
-								: "None yet"
+								: t("progress.noneYet")
 						}
 						valueColor={
 							weeklyStats.panicSuccessCount > 0 ? colors.primary : colors.muted
@@ -434,7 +443,7 @@ export default function ProgressScreen(): React.ReactElement {
 					/>
 					<Divider style={styles.divider} />
 					<StatRow
-						label="Spend urges avoided"
+						label={t("progress.spendUrgesAvoided")}
 						value={String(weeklyStats.spendAvoidedCount)}
 						valueColor={
 							weeklyStats.spendAvoidedCount > 0 ? colors.warning : colors.muted

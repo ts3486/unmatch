@@ -5,6 +5,7 @@
 
 import { colors } from "@/src/constants/theme";
 import type React from "react";
+import { useTranslation } from "react-i18next";
 import { Image, StyleSheet, Text, View } from "react-native";
 
 // ---------------------------------------------------------------------------
@@ -41,7 +42,11 @@ export function ShareStreakCard({
 	meditationCount,
 	meditationRank,
 }: ShareStreakCardProps): React.ReactElement {
-	const streakLabel = streak === 1 ? "1 day" : `${streak} days`;
+	const { t } = useTranslation();
+	const streakLabel =
+		streak === 1
+			? t("shareStreak.oneDay")
+			: t("shareStreak.days", { count: streak });
 
 	return (
 		<View style={styles.card}>
@@ -53,30 +58,37 @@ export function ShareStreakCard({
 						style={styles.logoMark}
 						resizeMode="contain"
 					/>
-					<Text style={styles.wordmark}>Unmatch</Text>
+					<Text style={styles.wordmark}>{t("common.appName")}</Text>
 				</View>
 				<View style={styles.offlinePill}>
 					<View style={styles.offlineDot} />
-					<Text style={styles.offlineLabel}>100% offline</Text>
+					<Text style={styles.offlineLabel}>{t("common.offlineLabel")}</Text>
 				</View>
 			</View>
 
 			{/* Main headline */}
 			<Text style={styles.headline}>
-				Checked in for{" "}
-				<Text style={styles.headlineAccent}>{streakLabel}</Text> straight
+				{t("shareStreak.headlinePrefix")}
+				<Text style={styles.headlineAccent}>{streakLabel}</Text>
+				{t("shareStreak.headlineSuffix")}
 			</Text>
 
 			{/* Stats row */}
 			<View style={styles.statsRow}>
 				<View style={styles.statBlock}>
 					<Text style={styles.statValue}>{meditationCount}</Text>
-					<Text style={styles.statLabel}>meditations completed</Text>
+					<Text style={styles.statLabel}>
+						{t("shareStreak.meditationsCompleted")}
+					</Text>
 				</View>
 				<View style={styles.statDivider} />
 				<View style={styles.statBlock}>
-					<Text style={styles.statValue}>Rank {meditationRank}</Text>
-					<Text style={styles.statLabel}>meditation rank</Text>
+					<Text style={styles.statValue}>
+						{t("shareStreak.rankValue", { rank: meditationRank })}
+					</Text>
+					<Text style={styles.statLabel}>
+						{t("shareStreak.meditationRank")}
+					</Text>
 				</View>
 			</View>
 

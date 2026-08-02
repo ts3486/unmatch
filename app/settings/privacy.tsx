@@ -9,6 +9,7 @@ import { useDataExport } from "@/src/hooks/useDataExport";
 import { useDataImport } from "@/src/hooks/useDataImport";
 import type React from "react";
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import {
 	Button,
@@ -39,6 +40,7 @@ async function deleteAllData(
 // ---------------------------------------------------------------------------
 
 export default function PrivacyScreen(): React.ReactElement {
+	const { t } = useTranslation();
 	const analytics = useAnalytics();
 	const { db } = useDatabaseContext();
 
@@ -75,13 +77,16 @@ export default function PrivacyScreen(): React.ReactElement {
 		try {
 			await deleteAllData(db);
 			analytics.track({ name: "data_deleted", props: {} });
-			Alert.alert("Data deleted", "All local data has been removed.");
+			Alert.alert(t("privacy.dataDeletedTitle"), t("privacy.dataDeletedBody"));
 		} catch {
-			Alert.alert("Delete failed", "Could not delete data. Please try again.");
+			Alert.alert(
+				t("privacy.deleteFailedTitle"),
+				t("privacy.deleteFailedBody"),
+			);
 		} finally {
 			setIsDeleting(false);
 		}
-	}, [db, analytics, isDeleting]);
+	}, [db, analytics, isDeleting, t]);
 
 	// ---------------------------------------------------------------------------
 	// Import confirmation summary
@@ -91,18 +96,32 @@ export default function PrivacyScreen(): React.ReactElement {
 		if (!importCounts) return "";
 		const parts: string[] = [];
 		if (importCounts.urge_events > 0)
-			parts.push(`${importCounts.urge_events} urge events`);
+			parts.push(
+				t("privacy.importUrgeEvents", { count: importCounts.urge_events }),
+			);
 		if (importCounts.daily_checkins > 0)
-			parts.push(`${importCounts.daily_checkins} check-ins`);
+			parts.push(
+				t("privacy.importCheckins", { count: importCounts.daily_checkins }),
+			);
 		if (importCounts.progress > 0)
-			parts.push(`${importCounts.progress} progress records`);
+			parts.push(t("privacy.importProgress", { count: importCounts.progress }));
 		if (importCounts.content_progress > 0)
-			parts.push(`${importCounts.content_progress} course completions`);
+			parts.push(
+				t("privacy.importContentProgress", {
+					count: importCounts.content_progress,
+				}),
+			);
 		if (importCounts.user_profile > 0)
-			parts.push(`${importCounts.user_profile} profile`);
+			parts.push(
+				t("privacy.importProfile", { count: importCounts.user_profile }),
+			);
 		if (importCounts.subscription_state > 0)
-			parts.push(`${importCounts.subscription_state} subscription record`);
-		return parts.length > 0 ? parts.join(", ") : "No data found in file";
+			parts.push(
+				t("privacy.importSubscription", {
+					count: importCounts.subscription_state,
+				}),
+			);
+		return parts.length > 0 ? parts.join(", ") : t("privacy.noDataFoundInFile");
 	}
 
 	// ---------------------------------------------------------------------------
@@ -117,27 +136,26 @@ export default function PrivacyScreen(): React.ReactElement {
 				showsVerticalScrollIndicator={false}
 			>
 				<Text variant="headlineMedium" style={styles.screenTitle}>
-					Privacy and data
+					{t("privacy.title")}
 				</Text>
 
 				<Card style={styles.infoCard} mode="contained">
 					<Card.Content style={styles.infoContent}>
 						<Text variant="bodyMedium" style={styles.infoText}>
-							All your data is stored locally on your device.
+							{t("privacy.allDataLocal")}
 						</Text>
 						<Text variant="bodyMedium" style={styles.infoText}>
-							No data is sent to any server in this version.
+							{t("privacy.noDataSentServer")}
 						</Text>
 						<Divider style={styles.divider} />
 						<Text variant="bodySmall" style={styles.infoNote}>
-							Exports include all data (notes, amounts) as a personal backup.
-							Use import to restore from a previous export.
+							{t("privacy.exportsNote")}
 						</Text>
 					</Card.Content>
 				</Card>
 
 				<Text variant="titleMedium" style={styles.sectionTitle}>
-					Your data
+					{t("privacy.yourData")}
 				</Text>
 
 				<Card style={styles.card} mode="contained">
@@ -146,10 +164,10 @@ export default function PrivacyScreen(): React.ReactElement {
 						<View style={styles.actionRow}>
 							<View style={styles.actionText}>
 								<Text variant="titleSmall" style={styles.actionTitle}>
-									Export data
+									{t("privacy.exportData")}
 								</Text>
 								<Text variant="bodySmall" style={styles.actionDesc}>
-									Save a JSON backup via the share sheet.
+									{t("privacy.exportDesc")}
 								</Text>
 							</View>
 							<Button
@@ -162,7 +180,7 @@ export default function PrivacyScreen(): React.ReactElement {
 								style={styles.exportButton}
 								textColor={colors.primary}
 							>
-								Export
+								{t("privacy.export")}
 							</Button>
 						</View>
 
@@ -172,10 +190,10 @@ export default function PrivacyScreen(): React.ReactElement {
 						<View style={styles.actionRow}>
 							<View style={styles.actionText}>
 								<Text variant="titleSmall" style={styles.actionTitle}>
-									Import data
+									{t("privacy.importData")}
 								</Text>
 								<Text variant="bodySmall" style={styles.actionDesc}>
-									Restore from a previous JSON backup.
+									{t("privacy.importDesc")}
 								</Text>
 							</View>
 							<Button
@@ -188,7 +206,7 @@ export default function PrivacyScreen(): React.ReactElement {
 								style={styles.importButton}
 								textColor={colors.primary}
 							>
-								Import
+								{t("privacy.import")}
 							</Button>
 						</View>
 
@@ -198,10 +216,10 @@ export default function PrivacyScreen(): React.ReactElement {
 						<View style={styles.actionRow}>
 							<View style={styles.actionText}>
 								<Text variant="titleSmall" style={styles.deleteTitle}>
-									Delete all data
+									{t("privacy.deleteAllData")}
 								</Text>
 								<Text variant="bodySmall" style={styles.actionDesc}>
-									Permanently removes all local records. This cannot be undone.
+									{t("privacy.deleteDesc")}
 								</Text>
 							</View>
 							<Button
@@ -212,7 +230,7 @@ export default function PrivacyScreen(): React.ReactElement {
 								style={styles.deleteButton}
 								textColor="#E05A5A"
 							>
-								Delete
+								{t("privacy.delete")}
 							</Button>
 						</View>
 					</Card.Content>
@@ -232,14 +250,12 @@ export default function PrivacyScreen(): React.ReactElement {
 				>
 					<Dialog.Title>
 						<Text variant="titleMedium" style={styles.dialogTitle}>
-							Delete all data?
+							{t("privacy.deleteDialogTitle")}
 						</Text>
 					</Dialog.Title>
 					<Dialog.Content>
 						<Text variant="bodyMedium" style={styles.dialogBody}>
-							This will permanently remove all your local records including
-							check-ins, urge events, and progress. This action cannot be
-							undone.
+							{t("privacy.deleteDialogBody")}
 						</Text>
 					</Dialog.Content>
 					<Dialog.Actions>
@@ -249,7 +265,7 @@ export default function PrivacyScreen(): React.ReactElement {
 							}}
 							textColor={colors.muted}
 						>
-							Cancel
+							{t("common.cancel")}
 						</Button>
 						<Button
 							onPress={() => {
@@ -257,7 +273,7 @@ export default function PrivacyScreen(): React.ReactElement {
 							}}
 							textColor="#E05A5A"
 						>
-							Delete all
+							{t("privacy.deleteAll")}
 						</Button>
 					</Dialog.Actions>
 				</Dialog>
@@ -270,12 +286,12 @@ export default function PrivacyScreen(): React.ReactElement {
 				>
 					<Dialog.Title>
 						<Text variant="titleMedium" style={styles.dialogTitle}>
-							Import data?
+							{t("privacy.importDialogTitle")}
 						</Text>
 					</Dialog.Title>
 					<Dialog.Content>
 						<Text variant="bodyMedium" style={styles.dialogBody}>
-							This will replace all current data with the backup file. Found:
+							{t("privacy.importDialogBody")}
 						</Text>
 						<Text variant="bodyMedium" style={styles.importSummary}>
 							{formatImportSummary()}
@@ -283,7 +299,7 @@ export default function PrivacyScreen(): React.ReactElement {
 					</Dialog.Content>
 					<Dialog.Actions>
 						<Button onPress={cancelImport} textColor={colors.muted}>
-							Cancel
+							{t("common.cancel")}
 						</Button>
 						<Button
 							onPress={() => {
@@ -291,7 +307,7 @@ export default function PrivacyScreen(): React.ReactElement {
 							}}
 							textColor={colors.primary}
 						>
-							Import
+							{t("privacy.import")}
 						</Button>
 					</Dialog.Actions>
 				</Dialog>

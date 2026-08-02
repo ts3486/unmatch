@@ -20,6 +20,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, Text } from "react-native-paper";
 
@@ -29,21 +30,14 @@ import { Button, Text } from "react-native-paper";
 
 interface FeatureItem {
 	icon: string;
-	label: string;
+	labelKey: "featurePanic" | "featureSpendDelay" | "featureProgress";
 }
 
 const ALL_FEATURES: FeatureItem[] = [
-	{ icon: "timer-outline", label: "60-second panic meditation — anytime, offline" },
-	{ icon: "credit-card-off-outline", label: "Spend delay cards — think before you boost" },
-	{ icon: "chart-line", label: "Progress tracking — streaks, rank & insights" },
+	{ icon: "timer-outline", labelKey: "featurePanic" },
+	{ icon: "credit-card-off-outline", labelKey: "featureSpendDelay" },
+	{ icon: "chart-line", labelKey: "featureProgress" },
 ];
-
-const GOAL_HEADLINES: Record<GoalType, string> = {
-	reduce_swipe: "Stop mindless swiping",
-	reduce_open: "Break the checking habit",
-	reduce_night_check: "Rest without the scroll",
-	reduce_spend: "Stop spending on boosts",
-};
 
 // Feature order prioritized by goal — first item is most relevant
 const GOAL_FEATURE_ORDER: Record<GoalType, number[]> = {
@@ -63,8 +57,15 @@ function getOrderedFeatures(goal: GoalType | null): FeatureItem[] {
 // ---------------------------------------------------------------------------
 
 export default function PaywallScreen(): React.ReactElement {
+	const { t } = useTranslation();
 	const analytics = useAnalytics();
-	const { isPremium, hasEverSubscribed, refreshPremiumStatus, unlockPremium, userProfile } = useAppState();
+	const {
+		isPremium,
+		hasEverSubscribed,
+		refreshPremiumStatus,
+		unlockPremium,
+		userProfile,
+	} = useAppState();
 	const goalType: GoalType | null = userProfile?.goal_type ?? null;
 	const features = getOrderedFeatures(goalType);
 	const { db } = useDatabaseContext();
@@ -100,20 +101,26 @@ export default function PaywallScreen(): React.ReactElement {
 			console.log("[Paywall] Offering:", JSON.stringify(offering, null, 2));
 			if (!offering || !offering.monthly) {
 				if (__DEV__) {
-					console.log("[Paywall] DEV mode — bypassing purchase, unlocking premium");
+					console.log(
+						"[Paywall] DEV mode — bypassing purchase, unlocking premium",
+					);
 					await requestPermissions();
 					await unlockPremium("dev_monthly_sandbox", "monthly");
 					return;
 				}
 				console.log("[Paywall] No monthly package found in offering");
-				setFeedbackMessage(
-					"Unable to load subscription options. Please try again.",
-				);
+				setFeedbackMessage(t("paywall.errorLoadOfferings"));
 				return;
 			}
-			console.log("[Paywall] Purchasing package:", offering.monthly.product.identifier);
+			console.log(
+				"[Paywall] Purchasing package:",
+				offering.monthly.product.identifier,
+			);
 			const customerInfo = await purchasePackage(offering.monthly);
-			console.log("[Paywall] CustomerInfo:", JSON.stringify(customerInfo, null, 2));
+			console.log(
+				"[Paywall] CustomerInfo:",
+				JSON.stringify(customerInfo, null, 2),
+			);
 			await syncSubscriptionToDb(db, customerInfo);
 			console.log("[Paywall] Synced to DB");
 			await requestPermissions();
@@ -127,7 +134,9 @@ export default function PaywallScreen(): React.ReactElement {
 		} catch (err: unknown) {
 			console.log("[Paywall] Purchase error:", JSON.stringify(err, null, 2));
 			if (__DEV__) {
-				console.log("[Paywall] DEV mode — bypassing purchase error, unlocking premium");
+				console.log(
+					"[Paywall] DEV mode — bypassing purchase error, unlocking premium",
+				);
 				await requestPermissions();
 				await unlockPremium("dev_monthly_sandbox", "monthly");
 				return;
@@ -138,14 +147,12 @@ export default function PaywallScreen(): React.ReactElement {
 				"userCancelled" in err &&
 				(err as { userCancelled: boolean }).userCancelled;
 			if (!isCancelled) {
-				setFeedbackMessage(
-					"Purchase could not be completed. Please try again.",
-				);
+				setFeedbackMessage(t("paywall.errorPurchaseFailed"));
 			}
 		} finally {
 			setIsPurchasing(false);
 		}
-	}, [isPurchasing, db, refreshPremiumStatus, unlockPremium, analytics]);
+	}, [isPurchasing, db, refreshPremiumStatus, unlockPremium, analytics, t]);
 
 	const handleRestore = useCallback(async (): Promise<void> => {
 		if (isPurchasing) return;
@@ -157,14 +164,14 @@ export default function PaywallScreen(): React.ReactElement {
 			await requestPermissions();
 			await refreshPremiumStatus();
 			if (!isPremiumFromCustomerInfo(customerInfo)) {
-				setFeedbackMessage("No previous purchases found.");
+				setFeedbackMessage(t("paywall.errorNoPreviousPurchases"));
 			}
 		} catch {
-			setFeedbackMessage("Could not restore purchases. Please try again.");
+			setFeedbackMessage(t("paywall.errorRestoreFailed"));
 		} finally {
 			setIsPurchasing(false);
 		}
-	}, [isPurchasing, db, refreshPremiumStatus]);
+	}, [isPurchasing, db, refreshPremiumStatus, t]);
 
 	// ---------------------------------------------------------------------------
 	// Render
@@ -181,11 +188,13 @@ export default function PaywallScreen(): React.ReactElement {
 				<Logo markSize={48} layout="vertical" />
 				<Text variant="headlineMedium" style={styles.headline}>
 					{isTrialOffer
-						? (goalType !== null ? GOAL_HEADLINES[goalType] : "Pause from dating apps")
-						: "Continue with Unmatch"}
+						? goalType !== null
+							? t(`paywall.goalHeadlines.${goalType}`)
+							: t("paywall.headlineDefault")
+						: t("paywall.headlineContinue")}
 				</Text>
 				<Text variant="bodyLarge" style={styles.subtext}>
-					Everything you need to be intentional about dating apps.
+					{t("paywall.subtext")}
 				</Text>
 			</View>
 
@@ -193,16 +202,15 @@ export default function PaywallScreen(): React.ReactElement {
 			<View style={styles.priceCompareWrap}>
 				<View style={styles.priceCompareBadge}>
 					<Text style={styles.priceCompareBadgeText}>
-						CHEAPER THAN ONE TINDER BOOST
+						{t("paywall.priceCompareBadge")}
 					</Text>
 				</View>
 				<View style={styles.priceCompare}>
 					<Text variant="titleMedium" style={styles.priceComparePrice}>
-						$4.99/month
+						{t("paywall.priceComparePrice")}
 					</Text>
 					<Text variant="bodySmall" style={styles.priceCompareContext}>
-						A single boost costs $5.99 and lasts 30 minutes.{"\n"}
-						Unmatch costs less — and works all month.
+						{t("paywall.priceCompareContext")}
 					</Text>
 				</View>
 			</View>
@@ -210,7 +218,7 @@ export default function PaywallScreen(): React.ReactElement {
 			{/* Feature list */}
 			<View style={styles.featureList}>
 				{features.map((feature) => (
-					<View key={feature.label} style={styles.featureRow}>
+					<View key={feature.labelKey} style={styles.featureRow}>
 						<View style={styles.featureIconWrap}>
 							<MaterialCommunityIcons
 								name={feature.icon as never}
@@ -219,7 +227,7 @@ export default function PaywallScreen(): React.ReactElement {
 							/>
 						</View>
 						<Text variant="bodyMedium" style={styles.featureLabel}>
-							{feature.label}
+							{t(`paywall.${feature.labelKey}`)}
 						</Text>
 					</View>
 				))}
@@ -237,11 +245,11 @@ export default function PaywallScreen(): React.ReactElement {
 					style={styles.ctaButton}
 					contentStyle={styles.ctaButtonContent}
 					labelStyle={styles.ctaButtonLabel}
-					accessibilityLabel="Try 7 Days for Free"
+					accessibilityLabel={t("paywall.ctaTrial")}
 					accessibilityRole="button"
 					accessibilityState={{ disabled: isPurchasing, busy: isPurchasing }}
 				>
-					Try 7 Days for Free
+					{t("paywall.ctaTrial")}
 				</Button>
 			) : (
 				<Button
@@ -254,11 +262,11 @@ export default function PaywallScreen(): React.ReactElement {
 					style={styles.ctaButton}
 					contentStyle={styles.ctaButtonContent}
 					labelStyle={styles.ctaButtonLabel}
-					accessibilityLabel="Subscribe — $4.99/month"
+					accessibilityLabel={t("paywall.ctaSubscribe")}
 					accessibilityRole="button"
 					accessibilityState={{ disabled: isPurchasing, busy: isPurchasing }}
 				>
-					Subscribe — $4.99/month
+					{t("paywall.ctaSubscribe")}
 				</Button>
 			)}
 
@@ -271,17 +279,16 @@ export default function PaywallScreen(): React.ReactElement {
 				textColor={colors.muted}
 				style={styles.restoreButton}
 				labelStyle={styles.restoreLabel}
-				accessibilityLabel="Restore previous purchase"
+				accessibilityLabel={t("paywall.restorePurchaseA11y")}
 				accessibilityRole="button"
 			>
-				Restore purchase
+				{t("paywall.restorePurchase")}
 			</Button>
 
 			{/* Auto-renewal terms (App Store guideline 3.1.2) */}
 			{isTrialOffer && (
 				<Text variant="bodySmall" style={styles.legalText}>
-					$4.99/month after free trial. Subscription auto-renews. Cancel anytime in
-					App Store settings at least 24 hours before renewal.
+					{t("paywall.legalText")}
 				</Text>
 			)}
 
@@ -293,7 +300,7 @@ export default function PaywallScreen(): React.ReactElement {
 					color={colors.muted}
 				/>
 				<Text variant="bodySmall" style={styles.trustText}>
-					Private & on-device · No account required
+					{t("paywall.trustText")}
 				</Text>
 			</View>
 

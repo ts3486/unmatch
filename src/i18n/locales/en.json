@@ -241,7 +241,14 @@
 			{ "title": "Reset your mind", "body": "Take a breath inside Unmatch to clear your head and stay focused." }
 		],
 		"streakNudgeBody": "Don't break your streak! Complete today's check-in before midnight.",
-		"courseUnlockBody": "A new lesson is available. Check it out to keep your progress going!"
+		"courseUnlockBody": "A new lesson is available. Check it out to keep your progress going!",
+		"eveningNudgeTitle": "Feeling the urge?",
+		"eveningNudgeBody": "Open Unmatch for a 60-second reset.",
+		"streakStillGoingTitle": "Your {{days}}-day streak is still going.",
+		"keepItAlive": "Keep it alive?",
+		"weeklySummaryTitle": "Your week in review",
+		"weeklySummaryBody": "This week: {{count}} meditations completed, {{minutes}} minutes saved. View your progress.",
+		"courseUnlockStarterBody": "A new lesson is available in your starter course."
 	},
 	"breathing": {
 		"affirmations": [
@@ -316,5 +323,32 @@
 			"afternoon": "afternoon (noon–6pm)",
 			"evening": "evening (6pm+)"
 		}
+	},
+	"paywall": {
+		"headlineDefault": "Pause from dating apps",
+		"headlineContinue": "Continue with Unmatch",
+		"goalHeadlines": {
+			"reduce_swipe": "Stop mindless swiping",
+			"reduce_open": "Break the checking habit",
+			"reduce_night_check": "Rest without the scroll",
+			"reduce_spend": "Stop spending on boosts"
+		},
+		"subtext": "Everything you need to be intentional about dating apps.",
+		"priceCompareBadge": "CHEAPER THAN ONE TINDER BOOST",
+		"priceComparePrice": "$4.99/month",
+		"priceCompareContext": "A single boost costs $5.99 and lasts 30 minutes.\nUnmatch costs less — and works all month.",
+		"featurePanic": "60-second panic meditation — anytime, offline",
+		"featureSpendDelay": "Spend delay cards — think before you boost",
+		"featureProgress": "Progress tracking — streaks, rank & insights",
+		"ctaTrial": "Try 7 Days for Free",
+		"ctaSubscribe": "Subscribe — $4.99/month",
+		"restorePurchase": "Restore purchase",
+		"restorePurchaseA11y": "Restore previous purchase",
+		"legalText": "$4.99/month after free trial. Subscription auto-renews. Cancel anytime in App Store settings at least 24 hours before renewal.",
+		"trustText": "Private & on-device · No account required",
+		"errorLoadOfferings": "Unable to load subscription options. Please try again.",
+		"errorPurchaseFailed": "Purchase could not be completed. Please try again.",
+		"errorNoPreviousPurchases": "No previous purchases found.",
+		"errorRestoreFailed": "Could not restore purchases. Please try again."
 	}
 }

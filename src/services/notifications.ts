@@ -8,11 +8,12 @@
 //
 // No default exports. TypeScript strict mode.
 
-import type { NotificationStyle, UserProfile } from "@/src/domain/types";
 import {
-	DAILY_MOTIVATION_MESSAGES,
 	NOTIFICATION_SCHEDULE,
+	getDailyMotivationMessages,
 } from "@/src/constants/notification-content";
+import type { NotificationStyle, UserProfile } from "@/src/domain/types";
+import i18n from "@/src/i18n";
 import * as ExpoNotifications from "expo-notifications";
 
 // ---------------------------------------------------------------------------
@@ -39,8 +40,8 @@ export function buildEveningNudgeContent(
 		return null;
 	}
 	return {
-		title: "Feeling the urge?",
-		body: "Open Unmatch for a 60-second reset.",
+		title: i18n.t("pushNotifications.eveningNudgeTitle"),
+		body: i18n.t("pushNotifications.eveningNudgeBody"),
 	};
 }
 
@@ -58,7 +59,7 @@ export function pickDailyMotivationPair(
 	if (style === "off") {
 		return null;
 	}
-	const messages = DAILY_MOTIVATION_MESSAGES;
+	const messages = getDailyMotivationMessages();
 	const firstIndex = Math.floor(Math.random() * messages.length);
 	let secondIndex = Math.floor(Math.random() * (messages.length - 1));
 	if (secondIndex >= firstIndex) {
@@ -86,8 +87,10 @@ export function buildStreakNudgeContent(
 		return null;
 	}
 	return {
-		title: `Your ${streakDays}-day streak is still going.`,
-		body: "Keep it alive?",
+		title: i18n.t("pushNotifications.streakStillGoingTitle", {
+			days: streakDays,
+		}),
+		body: i18n.t("pushNotifications.keepItAlive"),
 	};
 }
 
@@ -108,8 +111,11 @@ export function buildWeeklySummaryContent(
 		return null;
 	}
 	return {
-		title: "Your week in review",
-		body: `This week: ${meditationCount} meditations completed, ${minutesSaved} minutes saved. View your progress.`,
+		title: i18n.t("pushNotifications.weeklySummaryTitle"),
+		body: i18n.t("pushNotifications.weeklySummaryBody", {
+			count: meditationCount,
+			minutes: minutesSaved,
+		}),
 	};
 }
 
@@ -128,8 +134,8 @@ export function buildCourseUnlockContent(
 		return null;
 	}
 	return {
-		title: "Unmatch",
-		body: "A new lesson is available in your starter course.",
+		title: i18n.t("common.appName"),
+		body: i18n.t("pushNotifications.courseUnlockStarterBody"),
 	};
 }
 
@@ -309,7 +315,11 @@ export async function scheduleWeeklySummary(
 	minutesSaved: number,
 	notificationStyle: NotificationStyle,
 ): Promise<void> {
-	const content = buildWeeklySummaryContent(meditationCount, minutesSaved, notificationStyle);
+	const content = buildWeeklySummaryContent(
+		meditationCount,
+		minutesSaved,
+		notificationStyle,
+	);
 	if (content === null) {
 		return;
 	}
@@ -497,6 +507,10 @@ export async function rescheduleAll(
 		scheduleEveningNudge(style, appState.todaySuccess),
 		scheduleStreakNudge(appState.streak, appState.todaySuccess, style),
 		scheduleWeeklySummary(appState.meditationCount, minutesSaved, style),
-		scheduleCourseUnlock(style, appState.currentDayIndex, appState.todayContentCompleted),
+		scheduleCourseUnlock(
+			style,
+			appState.currentDayIndex,
+			appState.todayContentCompleted,
+		),
 	]);
 }

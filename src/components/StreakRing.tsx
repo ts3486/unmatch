@@ -5,6 +5,7 @@
 import { colors } from "@/src/constants/theme";
 import type React from "react";
 import { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 import Animated, {
@@ -24,16 +25,27 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 // Streak titles based on day count
 // ---------------------------------------------------------------------------
 
-function getStreakTitle(days: number): string {
-	if (days === 0) return "GETTING STARTED";
-	if (days <= 2) return "BUILDING MOMENTUM";
-	if (days <= 5) return "GAINING STRENGTH";
-	if (days <= 10) return "DETERMINED";
-	if (days <= 20) return "UNSTOPPABLE";
-	if (days <= 30) return "BREAKTHROUGH";
-	if (days <= 60) return "TRANSFORMED";
-	if (days <= 90) return "LEGENDARY";
-	return "TRANSCENDENT";
+type StreakTitleKey =
+	| "gettingStarted"
+	| "buildingMomentum"
+	| "gainingStrength"
+	| "determined"
+	| "unstoppable"
+	| "breakthrough"
+	| "transformed"
+	| "legendary"
+	| "transcendent";
+
+function getStreakTitleKey(days: number): StreakTitleKey {
+	if (days === 0) return "gettingStarted";
+	if (days <= 2) return "buildingMomentum";
+	if (days <= 5) return "gainingStrength";
+	if (days <= 10) return "determined";
+	if (days <= 20) return "unstoppable";
+	if (days <= 30) return "breakthrough";
+	if (days <= 60) return "transformed";
+	if (days <= 90) return "legendary";
+	return "transcendent";
 }
 
 // ---------------------------------------------------------------------------
@@ -64,6 +76,7 @@ export function StreakRing({
 	streak,
 	bestStreak,
 }: StreakRingProps): React.ReactElement {
+	const { t } = useTranslation();
 	const progress = useSharedValue(0);
 	const targetProgress = Math.min(streak / MAX_DAYS_FOR_FULL, 1);
 
@@ -80,7 +93,10 @@ export function StreakRing({
 		return `${streak}d`;
 	}, [streak]);
 
-	const title = useMemo(() => getStreakTitle(streak), [streak]);
+	const title = useMemo(
+		() => t(`streakRing.titles.${getStreakTitleKey(streak)}`),
+		[streak, t],
+	);
 
 	return (
 		<View style={styles.container}>
@@ -125,7 +141,7 @@ export function StreakRing({
 
 			{/* Center text overlay */}
 			<View style={styles.centerContent}>
-				<Text style={styles.daysCleanLabel}>CHECK-INS</Text>
+				<Text style={styles.daysCleanLabel}>{t("streakRing.checkins")}</Text>
 				<Text style={styles.streakNumber}>{streakLabel}</Text>
 				<Text style={styles.title}>{title}</Text>
 			</View>

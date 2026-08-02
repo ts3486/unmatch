@@ -16,16 +16,26 @@ const starterCourse = require("@/data/seed/starter_7d.json") as Record<
 	string,
 	unknown
 >;
+const catalogJa = require("@/data/seed/catalog.ja.json") as Record<
+	string,
+	unknown
+>;
+const starterCourseJa = require("@/data/seed/starter_7d.ja.json") as Record<
+	string,
+	unknown
+>;
 
 // ---------------------------------------------------------------------------
 // Text extraction helpers
 // ---------------------------------------------------------------------------
 
-function collectCatalogText(): string[] {
+function collectCatalogText(
+	source: Record<string, unknown> = catalog,
+): string[] {
 	const texts: string[] = [];
 
 	// triggers
-	const triggers = catalog.triggers as Array<{
+	const triggers = source.triggers as Array<{
 		label: string;
 		description: string;
 	}>;
@@ -34,31 +44,31 @@ function collectCatalogText(): string[] {
 	}
 
 	// urgeKinds
-	const urgeKinds = catalog.urgeKinds as Array<{ label: string; help: string }>;
+	const urgeKinds = source.urgeKinds as Array<{ label: string; help: string }>;
 	for (const u of urgeKinds) {
 		texts.push(u.label, u.help);
 	}
 
 	// spendCategories
-	const spendCategories = catalog.spendCategories as Array<{ label: string }>;
+	const spendCategories = source.spendCategories as Array<{ label: string }>;
 	for (const c of spendCategories) {
 		texts.push(c.label);
 	}
 
 	// spendItemTypes
-	const spendItemTypes = catalog.spendItemTypes as Array<{ label: string }>;
+	const spendItemTypes = source.spendItemTypes as Array<{ label: string }>;
 	for (const s of spendItemTypes) {
 		texts.push(s.label);
 	}
 
 	// actions
-	const actions = catalog.actions as Array<{ title: string; steps: string[] }>;
+	const actions = source.actions as Array<{ title: string; steps: string[] }>;
 	for (const a of actions) {
 		texts.push(a.title, ...a.steps);
 	}
 
 	// spendDelayCards
-	const cards = catalog.spendDelayCards as Array<{
+	const cards = source.spendDelayCards as Array<{
 		title: string;
 		body: string;
 	}>;
@@ -67,7 +77,7 @@ function collectCatalogText(): string[] {
 	}
 
 	// copy strings
-	const copy = catalog.copy as Record<string, string>;
+	const copy = source.copy as Record<string, string>;
 	if (copy) {
 		texts.push(...Object.values(copy));
 	}
@@ -75,9 +85,11 @@ function collectCatalogText(): string[] {
 	return texts.filter(Boolean);
 }
 
-function collectStarterCourseText(): string[] {
+function collectStarterCourseText(
+	source: Record<string, unknown> = starterCourse,
+): string[] {
 	const texts: string[] = [];
-	const days = starterCourse.days as Array<{
+	const days = source.days as Array<{
 		title: string;
 		body: string;
 		actionText: string;
@@ -90,6 +102,13 @@ function collectStarterCourseText(): string[] {
 
 function allSeedText(): string {
 	return [...collectCatalogText(), ...collectStarterCourseText()].join("\n");
+}
+
+function allSeedTextJa(): string {
+	return [
+		...collectCatalogText(catalogJa),
+		...collectStarterCourseText(starterCourseJa),
+	].join("\n");
 }
 
 // ---------------------------------------------------------------------------
@@ -128,6 +147,24 @@ const DATING_COACHING_PATTERN =
  */
 const FORCED_LOCKOUT_PATTERN =
 	/\b(?:forced?|involuntary)\s+(?:lock(?:out|ed|s)?|block(?:ed|s)?|prevent(?:ed|s)?)/i;
+
+// ---------------------------------------------------------------------------
+// Pattern definitions — Japanese equivalents
+// (Japanese has no reliable word-boundary character, so \b is not used;
+// patterns instead match forbidden terms directly, optionally allowing an
+// adjacent intensifier for the "perfect blocking" / "forced lockout" cases.)
+// ---------------------------------------------------------------------------
+
+const SEXUAL_WORDING_PATTERN_JA = /(性的|セックス|エロ|ポルノ|ヌード|裸)/;
+
+const CURE_TREATMENT_PATTERN_JA = /(治療|治す|治せ|セラピー|療法|診断|処方)/;
+
+const PERFECT_BLOCKING_PATTERN_JA =
+	/(完全に|絶対に|100%)(ブロック|遮断|阻止|防止|防げ)/;
+
+const DATING_COACHING_PATTERN_JA = /(恋愛|デート|婚活)コーチ/;
+
+const FORCED_LOCKOUT_PATTERN_JA = /強制(的)?(に)?(ロック|ブロック|遮断)/;
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -210,6 +247,83 @@ describe("Forbidden wording scan — all seed text combined", () => {
 	});
 });
 
+describe("Forbidden wording scan — catalog.ja.json", () => {
+	let catalogText: string;
+
+	beforeAll(() => {
+		catalogText = collectCatalogText(catalogJa).join("\n");
+	});
+
+	it("contains no explicit sexual wording", () => {
+		const match = catalogText.match(SEXUAL_WORDING_PATTERN_JA);
+		expect(match).toBeNull();
+	});
+
+	it("contains no cure/treatment claims", () => {
+		const match = catalogText.match(CURE_TREATMENT_PATTERN_JA);
+		expect(match).toBeNull();
+	});
+
+	it("contains no perfect blocking claims", () => {
+		const match = catalogText.match(PERFECT_BLOCKING_PATTERN_JA);
+		expect(match).toBeNull();
+	});
+
+	it("contains no relationship/dating coaching claims", () => {
+		const match = catalogText.match(DATING_COACHING_PATTERN_JA);
+		expect(match).toBeNull();
+	});
+
+	it("contains no forced lockout language", () => {
+		const match = catalogText.match(FORCED_LOCKOUT_PATTERN_JA);
+		expect(match).toBeNull();
+	});
+});
+
+describe("Forbidden wording scan — starter_7d.ja.json", () => {
+	let courseText: string;
+
+	beforeAll(() => {
+		courseText = collectStarterCourseText(starterCourseJa).join("\n");
+	});
+
+	it("contains no explicit sexual wording", () => {
+		const match = courseText.match(SEXUAL_WORDING_PATTERN_JA);
+		expect(match).toBeNull();
+	});
+
+	it("contains no cure/treatment claims", () => {
+		const match = courseText.match(CURE_TREATMENT_PATTERN_JA);
+		expect(match).toBeNull();
+	});
+
+	it("contains no perfect blocking claims", () => {
+		const match = courseText.match(PERFECT_BLOCKING_PATTERN_JA);
+		expect(match).toBeNull();
+	});
+
+	it("contains no relationship/dating coaching claims", () => {
+		const match = courseText.match(DATING_COACHING_PATTERN_JA);
+		expect(match).toBeNull();
+	});
+
+	it("contains no forced lockout language", () => {
+		const match = courseText.match(FORCED_LOCKOUT_PATTERN_JA);
+		expect(match).toBeNull();
+	});
+});
+
+describe("Forbidden wording scan — all Japanese seed text combined", () => {
+	it("passes all forbidden-wording checks end-to-end", () => {
+		const text = allSeedTextJa();
+		expect(text.match(SEXUAL_WORDING_PATTERN_JA)).toBeNull();
+		expect(text.match(CURE_TREATMENT_PATTERN_JA)).toBeNull();
+		expect(text.match(PERFECT_BLOCKING_PATTERN_JA)).toBeNull();
+		expect(text.match(DATING_COACHING_PATTERN_JA)).toBeNull();
+		expect(text.match(FORCED_LOCKOUT_PATTERN_JA)).toBeNull();
+	});
+});
+
 // ---------------------------------------------------------------------------
 // Regression: ensure the patterns themselves are not broken
 // (meta-tests that verify the patterns catch what they should)
@@ -243,6 +357,34 @@ describe("Pattern sanity checks", () => {
 	it('FORCED_LOCKOUT_PATTERN catches "forced lockout"', () => {
 		expect(
 			"forced lockout feature".match(FORCED_LOCKOUT_PATTERN),
+		).not.toBeNull();
+	});
+
+	it("SEXUAL_WORDING_PATTERN_JA catches 性的", () => {
+		expect("性的なコンテンツ".match(SEXUAL_WORDING_PATTERN_JA)).not.toBeNull();
+	});
+
+	it("CURE_TREATMENT_PATTERN_JA catches 治療", () => {
+		expect(
+			"これは治療になります".match(CURE_TREATMENT_PATTERN_JA),
+		).not.toBeNull();
+	});
+
+	it("PERFECT_BLOCKING_PATTERN_JA catches 完全にブロック", () => {
+		expect(
+			"衝動を完全にブロックします".match(PERFECT_BLOCKING_PATTERN_JA),
+		).not.toBeNull();
+	});
+
+	it("DATING_COACHING_PATTERN_JA catches 恋愛コーチ", () => {
+		expect(
+			"恋愛コーチングサービス".match(DATING_COACHING_PATTERN_JA),
+		).not.toBeNull();
+	});
+
+	it("FORCED_LOCKOUT_PATTERN_JA catches 強制ブロック", () => {
+		expect(
+			"強制的にブロックする機能".match(FORCED_LOCKOUT_PATTERN_JA),
 		).not.toBeNull();
 	});
 });

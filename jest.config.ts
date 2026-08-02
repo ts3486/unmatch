@@ -52,6 +52,10 @@ const config: Config = {
 			__dirname,
 			"__mocks__/expo-file-system-legacy.ts",
 		),
+		"^expo-localization$": path.resolve(
+			__dirname,
+			"__mocks__/expo-localization.ts",
+		),
 	},
 
 	// Only run files that match the project's test naming convention.
