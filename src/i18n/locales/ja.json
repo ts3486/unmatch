@@ -1,0 +1,320 @@
+{
+	"common": {
+		"appName": "Unmatch",
+		"yes": "はい",
+		"no": "いいえ",
+		"cancel": "キャンセル",
+		"back": "戻る",
+		"continue": "続ける",
+		"loading": "読み込み中...",
+		"offlineLabel": "100%オフライン",
+		"offlineA11y": "このアプリは100%オフラインで動作します",
+		"close": "閉じる"
+	},
+	"onboarding": {
+		"backA11y": "戻る",
+		"stepIndicatorA11y": "{{total}}ステップ中{{current}}ステップ目",
+		"welcome": {
+			"title": "マッチングアプリと、少し距離を置こう",
+			"subtitle": "このアプリは、マッチングアプリと距離を置き、主体的に付き合っていくことをサポートします。人生から完全になくすのではなく、コントロールを取り戻すためのものです。",
+			"cta": "はじめる"
+		},
+		"meditation": {
+			"title": "衝動が来たら、深呼吸。",
+			"subtitle": "本当に効果のある60秒の呼吸ガイド。意志の力は不要 — 円に合わせて呼吸するだけ。"
+		},
+		"checkin": {
+			"title": "1分で、自分をもっと知る",
+			"subtitle": "毎日の気分と衝動を記録しましょう。小さな振り返りが、気づかなかったパターンを教えてくれます。",
+			"demo": {
+				"moodLabel": "気分",
+				"moodSubtitle": "今の気分はどうですか?",
+				"urgeLabel": "衝動の強さ",
+				"lateNightQuestion": "夜遅くにマッチングアプリを開きましたか?"
+			}
+		},
+		"notifications": {
+			"title": "ちゃんと支えます",
+			"subtitle": "自分に集中するための毎日の励まし、連続記録のリマインダー、深呼吸のきっかけ。ちょうどいい頻度で、うるさくなりすぎません。",
+			"settingUp": "設定中...",
+			"demo": {
+				"streakTitle": "5日間の連続記録が続いています。",
+				"streakBody": "このまま続けますか?"
+			}
+		}
+	},
+	"home": {
+		"showGuideA11y": "ガイドを表示",
+		"todayDone": "今日は完了",
+		"checkinDone": "チェックイン完了",
+		"dailyCheckin": "デイリーチェックイン",
+		"dailyCheckinA11y": "デイリーチェックインを開く",
+		"dailyCheckinHint": "簡単な自己振り返り — プライベートでオフライン",
+		"guide": {
+			"breathing": {
+				"title": "呼吸エクササイズ",
+				"text": "マッチングアプリを開きたい衝動を感じたら、円に合わせて呼吸しましょう。常に動いているので、そのまま合わせるだけで大丈夫です。"
+			},
+			"checkin": {
+				"title": "デイリーチェックイン",
+				"text": "下のボタンをタップして、今日の気分を記録しましょう。簡単なチェックインだけでもその日の成功としてカウントされます。"
+			},
+			"gotIt": "わかった",
+			"next": "次へ"
+		}
+	},
+	"ratingChips": {
+		"mood": { "1": "低い", "2": "まあまあ", "3": "良い", "4": "とても良い", "5": "最高" },
+		"fatigue": { "1": "元気", "2": "疲れ気味", "3": "疲れた", "4": "かなり疲れた", "5": "限界" },
+		"urge": { "1": "落ち着いている", "2": "軽い", "3": "強い", "4": "激しい", "5": "抑えられない" }
+	},
+	"navHeaders": {
+		"blockerGuide": "ブロッカーガイド",
+		"privacy": "プライバシー",
+		"dayDetail": "デイの詳細",
+		"progress": "進捗",
+		"checkin": "デイリーチェックイン"
+	},
+	"checkin": {
+		"title": "デイリーチェックイン",
+		"subtitle": "1日の終わりに、気分や衝動、パターンを振り返りましょう。マッチングアプリとの関わり方を理解し、時間の経過とともに進捗を追うのに役立ちます。",
+		"alreadySubmittedTitle": "今日のチェックイン",
+		"alreadySubmittedSubtitle": "今日はすでに提出済みです。",
+		"howAreYouToday": "今日の調子はどうですか?",
+		"mood": "気分",
+		"fatigue": "疲労感",
+		"urgeLevel": "衝動の強さ",
+		"openedLateNight": "夜遅くにマッチングアプリを開きましたか?",
+		"openedLateNightShort": "夜遅くにアプリを開いた",
+		"spentToday": "今日、デートにお金を使いましたか?",
+		"spentTodayShort": "今日、デートにお金を使った",
+		"spentOnApps": "マッチングアプリでの出費",
+		"nothing": "なし",
+		"appOpens": "マッチングアプリを開いた回数",
+		"appOpensLabels": { "1": "なし", "2": "1回", "3": "数回", "4": "多い", "5": "多すぎる" },
+		"approxAmount": "おおよその金額(任意)",
+		"amount": "金額(任意)",
+		"amountNote": "金額はローカルに保存され、共有されることはありません。",
+		"personalNote": "個人的なメモ(任意)",
+		"notePlaceholder": "自分だけが見られます",
+		"noteNote": "メモは分析やエクスポートに含まれることはありません。",
+		"save": "振り返りを保存",
+		"saveShort": "振り返りを保存",
+		"maybeLater": "また後で",
+		"addDetails": "詳細を追加",
+		"viewDetails": "詳細を見る"
+	},
+	"progress": {
+		"title": "進捗",
+		"thisWeekVsLastWeek": "今週 対 先週",
+		"checkinDays": "チェックイン日数",
+		"resetsSucceeded": "成功したリセット",
+		"same": "— 変化なし",
+		"deltaVsLastWeek": "先週比 {{delta}}",
+		"shareYourStreak": "連続記録をシェア",
+		"thisWeek": "今週",
+		"bestCheckinStreak": "最長チェックイン記録",
+		"daysCount": "{{count}}日",
+		"notYet": "まだありません",
+		"urgeResetsSucceeded": "成功した衝動リセット",
+		"noneYet": "まだありません",
+		"spendUrgesAvoided": "回避した課金の衝動"
+	},
+	"dayDetail": {
+		"unknownDate": "不明な日付",
+		"meditated": "瞑想した",
+		"didNotMeditate": "瞑想しなかった",
+		"ongoing": "進行中",
+		"dailyCheckin": "デイリーチェックイン",
+		"openedLateAtNight": "夜遅くに開いた",
+		"spentToday": "今日使った金額",
+		"urgeEvents": "衝動イベント",
+		"coping": "対処法: {{action}}",
+		"noData": "この日の記録はありません。",
+		"urgeKind": { "swipe": "スワイプ", "check": "チェック", "spend": "課金" }
+	},
+	"learn": {
+		"title": "7日間スターターコース",
+		"subtitle": "より健康的な習慣を築くための、やさしい毎日の実践。",
+		"minutes": "{{count}}分",
+		"dayCardA11y": "{{day}}日目: {{title}}",
+		"notYetAvailable": "まだ利用できません",
+		"tapToExpand": "タップして展開",
+		"practice": "実践",
+		"markComplete": "完了にする",
+		"completed": "完了"
+	},
+	"blockerGuide": {
+		"title": "マッチングアプリへのアクセスを制限する方法",
+		"intro": "お使いの端末には、アプリの利用に境界線を設けるための機能が備わっています。これらは任意で、すべてあなたのコントロール下にあります。",
+		"disclaimer": "このアプリは他のアプリを直接ブロックすることはできません。以下の手順は、お使いの端末の標準機能を使用します。",
+		"screenTime": "スクリーンタイム",
+		"digitalWellbeing": "Digital Wellbeing",
+		"tip": "ヒント",
+		"tipText": "制限を設定しても、アクセスが完全になくなるわけではありません。一呼吸置く瞬間を作ることが、意識的な選択をするために必要なことのすべてであることがよくあります。",
+		"iosSteps": [
+			"iPhoneまたはiPadの「設定」アプリを開きます。",
+			"「スクリーンタイム」をタップし、まだオンになっていなければ有効にします。",
+			"「App使用時間の制限」をタップし、「制限を追加」を選択します。",
+			"「ソーシャルネットワーキング」を選ぶか、特定のマッチングアプリを検索します。",
+			"1日の利用時間の上限を設定します。上限に達すると、制限画面が表示されます。",
+			"より強い制限をかけるには、スクリーンタイムのパスコード設定で「時間制限の終了時にブロック」を有効にします。"
+		],
+		"androidSteps": [
+			"Android端末の「設定」アプリを開きます。",
+			"「Digital Wellbeingと保護者による使用制限」に移動します(メーカーにより表示場所が異なります)。",
+			"「ダッシュボード」をタップし、リストからマッチングアプリを探します。",
+			"アプリの横にある砂時計アイコンをタップして、1日のタイマーを設定します。",
+			"上限に達すると、アプリのアイコンがグレーアウトします。",
+			"より厳しい制限には、Google ファミリーリンクやサードパーティのアプリブロッカーを使用してください。"
+		]
+	},
+	"privacy": {
+		"title": "プライバシーとデータ",
+		"allDataLocal": "すべてのデータは、お使いの端末にローカルで保存されます。",
+		"noDataSentServer": "このバージョンでは、データがサーバーに送信されることはありません。",
+		"exportsNote": "エクスポートには、個人的なバックアップとしてすべてのデータ(メモ、金額を含む)が含まれます。以前のエクスポートから復元するには、インポートを使用してください。",
+		"yourData": "あなたのデータ",
+		"exportData": "データをエクスポート",
+		"exportDesc": "共有シートからJSONバックアップを保存します。",
+		"export": "エクスポート",
+		"importData": "データをインポート",
+		"importDesc": "以前のJSONバックアップから復元します。",
+		"import": "インポート",
+		"deleteAllData": "すべてのデータを削除",
+		"deleteDesc": "すべてのローカル記録を完全に削除します。この操作は取り消せません。",
+		"delete": "削除",
+		"deleteDialogTitle": "すべてのデータを削除しますか?",
+		"deleteDialogBody": "チェックイン、衝動イベント、進捗を含む、すべてのローカル記録が完全に削除されます。この操作は取り消せません。",
+		"deleteAll": "すべて削除",
+		"dataDeletedTitle": "データを削除しました",
+		"dataDeletedBody": "すべてのローカルデータが削除されました。",
+		"deleteFailedTitle": "削除に失敗しました",
+		"deleteFailedBody": "データを削除できませんでした。もう一度お試しください。",
+		"importDialogTitle": "データをインポートしますか?",
+		"importDialogBody": "現在のすべてのデータが、バックアップファイルの内容に置き換わります。検出された内容:",
+		"noDataFoundInFile": "ファイルにデータが見つかりません",
+		"importUrgeEvents": "衝動イベント {{count}}件",
+		"importCheckins": "チェックイン {{count}}件",
+		"importProgress": "進捗記録 {{count}}件",
+		"importContentProgress": "コース完了 {{count}}件",
+		"importProfile": "プロフィール {{count}}件",
+		"importSubscription": "サブスクリプション記録 {{count}}件"
+	},
+	"settings": {
+		"title": "設定",
+		"yourNotifications": "通知",
+		"notificationStyle": "通知スタイル",
+		"currentPrefix": "現在: {{value}}",
+		"on": "オン",
+		"off": "オフ",
+		"notifStyleA11y": "通知スタイル: {{value}}。タップして変更。",
+		"notifDisabledTitle": "通知が無効です",
+		"notifDisabledBody": "端末の設定から通知を有効にできます。",
+		"language": "言語",
+		"languageEnglish": "English",
+		"languageJapanese": "日本語",
+		"tools": "ツール",
+		"blockerGuide": "ブロッカーガイド",
+		"blockerGuideDesc": "端末の設定を使ってマッチングアプリへのアクセスを制限する方法",
+		"yourData": "データ",
+		"privacyAndData": "プライバシーとデータ",
+		"privacyAndDataDesc": "ローカルデータのエクスポートまたは削除",
+		"devTools": "開発者ツール",
+		"resetSubscription": "サブスクリプションをリセット",
+		"resetSubscriptionDesc": "プレミアム状態をクリアして、ペイウォールをテストできるようにします",
+		"resetSubscriptionDialogTitle": "サブスクリプションをリセットしますか?",
+		"resetSubscriptionDialogBody": "プレミアム状態が解除され、ペイウォールにリダイレクトされます。",
+		"reset": "リセット",
+		"resetOnboarding": "オンボーディングをリセット",
+		"resetOnboardingDesc": "プロフィールを消去し、オンボーディングからやり直します",
+		"resetOnboardingDialogTitle": "オンボーディングをリセットしますか?",
+		"resetOnboardingDialogBody": "プロフィールとすべてのデータが削除されます。アプリはオンボーディングから再開します。",
+		"footerText": "すべてのデータは、常にあなたの端末内にとどまります。"
+	},
+	"pushNotifications": {
+		"dailyMotivation": [
+			{ "title": "自分を最優先に", "body": "今日はアプリを置いて、そのエネルギーを自分自身に注いでみましょう。" },
+			{ "title": "あなたの時間は、あなたのもの", "body": "マッチングアプリから離れる1分は、本当に大切なもの—つまりあなた自身—に使う1分です。" },
+			{ "title": "今ここに集中", "body": "本当の人生は、今まさに起きています。大切なことに意識を向けましょう。" },
+			{ "title": "よくやっています", "body": "終わりのないスワイプより自分を選ぶこと、それは立派な勝利です。その調子で。" },
+			{ "title": "心をリセット", "body": "Unmatchの中でひと呼吸して、頭をすっきりさせ、集中を取り戻しましょう。" }
+		],
+		"streakNudgeBody": "連続記録を途切れさせないで!今日のチェックインを、日付が変わる前に済ませましょう。",
+		"courseUnlockBody": "新しいレッスンが利用可能になりました。進捗を続けるために、チェックしてみましょう!"
+	},
+	"breathing": {
+		"affirmations": [
+			"誰かに認めてもらう必要はありません。",
+			"あなたの時間は、スワイプよりも価値があります。",
+			"マッチを追いかけるのをやめて、自分自身を育てましょう。",
+			"そのブーストが、あなたを幸せにすることはありません。",
+			"あなたがここにいるのは、自分自身を選んだからです。",
+			"本当のつながりは、自分の内側から始まります。",
+			"あなたがすでに持っているものを、アプリで埋めることはできません。",
+			"いいねではなく、自分自身に投資しましょう。",
+			"マッチがなくても、あなたは十分です。",
+			"衝動が過ぎ去るのを待ちましょう。あなたはそれよりも強い。"
+		],
+		"completionText": "よくできました。自分自身を選びましたね。",
+		"restartSession": "セッションを再開",
+		"session": "セッション",
+		"phase": { "inhale": "吸う", "hold": "止める", "exhale": "吐く" }
+	},
+	"streakRing": {
+		"checkins": "チェックイン",
+		"titles": {
+			"gettingStarted": "はじめたばかり",
+			"buildingMomentum": "勢いをつけている",
+			"gainingStrength": "力がついてきた",
+			"determined": "決意十分",
+			"unstoppable": "止まらない",
+			"breakthrough": "ブレイクスルー",
+			"transformed": "変わった",
+			"legendary": "伝説的",
+			"transcendent": "超越"
+		}
+	},
+	"meditationRank": {
+		"title": "あなたの瞑想ランク",
+		"rank": "ランク",
+		"maximumRankReached": "最大ランクに到達",
+		"rankOfCap": "ランク{{level}} / {{cap}}",
+		"max": "最大",
+		"moreToNextRank": "あと{{count}}回でランク{{next}}",
+		"maxRank": "最大ランク"
+	},
+	"personalBest": {
+		"newPersonalBest": "新記録達成",
+		"streakLabel": "{{count}}日連続チェックイン",
+		"keepGoing": "その調子です — 波に乗っています。"
+	},
+	"shareStreak": {
+		"headlinePrefix": "",
+		"headlineSuffix": "連続でチェックイン中",
+		"oneDay": "1日",
+		"days": "{{count}}日",
+		"meditationsCompleted": "瞑想完了回数",
+		"meditationRank": "瞑想ランク",
+		"rankValue": "ランク{{rank}}"
+	},
+	"weeklyInsight": {
+		"sectionLabel": "週間インサイト",
+		"resetMostOn": "{{day}}に最もリセットしています",
+		"strongestTimeIs": "最も強い時間帯は{{time}}です",
+		"resetsUp": "先週比でリセットが{{pct}}%増加",
+		"resetsDown": "先週比でリセットが{{pct}}%減少",
+		"sameResets": "先週と同じ回数のリセットです",
+		"resetsThisWeek": "今週は{{count}}回リセット — 幸先の良いスタートです",
+		"resetThisWeek": "今週は1回リセット — 幸先の良いスタートです",
+		"dow": {
+			"0": "日曜日", "1": "月曜日", "2": "火曜日", "3": "水曜日",
+			"4": "木曜日", "5": "金曜日", "6": "土曜日", "default": "平日"
+		},
+		"timeOfDay": {
+			"morning": "朝(5時〜正午)",
+			"afternoon": "午後(正午〜18時)",
+			"evening": "夜(18時以降)"
+		}
+	}
+}

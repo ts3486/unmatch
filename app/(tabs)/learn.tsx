@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { Button, Card, Divider, Text } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useAppState } from '@/src/contexts/AppStateContext';
 import { useContent } from '@/src/hooks/useContent';
 import { useAnalytics } from '@/src/contexts/AnalyticsContext';
@@ -23,6 +24,7 @@ import type { Content } from '@/src/domain/types';
 // ---------------------------------------------------------------------------
 
 export default function LearnScreen(): React.ReactElement {
+  const { t } = useTranslation();
   const { userProfile } = useAppState();
   const analytics = useAnalytics();
   const {
@@ -82,10 +84,10 @@ export default function LearnScreen(): React.ReactElement {
       showsVerticalScrollIndicator={false}
     >
       <Text variant="headlineMedium" style={styles.screenTitle}>
-        7-Day Starter
+        {t('learn.title')}
       </Text>
       <Text variant="bodyMedium" style={styles.screenSubtitle}>
-        A gentle daily practice to build healthier habits.
+        {t('learn.subtitle')}
       </Text>
 
       <View style={styles.cardList}>
@@ -141,6 +143,7 @@ function ContentCard({
   onPress,
   onMarkComplete,
 }: ContentCardProps): React.ReactElement {
+  const { t } = useTranslation();
   return (
     <Card
       style={[
@@ -154,8 +157,8 @@ function ContentCard({
       <TouchableOpacity
         onPress={onPress}
         disabled={isLocked}
-        accessibilityLabel={`Day ${content.day_index}: ${content.title}`}
-        accessibilityHint={isLocked ? 'Not yet available' : 'Tap to expand'}
+        accessibilityLabel={t('learn.dayCardA11y', { day: content.day_index, title: content.title })}
+        accessibilityHint={isLocked ? t('learn.notYetAvailable') : t('learn.tapToExpand')}
       >
         <View style={styles.cardHeader}>
           <View style={styles.cardHeaderLeft}>
@@ -177,7 +180,7 @@ function ContentCard({
                 {content.title}
               </Text>
               <Text variant="labelSmall" style={styles.cardMeta}>
-                {content.est_minutes} min
+                {t('learn.minutes', { count: content.est_minutes })}
               </Text>
             </View>
           </View>
@@ -216,7 +219,7 @@ function ContentCard({
             {content.action_text.length > 0 && (
               <View style={styles.actionTextBox}>
                 <Text variant="labelMedium" style={styles.actionTextLabel}>
-                  Practice
+                  {t('learn.practice')}
                 </Text>
                 <Text variant="bodyMedium" style={styles.actionText}>
                   {content.action_text}
@@ -233,7 +236,7 @@ function ContentCard({
                 contentStyle={styles.markButtonContent}
                 labelStyle={styles.markButtonLabel}
               >
-                Mark complete
+                {t('learn.markComplete')}
               </Button>
             )}
             {isCompleted && (
@@ -244,7 +247,7 @@ function ContentCard({
                   color={colors.success}
                 />
                 <Text variant="labelMedium" style={styles.completedBannerText}>
-                  Completed
+                  {t('learn.completed')}
                 </Text>
               </View>
             )}

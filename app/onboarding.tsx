@@ -6,18 +6,25 @@
 import { BreathingExercise } from "@/src/components/BreathingExercise";
 import { Logo } from "@/src/components/Logo";
 import {
-	MOOD_LABELS,
 	RatingChips,
-	URGE_LABELS,
+	useMoodLabels,
+	useUrgeLabels,
 } from "@/src/components/RatingChips";
-import { DAILY_MOTIVATION_MESSAGES } from "@/src/constants/notification-content";
 import { colors } from "@/src/constants/theme";
 import { useAnalytics } from "@/src/contexts/AnalyticsContext";
 import { useAppState } from "@/src/contexts/AppStateContext";
 import { router } from "expo-router";
 import type React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, Easing, Platform, ScrollView, StyleSheet, View } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+	Animated,
+	Easing,
+	Platform,
+	ScrollView,
+	StyleSheet,
+	View,
+} from "react-native";
 import { Button, Card, Chip, Divider, Text } from "react-native-paper";
 
 // ---------------------------------------------------------------------------
@@ -47,11 +54,15 @@ function ProgressDots({
 	steps,
 	current,
 }: ProgressDotsProps): React.ReactElement {
+	const { t } = useTranslation();
 	const currentIdx = steps.indexOf(current);
 	return (
 		<View
 			style={styles.progressRow}
-			accessibilityLabel={`Step ${currentIdx + 1} of ${steps.length}`}
+			accessibilityLabel={t("onboarding.stepIndicatorA11y", {
+				current: currentIdx + 1,
+				total: steps.length,
+			})}
 		>
 			{steps.map((s, i) => (
 				<View
@@ -68,6 +79,7 @@ function ProgressDots({
 }
 
 function BackButton({ onPress }: { onPress: () => void }): React.ReactElement {
+	const { t } = useTranslation();
 	return (
 		<View style={styles.backButtonRow}>
 			<Button
@@ -77,10 +89,10 @@ function BackButton({ onPress }: { onPress: () => void }): React.ReactElement {
 				textColor={colors.muted}
 				style={styles.backButton}
 				compact
-				accessibilityLabel="Go back"
+				accessibilityLabel={t("onboarding.backA11y")}
 				testID="back-button"
 			>
-				Back
+				{t("common.back")}
 			</Button>
 		</View>
 	);
@@ -114,29 +126,32 @@ function MeditationDemo(): React.ReactElement {
 // ---------------------------------------------------------------------------
 
 function CheckinDemo(): React.ReactElement {
+	const { t } = useTranslation();
+	const moodLabels = useMoodLabels();
+	const urgeLabels = useUrgeLabels();
 	return (
 		<Card style={demoStyles.card} mode="contained">
 			<Card.Content style={demoStyles.cardContent}>
 				<RatingChips
-					label="Mood"
+					label={t("onboarding.checkin.demo.moodLabel")}
 					value={4}
 					onChange={() => {}}
 					readonly
-					labelMap={MOOD_LABELS}
-					subtitle="How are you feeling right now?"
+					labelMap={moodLabels}
+					subtitle={t("onboarding.checkin.demo.moodSubtitle")}
 				/>
 				<Divider style={demoStyles.divider} />
 				<RatingChips
-					label="Urge level"
+					label={t("onboarding.checkin.demo.urgeLabel")}
 					value={2}
 					onChange={() => {}}
 					readonly
-					labelMap={URGE_LABELS}
+					labelMap={urgeLabels}
 				/>
 				<Divider style={demoStyles.divider} />
 				<View style={demoStyles.yesNoRow}>
 					<Text variant="labelLarge" style={demoStyles.ratingLabel}>
-						Opened a dating app late at night?
+						{t("onboarding.checkin.demo.lateNightQuestion")}
 					</Text>
 					<View style={demoStyles.chipRow}>
 						<Chip
@@ -145,7 +160,7 @@ function CheckinDemo(): React.ReactElement {
 							textStyle={demoStyles.ratingChipText}
 							compact
 						>
-							Yes
+							{t("common.yes")}
 						</Chip>
 						<Chip
 							selected
@@ -156,7 +171,7 @@ function CheckinDemo(): React.ReactElement {
 							]}
 							compact
 						>
-							No
+							{t("common.no")}
 						</Chip>
 					</View>
 				</View>
@@ -174,24 +189,6 @@ interface MockNotifProps {
 	body: string;
 	time: string;
 }
-
-const MOCK_NOTIFS: MockNotifProps[] = [
-	{
-		title: DAILY_MOTIVATION_MESSAGES[0].title,
-		body: DAILY_MOTIVATION_MESSAGES[0].body,
-		time: "9:00 AM",
-	},
-	{
-		title: DAILY_MOTIVATION_MESSAGES[4].title,
-		body: DAILY_MOTIVATION_MESSAGES[4].body,
-		time: "2:00 PM",
-	},
-	{
-		title: "Your 5-day streak is still going.",
-		body: "Keep it alive?",
-		time: "8:00 PM",
-	},
-];
 
 function AnimatedNotifBanner({
 	title,
@@ -258,9 +255,32 @@ function AnimatedNotifBanner({
 }
 
 function NotificationsDemo(): React.ReactElement {
+	const { t } = useTranslation();
+
+	const mockNotifs: MockNotifProps[] = useMemo(
+		() => [
+			{
+				title: t("pushNotifications.dailyMotivation.0.title"),
+				body: t("pushNotifications.dailyMotivation.0.body"),
+				time: "9:00 AM",
+			},
+			{
+				title: t("pushNotifications.dailyMotivation.4.title"),
+				body: t("pushNotifications.dailyMotivation.4.body"),
+				time: "2:00 PM",
+			},
+			{
+				title: t("onboarding.notifications.demo.streakTitle"),
+				body: t("onboarding.notifications.demo.streakBody"),
+				time: "8:00 PM",
+			},
+		],
+		[t],
+	);
+
 	return (
 		<View style={demoStyles.notifList}>
-			{MOCK_NOTIFS.map((notif, i) => (
+			{mockNotifs.map((notif, i) => (
 				<AnimatedNotifBanner
 					key={notif.title}
 					{...notif}
@@ -276,6 +296,7 @@ function NotificationsDemo(): React.ReactElement {
 // ---------------------------------------------------------------------------
 
 export default function OnboardingScreen(): React.ReactElement {
+	const { t, i18n } = useTranslation();
 	const { completeOnboarding } = useAppState();
 	const analytics = useAnalytics();
 
@@ -302,7 +323,7 @@ export default function OnboardingScreen(): React.ReactElement {
 
 		try {
 			await completeOnboarding({
-				locale: "en",
+				locale: i18n.language,
 				notification_style: "normal",
 				plan_selected: "starter_7d",
 				goal_type: "reduce_swipe",
@@ -338,11 +359,10 @@ export default function OnboardingScreen(): React.ReactElement {
 					<Logo markSize={72} layout="vertical" wordmarkColor={colors.text} />
 					<View style={styles.welcomeTextBlock}>
 						<Text variant="displaySmall" style={styles.welcomeTitle}>
-							Take a pause from dating
+							{t("onboarding.welcome.title")}
 						</Text>
 						<Text variant="bodyLarge" style={styles.welcomeSubtitle}>
-							This app helps you pause from dating apps and be intentional about
-							it — not remove them from your life, just put you back in control.
+							{t("onboarding.welcome.subtitle")}
 						</Text>
 					</View>
 				</View>
@@ -357,7 +377,7 @@ export default function OnboardingScreen(): React.ReactElement {
 						labelStyle={styles.primaryButtonLabel}
 						testID="welcome-get-started"
 					>
-						Get started
+						{t("onboarding.welcome.cta")}
 					</Button>
 				</View>
 			</View>
@@ -380,11 +400,10 @@ export default function OnboardingScreen(): React.ReactElement {
 				>
 					<View style={styles.stepHeader}>
 						<Text variant="headlineMedium" style={styles.stepTitle}>
-							Urge hits? Breathe it out.
+							{t("onboarding.meditation.title")}
 						</Text>
 						<Text variant="bodyMedium" style={styles.stepSubtitle}>
-							A 60-second guided session that actually works. No willpower
-							required — just breathe with the circle.
+							{t("onboarding.meditation.subtitle")}
 						</Text>
 					</View>
 
@@ -401,7 +420,7 @@ export default function OnboardingScreen(): React.ReactElement {
 						labelStyle={styles.primaryButtonLabel}
 						testID="meditation-continue"
 					>
-						Continue
+						{t("common.continue")}
 					</Button>
 				</View>
 			</View>
@@ -424,11 +443,10 @@ export default function OnboardingScreen(): React.ReactElement {
 				>
 					<View style={styles.stepHeader}>
 						<Text variant="headlineMedium" style={styles.stepTitle}>
-							One minute to know yourself better
+							{t("onboarding.checkin.title")}
 						</Text>
 						<Text variant="bodyMedium" style={styles.stepSubtitle}>
-							Track your mood and urges daily. Small reflections reveal patterns
-							you'd never notice otherwise.
+							{t("onboarding.checkin.subtitle")}
 						</Text>
 					</View>
 
@@ -445,7 +463,7 @@ export default function OnboardingScreen(): React.ReactElement {
 						labelStyle={styles.primaryButtonLabel}
 						testID="checkin-continue"
 					>
-						Continue
+						{t("common.continue")}
 					</Button>
 				</View>
 			</View>
@@ -468,12 +486,10 @@ export default function OnboardingScreen(): React.ReactElement {
 				>
 					<View style={styles.stepHeader}>
 						<Text variant="headlineMedium" style={styles.stepTitle}>
-							We've got your back
+							{t("onboarding.notifications.title")}
 						</Text>
 						<Text variant="bodyMedium" style={styles.stepSubtitle}>
-							Daily motivation to stay focused on yourself, streak reminders,
-							and a nudge to breathe. Just enough to keep your momentum —
-							never annoying.
+							{t("onboarding.notifications.subtitle")}
 						</Text>
 					</View>
 
@@ -492,7 +508,7 @@ export default function OnboardingScreen(): React.ReactElement {
 						labelStyle={styles.primaryButtonLabel}
 						testID="notifications-continue"
 					>
-						{isSubmitting ? "Setting up..." : "Continue"}
+						{isSubmitting ? t("onboarding.notifications.settingUp") : t("common.continue")}
 					</Button>
 				</View>
 			</View>

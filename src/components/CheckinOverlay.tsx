@@ -4,16 +4,17 @@
 // TypeScript strict mode.
 
 import {
-	FATIGUE_LABELS,
-	MOOD_LABELS,
 	RatingChips,
-	URGE_LABELS,
+	useFatigueLabels,
+	useMoodLabels,
+	useUrgeLabels,
 } from "@/src/components/RatingChips";
 import { colors } from "@/src/constants/theme";
 import type { UseCheckinReturn } from "@/src/hooks/useCheckin";
 import { router } from "expo-router";
 import type React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, View } from "react-native";
 import {
 	Button,
@@ -37,18 +38,24 @@ interface CheckinOverlayProps {
 // Component
 // ---------------------------------------------------------------------------
 
-const APP_OPENS_LABELS: Record<number, string> = {
-	1: "None",
-	2: "Once",
-	3: "A few",
-	4: "Many",
-	5: "Too many",
-};
-
 export function CheckinOverlay({
 	checkin,
 	onClose,
 }: CheckinOverlayProps): React.ReactElement {
+	const { t } = useTranslation();
+	const moodLabels = useMoodLabels();
+	const fatigueLabels = useFatigueLabels();
+	const urgeLabels = useUrgeLabels();
+	const appOpensLabels = useMemo(
+		() => ({
+			1: t("checkin.appOpensLabels.1"),
+			2: t("checkin.appOpensLabels.2"),
+			3: t("checkin.appOpensLabels.3"),
+			4: t("checkin.appOpensLabels.4"),
+			5: t("checkin.appOpensLabels.5"),
+		}),
+		[t],
+	);
 	const {
 		mood,
 		fatigue,
@@ -118,10 +125,10 @@ export function CheckinOverlay({
 				<View style={styles.headerLeft}>
 					<View>
 						<Text variant="titleLarge" style={styles.title}>
-							Daily check-in
+							{t("checkin.title")}
 						</Text>
 						<Text variant="bodyMedium" style={styles.subtitle}>
-							How are you today?
+							{t("checkin.howAreYouToday")}
 						</Text>
 					</View>
 				</View>
@@ -140,40 +147,40 @@ export function CheckinOverlay({
 				showsVerticalScrollIndicator={false}
 			>
 				<RatingChips
-					label="Mood"
+					label={t("checkin.mood")}
 					value={mood}
 					onChange={setMood}
-					labelMap={MOOD_LABELS}
+					labelMap={moodLabels}
 				/>
 				<Divider style={styles.divider} />
 				<RatingChips
-					label="Fatigue"
+					label={t("checkin.fatigue")}
 					value={fatigue}
 					onChange={setFatigue}
-					labelMap={FATIGUE_LABELS}
+					labelMap={fatigueLabels}
 				/>
 				<Divider style={styles.divider} />
 				<RatingChips
-					label="Urge level"
+					label={t("checkin.urgeLevel")}
 					value={urge}
 					onChange={setUrge}
-					labelMap={URGE_LABELS}
+					labelMap={urgeLabels}
 				/>
 				<Divider style={styles.divider} />
 
 				{/* App opens frequency */}
 				<RatingChips
-					label="Opened dating apps"
+					label={t("checkin.appOpens")}
 					value={appOpens}
 					onChange={handleAppOpensChange}
-					labelMap={APP_OPENS_LABELS}
+					labelMap={appOpensLabels}
 				/>
 				<Divider style={styles.divider} />
 
 				{/* Spending */}
 				<View style={styles.spendSection}>
 					<Text variant="labelLarge" style={styles.spendLabel}>
-						Spent on dating apps
+						{t("checkin.spentOnApps")}
 					</Text>
 					<View style={styles.spendChipRow}>
 						<Chip
@@ -193,7 +200,7 @@ export function CheckinOverlay({
 							]}
 							compact
 						>
-							Nothing
+							{t("checkin.nothing")}
 						</Chip>
 						<Chip
 							selected={spentToday === true}
@@ -208,13 +215,13 @@ export function CheckinOverlay({
 							]}
 							compact
 						>
-							Yes
+							{t("common.yes")}
 						</Chip>
 					</View>
 					{spentToday === true && (
 						<TextInput
 							mode="outlined"
-							label="Amount (optional)"
+							label={t("checkin.amount")}
 							value={spendAmountText}
 							onChangeText={(text) => {
 								setSpendAmountText(text);
@@ -250,14 +257,14 @@ export function CheckinOverlay({
 					contentStyle={styles.saveButtonContent}
 					labelStyle={styles.saveButtonLabel}
 				>
-					Save reflection
+					{t("checkin.saveShort")}
 				</Button>
 				<Text
 					variant="labelMedium"
 					style={styles.detailsLink}
 					onPress={handleDetails}
 				>
-					Add details
+					{t("checkin.addDetails")}
 				</Text>
 			</View>
 		</View>

@@ -2,6 +2,8 @@
 // No default exports other than the required route component.
 // TypeScript strict mode.
 
+import "@/src/i18n";
+
 import * as Notifications from "expo-notifications";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -33,6 +35,7 @@ import { AppStateProvider, useAppState } from "@/src/contexts/AppStateContext";
 import { DatabaseProvider } from "@/src/contexts/DatabaseContext";
 import { useContent } from "@/src/hooks/useContent";
 import { rescheduleAll } from "@/src/services/notifications";
+import { useTranslation } from "react-i18next";
 import { PaperProvider } from "react-native-paper";
 
 // ---------------------------------------------------------------------------
@@ -45,6 +48,7 @@ function InnerLayout(): React.ReactElement {
 		useAppState();
 	const analytics = useAnalytics();
 	const router = useRouter();
+	const { t } = useTranslation();
 	const appStateRef = useRef<AppStateStatus>(AppState.currentState);
 
 	// Course state for notification scheduling.
@@ -148,7 +152,7 @@ function InnerLayout(): React.ReactElement {
 					headerStyle: { backgroundColor: "#0B1220" },
 					headerTintColor: "#E6EDF7",
 					headerShadowVisible: false,
-					headerBackTitle: "Back",
+					headerBackTitle: t("common.back"),
 					animation: "simple_push",
 				}}
 			>
@@ -160,16 +164,22 @@ function InnerLayout(): React.ReactElement {
 				/>
 				<Stack.Screen
 					name="settings/blocker-guide"
-					options={{ title: "Blocker Guide" }}
+					options={{ title: t("navHeaders.blockerGuide") }}
 				/>
-				<Stack.Screen name="settings/privacy" options={{ title: "Privacy" }} />
+				<Stack.Screen
+					name="settings/privacy"
+					options={{ title: t("navHeaders.privacy") }}
+				/>
 				<Stack.Screen
 					name="progress/day/[date]"
-					options={{ title: "Day Detail", headerBackTitle: "Progress" }}
+					options={{
+						title: t("navHeaders.dayDetail"),
+						headerBackTitle: t("navHeaders.progress"),
+					}}
 				/>
 				<Stack.Screen
 					name="checkin"
-					options={{ title: "Daily Check-in" }}
+					options={{ title: t("navHeaders.checkin") }}
 				/>
 			</Stack>
 		</>

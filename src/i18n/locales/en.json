@@ -1,0 +1,320 @@
+{
+	"common": {
+		"appName": "Unmatch",
+		"yes": "Yes",
+		"no": "No",
+		"cancel": "Cancel",
+		"back": "Back",
+		"continue": "Continue",
+		"loading": "Loading...",
+		"offlineLabel": "100% offline",
+		"offlineA11y": "This app works 100% offline",
+		"close": "Close"
+	},
+	"onboarding": {
+		"backA11y": "Go back",
+		"stepIndicatorA11y": "Step {{current}} of {{total}}",
+		"welcome": {
+			"title": "Take a pause from dating",
+			"subtitle": "This app helps you pause from dating apps and be intentional about it — not remove them from your life, just put you back in control.",
+			"cta": "Get started"
+		},
+		"meditation": {
+			"title": "Urge hits? Breathe it out.",
+			"subtitle": "A 60-second guided session that actually works. No willpower required — just breathe with the circle."
+		},
+		"checkin": {
+			"title": "One minute to know yourself better",
+			"subtitle": "Track your mood and urges daily. Small reflections reveal patterns you'd never notice otherwise.",
+			"demo": {
+				"moodLabel": "Mood",
+				"moodSubtitle": "How are you feeling right now?",
+				"urgeLabel": "Urge level",
+				"lateNightQuestion": "Opened a dating app late at night?"
+			}
+		},
+		"notifications": {
+			"title": "We've got your back",
+			"subtitle": "Daily motivation to stay focused on yourself, streak reminders, and a nudge to breathe. Just enough to keep your momentum — never annoying.",
+			"settingUp": "Setting up...",
+			"demo": {
+				"streakTitle": "Your 5-day streak is still going.",
+				"streakBody": "Keep it alive?"
+			}
+		}
+	},
+	"home": {
+		"showGuideA11y": "Show guide",
+		"todayDone": "Today done",
+		"checkinDone": "Check-in done",
+		"dailyCheckin": "Daily check-in",
+		"dailyCheckinA11y": "Open daily check-in",
+		"dailyCheckinHint": "Quick self-reflection — private and offline",
+		"guide": {
+			"breathing": {
+				"title": "Breathing exercise",
+				"text": "Breathe with the circle when you feel the urge to open a dating app. It runs continuously — just follow along."
+			},
+			"checkin": {
+				"title": "Daily check-in",
+				"text": "Tap the button at the bottom to log how you're feeling today. A quick daily check-in counts as a success for the day."
+			},
+			"gotIt": "Got it",
+			"next": "Next"
+		}
+	},
+	"ratingChips": {
+		"mood": { "1": "Low", "2": "Okay", "3": "Good", "4": "Great", "5": "Amazing" },
+		"fatigue": { "1": "Fine", "2": "Tired", "3": "Drained", "4": "Exhausted", "5": "Wrecked" },
+		"urge": { "1": "Calm", "2": "Mild", "3": "Strong", "4": "Intense", "5": "Overwhelming" }
+	},
+	"navHeaders": {
+		"blockerGuide": "Blocker Guide",
+		"privacy": "Privacy",
+		"dayDetail": "Day Detail",
+		"progress": "Progress",
+		"checkin": "Daily Check-in"
+	},
+	"checkin": {
+		"title": "Daily check-in",
+		"subtitle": "At the end of the day, reflect on your mood, urges, and patterns. This helps you understand your relationship with dating apps and track your progress over time.",
+		"alreadySubmittedTitle": "Today's check-in",
+		"alreadySubmittedSubtitle": "Already submitted for today.",
+		"howAreYouToday": "How are you today?",
+		"mood": "Mood",
+		"fatigue": "Fatigue",
+		"urgeLevel": "Urge level",
+		"openedLateNight": "Opened a dating app late at night?",
+		"openedLateNightShort": "Opened app late at night",
+		"spentToday": "Spent money on dating today?",
+		"spentTodayShort": "Spent money on dating today",
+		"spentOnApps": "Spent on dating apps",
+		"nothing": "Nothing",
+		"appOpens": "Opened dating apps",
+		"appOpensLabels": { "1": "None", "2": "Once", "3": "A few", "4": "Many", "5": "Too many" },
+		"approxAmount": "Approximate amount (optional)",
+		"amount": "Amount (optional)",
+		"amountNote": "Amount is stored locally and never shared.",
+		"personalNote": "Personal note (optional)",
+		"notePlaceholder": "For your eyes only",
+		"noteNote": "Notes are never included in analytics or exports.",
+		"save": "Save my reflection",
+		"saveShort": "Save reflection",
+		"maybeLater": "Maybe later",
+		"addDetails": "Add details",
+		"viewDetails": "View details"
+	},
+	"progress": {
+		"title": "Progress",
+		"thisWeekVsLastWeek": "This week vs. last week",
+		"checkinDays": "Check-in days",
+		"resetsSucceeded": "Resets succeeded",
+		"same": "— same",
+		"deltaVsLastWeek": "{{delta}} vs last week",
+		"shareYourStreak": "Share your streak",
+		"thisWeek": "This Week",
+		"bestCheckinStreak": "Best check-in streak",
+		"daysCount": "{{count}} days",
+		"notYet": "Not yet",
+		"urgeResetsSucceeded": "Urge resets succeeded",
+		"noneYet": "None yet",
+		"spendUrgesAvoided": "Spend urges avoided"
+	},
+	"dayDetail": {
+		"unknownDate": "Unknown date",
+		"meditated": "Meditated",
+		"didNotMeditate": "Did not meditate",
+		"ongoing": "Ongoing",
+		"dailyCheckin": "Daily check-in",
+		"openedLateAtNight": "Opened late at night",
+		"spentToday": "Spent today",
+		"urgeEvents": "Urge events",
+		"coping": "Coping: {{action}}",
+		"noData": "No data recorded for this day.",
+		"urgeKind": { "swipe": "Swiping", "check": "Checking", "spend": "Spending" }
+	},
+	"learn": {
+		"title": "7-Day Starter",
+		"subtitle": "A gentle daily practice to build healthier habits.",
+		"minutes": "{{count}} min",
+		"dayCardA11y": "Day {{day}}: {{title}}",
+		"notYetAvailable": "Not yet available",
+		"tapToExpand": "Tap to expand",
+		"practice": "Practice",
+		"markComplete": "Mark complete",
+		"completed": "Completed"
+	},
+	"blockerGuide": {
+		"title": "How to limit dating app access",
+		"intro": "Your device has built-in tools to set boundaries on app usage. These are optional and entirely within your control.",
+		"disclaimer": "This app cannot block other apps directly. The steps below use your device's native controls.",
+		"screenTime": "Screen Time",
+		"digitalWellbeing": "Digital Wellbeing",
+		"tip": "Tip",
+		"tipText": "Setting a limit does not remove access entirely. It creates a moment of pause — which is often all you need to make a mindful choice.",
+		"iosSteps": [
+			"Open the Settings app on your iPhone or iPad.",
+			"Tap \"Screen Time\" and enable it if not already on.",
+			"Tap \"App Limits\", then \"Add Limit\".",
+			"Choose \"Social Networking\" or search for a specific dating app.",
+			"Set a daily time limit. When reached, a soft limit screen appears.",
+			"Enable \"Block at End of Limit\" in Screen Time passcode settings for a firmer boundary."
+		],
+		"androidSteps": [
+			"Open the Settings app on your Android device.",
+			"Go to \"Digital Wellbeing and parental controls\" (location varies by manufacturer).",
+			"Tap \"Dashboard\" and find the dating app in the list.",
+			"Tap the hourglass icon next to the app to set a daily timer.",
+			"When the limit is reached, the app icon becomes greyed out.",
+			"For stricter controls, use Google Family Link or a third-party app blocker."
+		]
+	},
+	"privacy": {
+		"title": "Privacy and data",
+		"allDataLocal": "All your data is stored locally on your device.",
+		"noDataSentServer": "No data is sent to any server in this version.",
+		"exportsNote": "Exports include all data (notes, amounts) as a personal backup. Use import to restore from a previous export.",
+		"yourData": "Your data",
+		"exportData": "Export data",
+		"exportDesc": "Save a JSON backup via the share sheet.",
+		"export": "Export",
+		"importData": "Import data",
+		"importDesc": "Restore from a previous JSON backup.",
+		"import": "Import",
+		"deleteAllData": "Delete all data",
+		"deleteDesc": "Permanently removes all local records. This cannot be undone.",
+		"delete": "Delete",
+		"deleteDialogTitle": "Delete all data?",
+		"deleteDialogBody": "This will permanently remove all your local records including check-ins, urge events, and progress. This action cannot be undone.",
+		"deleteAll": "Delete all",
+		"dataDeletedTitle": "Data deleted",
+		"dataDeletedBody": "All local data has been removed.",
+		"deleteFailedTitle": "Delete failed",
+		"deleteFailedBody": "Could not delete data. Please try again.",
+		"importDialogTitle": "Import data?",
+		"importDialogBody": "This will replace all current data with the backup file. Found:",
+		"noDataFoundInFile": "No data found in file",
+		"importUrgeEvents": "{{count}} urge events",
+		"importCheckins": "{{count}} check-ins",
+		"importProgress": "{{count}} progress records",
+		"importContentProgress": "{{count}} course completions",
+		"importProfile": "{{count}} profile",
+		"importSubscription": "{{count}} subscription record"
+	},
+	"settings": {
+		"title": "Settings",
+		"yourNotifications": "Your Notifications",
+		"notificationStyle": "Notification style",
+		"currentPrefix": "Current: {{value}}",
+		"on": "On",
+		"off": "Off",
+		"notifStyleA11y": "Notification style: {{value}}. Tap to change.",
+		"notifDisabledTitle": "Notifications Disabled",
+		"notifDisabledBody": "You can enable notifications in your device settings.",
+		"language": "Language",
+		"languageEnglish": "English",
+		"languageJapanese": "日本語",
+		"tools": "Tools",
+		"blockerGuide": "Blocker guide",
+		"blockerGuideDesc": "How to limit dating app access using device settings",
+		"yourData": "Your Data",
+		"privacyAndData": "Privacy and data",
+		"privacyAndDataDesc": "Export or delete your local data",
+		"devTools": "Dev Tools",
+		"resetSubscription": "Reset subscription",
+		"resetSubscriptionDesc": "Clears premium status so you can test the paywall",
+		"resetSubscriptionDialogTitle": "Reset subscription?",
+		"resetSubscriptionDialogBody": "This will remove your premium status and redirect to the paywall.",
+		"reset": "Reset",
+		"resetOnboarding": "Reset onboarding",
+		"resetOnboardingDesc": "Wipes profile so you restart from onboarding",
+		"resetOnboardingDialogTitle": "Reset onboarding?",
+		"resetOnboardingDialogBody": "This will delete your profile and all data. The app will restart at onboarding.",
+		"footerText": "All data stays on your device — always."
+	},
+	"pushNotifications": {
+		"dailyMotivation": [
+			{ "title": "You come first", "body": "Put the apps down and invest that energy in yourself today." },
+			{ "title": "Your time is yours", "body": "Every minute off dating apps is a minute you spend on what really matters — you." },
+			{ "title": "Stay present", "body": "Real life is happening right now. Keep your focus where it counts." },
+			{ "title": "You're doing great", "body": "Choosing yourself over endless swiping is a win. Keep it up." },
+			{ "title": "Reset your mind", "body": "Take a breath inside Unmatch to clear your head and stay focused." }
+		],
+		"streakNudgeBody": "Don't break your streak! Complete today's check-in before midnight.",
+		"courseUnlockBody": "A new lesson is available. Check it out to keep your progress going!"
+	},
+	"breathing": {
+		"affirmations": [
+			"You don't need their validation.",
+			"Your time is worth more than a swipe.",
+			"Stop chasing matches. Start building yourself.",
+			"That boost won't make you happier.",
+			"You're here because you chose yourself.",
+			"Real connection starts within.",
+			"No app can fill what you already have.",
+			"Invest in yourself, not in likes.",
+			"You are enough without a match.",
+			"Let the urge pass. You're stronger than it."
+		],
+		"completionText": "Well done. You chose yourself.",
+		"restartSession": "Restart session",
+		"session": "Session",
+		"phase": { "inhale": "Inhale", "hold": "Hold", "exhale": "Exhale" }
+	},
+	"streakRing": {
+		"checkins": "CHECK-INS",
+		"titles": {
+			"gettingStarted": "GETTING STARTED",
+			"buildingMomentum": "BUILDING MOMENTUM",
+			"gainingStrength": "GAINING STRENGTH",
+			"determined": "DETERMINED",
+			"unstoppable": "UNSTOPPABLE",
+			"breakthrough": "BREAKTHROUGH",
+			"transformed": "TRANSFORMED",
+			"legendary": "LEGENDARY",
+			"transcendent": "TRANSCENDENT"
+		}
+	},
+	"meditationRank": {
+		"title": "Your Meditation Rank",
+		"rank": "Rank",
+		"maximumRankReached": "Maximum rank reached",
+		"rankOfCap": "Rank {{level}} of {{cap}}",
+		"max": "Max",
+		"moreToNextRank": "{{count}} more to Rank {{next}}",
+		"maxRank": "Max Rank"
+	},
+	"personalBest": {
+		"newPersonalBest": "NEW PERSONAL BEST",
+		"streakLabel": "{{count}} day check-in streak",
+		"keepGoing": "Keep going — you're on a roll."
+	},
+	"shareStreak": {
+		"headlinePrefix": "Checked in for ",
+		"headlineSuffix": " straight",
+		"oneDay": "1 day",
+		"days": "{{count}} days",
+		"meditationsCompleted": "meditations completed",
+		"meditationRank": "meditation rank",
+		"rankValue": "Rank {{rank}}"
+	},
+	"weeklyInsight": {
+		"sectionLabel": "WEEKLY INSIGHT",
+		"resetMostOn": "You reset most on {{day}}",
+		"strongestTimeIs": "Your strongest time is {{time}}",
+		"resetsUp": "Resets up {{pct}}% vs last week",
+		"resetsDown": "Resets down {{pct}}% vs last week",
+		"sameResets": "Same number of resets as last week",
+		"resetsThisWeek": "{{count}} resets this week — great start",
+		"resetThisWeek": "1 reset this week — great start",
+		"dow": {
+			"0": "Sunday", "1": "Monday", "2": "Tuesday", "3": "Wednesday",
+			"4": "Thursday", "5": "Friday", "6": "Saturday", "default": "weekdays"
+		},
+		"timeOfDay": {
+			"morning": "morning (5am–noon)",
+			"afternoon": "afternoon (noon–6pm)",
+			"evening": "evening (6pm+)"
+		}
+	}
+}

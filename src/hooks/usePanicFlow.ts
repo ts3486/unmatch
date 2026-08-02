@@ -12,6 +12,7 @@ import {
 	upsertProgress,
 } from "@/src/data/repositories";
 import { getCatalog } from "@/src/data/seed-loader";
+import i18n from "@/src/i18n";
 import {
 	calculateMeditationRank,
 	isDaySuccess,
@@ -207,7 +208,7 @@ export function usePanicFlow(): UsePanicFlowReturn {
 			const startedAt = new Date().toISOString();
 
 			// Resolve action metadata from catalog.
-			const catalog = getCatalog();
+			const catalog = getCatalog(i18n.language);
 			const action =
 				state.actionId !== null
 					? catalog.actions.find((a) => a.id === state.actionId)

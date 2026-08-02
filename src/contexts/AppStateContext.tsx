@@ -9,6 +9,7 @@ import {
 	getLatestProgress,
 	getUserProfile,
 	hasContentCompletedOnDate,
+	updateUserProfile,
 } from "@/src/data/repositories";
 import {
 	getHasEverSubscribed,
@@ -16,12 +17,14 @@ import {
 	recordLifetimePurchase,
 	recordMonthlySubscription,
 } from "@/src/data/repositories/subscription-repository";
+import { reseedContentForLocale } from "@/src/data/seed-loader";
 import {
 	calculateMeditationRank,
 	calculateStreak,
 	isDaySuccess,
 } from "@/src/domain/progress-rules";
 import type { Progress, UserProfile } from "@/src/domain/types";
+import i18n, { type SupportedLocale, isSupportedLocale } from "@/src/i18n";
 import { getLocalDateString } from "@/src/utils/date";
 import type React from "react";
 import {
@@ -62,6 +65,7 @@ interface AppStateActions {
 		productId: string,
 		period: "monthly" | "lifetime",
 	) => Promise<void>;
+	changeLocale: (locale: SupportedLocale) => Promise<void>;
 }
 
 type AppStateContextValue = AppState & AppStateActions;
@@ -164,6 +168,31 @@ export function AppStateProvider({
 		[db, refreshPremium],
 	);
 
+	const changeLocale = useCallback(
+		async (locale: SupportedLocale): Promise<void> => {
+			if (userProfile === null) return;
+			await updateUserProfile(db, userProfile.id, { locale });
+			await i18n.changeLanguage(locale);
+			await reseedContentForLocale(db, locale);
+			await refreshProfile();
+		},
+		[db, userProfile, refreshProfile],
+	);
+
+	// ---------------------------------------------------------------------------
+	// Keep i18n language in sync with the persisted profile locale.
+	// ---------------------------------------------------------------------------
+
+	useEffect(() => {
+		if (
+			userProfile !== null &&
+			isSupportedLocale(userProfile.locale) &&
+			userProfile.locale !== i18n.language
+		) {
+			void i18n.changeLanguage(userProfile.locale);
+		}
+	}, [userProfile]);
+
 	// ---------------------------------------------------------------------------
 	// Initial load
 	// ---------------------------------------------------------------------------
@@ -209,6 +238,7 @@ export function AppStateProvider({
 		refreshPremiumStatus: refreshPremium,
 		completeOnboarding,
 		unlockPremium,
+		changeLocale,
 	};
 
 	return (

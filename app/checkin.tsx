@@ -4,16 +4,17 @@
 // TypeScript strict mode.
 
 import {
-	FATIGUE_LABELS,
-	MOOD_LABELS,
 	RatingChips,
-	URGE_LABELS,
+	useFatigueLabels,
+	useMoodLabels,
+	useUrgeLabels,
 } from "@/src/components/RatingChips";
 import { colors } from "@/src/constants/theme";
 import { useCheckin } from "@/src/hooks/useCheckin";
 import { router } from "expo-router";
 import type React from "react";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	KeyboardAvoidingView,
 	Platform,
@@ -47,6 +48,7 @@ function YesNoToggle({
 	onChange,
 	readonly = false,
 }: YesNoToggleProps): React.ReactElement {
+	const { t } = useTranslation();
 	return (
 		<View style={styles.yesNoRow}>
 			<Text variant="labelLarge" style={styles.ratingLabel}>
@@ -69,7 +71,7 @@ function YesNoToggle({
 					]}
 					compact
 				>
-					Yes
+					{t("common.yes")}
 				</Chip>
 				<Chip
 					selected={value === false}
@@ -87,7 +89,7 @@ function YesNoToggle({
 					]}
 					compact
 				>
-					No
+					{t("common.no")}
 				</Chip>
 			</View>
 		</View>
@@ -99,6 +101,10 @@ function YesNoToggle({
 // ---------------------------------------------------------------------------
 
 export default function CheckinScreen(): React.ReactElement {
+	const { t } = useTranslation();
+	const moodLabels = useMoodLabels();
+	const fatigueLabels = useFatigueLabels();
+	const urgeLabels = useUrgeLabels();
 	const {
 		mood,
 		fatigue,
@@ -162,37 +168,37 @@ export default function CheckinScreen(): React.ReactElement {
 			>
 				<View style={styles.header}>
 					<Text variant="headlineMedium" style={styles.screenTitle}>
-						Today's check-in
+						{t("checkin.alreadySubmittedTitle")}
 					</Text>
 					<Text variant="bodyMedium" style={styles.subtitle}>
-						Already submitted for today.
+						{t("checkin.alreadySubmittedSubtitle")}
 					</Text>
 				</View>
 
 				<Card style={styles.card} mode="contained">
 					<Card.Content style={styles.summaryContent}>
 						<RatingChips
-							label="Mood"
+							label={t("checkin.mood")}
 							value={existingCheckin.mood}
 							onChange={() => {}}
 							readonly
-							labelMap={MOOD_LABELS}
+							labelMap={moodLabels}
 						/>
 						<Divider style={styles.divider} />
 						<RatingChips
-							label="Fatigue"
+							label={t("checkin.fatigue")}
 							value={existingCheckin.fatigue}
 							onChange={() => {}}
 							readonly
-							labelMap={FATIGUE_LABELS}
+							labelMap={fatigueLabels}
 						/>
 						<Divider style={styles.divider} />
 						<RatingChips
-							label="Urge level"
+							label={t("checkin.urgeLevel")}
 							value={existingCheckin.urge}
 							onChange={() => {}}
 							readonly
-							labelMap={URGE_LABELS}
+							labelMap={urgeLabels}
 						/>
 
 						{existingCheckin.opened_at_night !== null && (
@@ -200,10 +206,12 @@ export default function CheckinScreen(): React.ReactElement {
 								<Divider style={styles.divider} />
 								<View style={styles.readonlyRow}>
 									<Text variant="bodyMedium" style={styles.ratingLabel}>
-										Opened app late at night
+										{t("checkin.openedLateNightShort")}
 									</Text>
 									<Text variant="bodyMedium" style={styles.readonlyValue}>
-										{existingCheckin.opened_at_night === 1 ? "Yes" : "No"}
+										{existingCheckin.opened_at_night === 1
+											? t("common.yes")
+											: t("common.no")}
 									</Text>
 								</View>
 							</>
@@ -214,10 +222,12 @@ export default function CheckinScreen(): React.ReactElement {
 								<Divider style={styles.divider} />
 								<View style={styles.readonlyRow}>
 									<Text variant="bodyMedium" style={styles.ratingLabel}>
-										Spent money on dating today
+										{t("checkin.spentTodayShort")}
 									</Text>
 									<Text variant="bodyMedium" style={styles.readonlyValue}>
-										{existingCheckin.spent_today === 1 ? "Yes" : "No"}
+										{existingCheckin.spent_today === 1
+											? t("common.yes")
+											: t("common.no")}
 									</Text>
 								</View>
 							</>
@@ -231,7 +241,7 @@ export default function CheckinScreen(): React.ReactElement {
 					style={styles.closeButton}
 					textColor={colors.muted}
 				>
-					Close
+					{t("common.close")}
 				</Button>
 
 				<View style={styles.bottomSpacer} />
@@ -256,35 +266,35 @@ export default function CheckinScreen(): React.ReactElement {
 			>
 				<View style={styles.header}>
 					<Text variant="headlineMedium" style={styles.screenTitle}>
-						Daily check-in
+						{t("checkin.title")}
 					</Text>
 					<Text variant="bodyMedium" style={styles.subtitle}>
-						At the end of the day, reflect on your mood, urges, and patterns. This helps you understand your relationship with dating apps and track your progress over time.
+						{t("checkin.subtitle")}
 					</Text>
 				</View>
 
 				<Card style={styles.card} mode="contained">
 					<Card.Content style={styles.formContent}>
 						<RatingChips
-							label="Mood"
+							label={t("checkin.mood")}
 							value={mood}
 							onChange={setMood}
-							labelMap={MOOD_LABELS}
-							subtitle="How are you feeling right now?"
+							labelMap={moodLabels}
+							subtitle={t("onboarding.checkin.demo.moodSubtitle")}
 						/>
 						<Divider style={styles.divider} />
 						<RatingChips
-							label="Fatigue"
+							label={t("checkin.fatigue")}
 							value={fatigue}
 							onChange={setFatigue}
-							labelMap={FATIGUE_LABELS}
+							labelMap={fatigueLabels}
 						/>
 						<Divider style={styles.divider} />
 						<RatingChips
-							label="Urge level"
+							label={t("checkin.urgeLevel")}
 							value={urge}
 							onChange={setUrge}
-							labelMap={URGE_LABELS}
+							labelMap={urgeLabels}
 						/>
 					</Card.Content>
 				</Card>
@@ -292,13 +302,13 @@ export default function CheckinScreen(): React.ReactElement {
 				<Card style={styles.card} mode="contained">
 					<Card.Content style={styles.formContent}>
 						<YesNoToggle
-							label="Opened a dating app late at night?"
+							label={t("checkin.openedLateNight")}
 							value={openedAtNight}
 							onChange={setOpenedAtNight}
 						/>
 						<Divider style={styles.divider} />
 						<YesNoToggle
-							label="Spent money on dating today?"
+							label={t("checkin.spentToday")}
 							value={spentToday}
 							onChange={setSpentToday}
 						/>
@@ -307,7 +317,7 @@ export default function CheckinScreen(): React.ReactElement {
 							<View style={styles.amountContainer}>
 								<TextInput
 									mode="outlined"
-									label="Approximate amount (optional)"
+									label={t("checkin.approxAmount")}
 									placeholder="0.00"
 									value={spentAmountDollars}
 									onChangeText={handleSpentAmountChange}
@@ -320,7 +330,7 @@ export default function CheckinScreen(): React.ReactElement {
 									placeholderTextColor={colors.muted}
 								/>
 								<Text variant="bodySmall" style={styles.amountNote}>
-									Amount is stored locally and never shared.
+									{t("checkin.amountNote")}
 								</Text>
 							</View>
 						)}
@@ -331,8 +341,8 @@ export default function CheckinScreen(): React.ReactElement {
 					<Card.Content>
 						<TextInput
 							mode="outlined"
-							label="Personal note (optional)"
-							placeholder="For your eyes only"
+							label={t("checkin.personalNote")}
+							placeholder={t("checkin.notePlaceholder")}
 							value={note}
 							onChangeText={setNote}
 							multiline
@@ -344,7 +354,7 @@ export default function CheckinScreen(): React.ReactElement {
 							placeholderTextColor={colors.muted}
 						/>
 						<Text variant="bodySmall" style={styles.noteNote}>
-							Notes are never included in analytics or exports.
+							{t("checkin.noteNote")}
 						</Text>
 					</Card.Content>
 				</Card>
@@ -363,10 +373,10 @@ export default function CheckinScreen(): React.ReactElement {
 					contentStyle={styles.submitButtonContent}
 					labelStyle={styles.submitButtonLabel}
 				>
-					Save my reflection
+					{t("checkin.save")}
 				</Button>
 				<Button mode="text" onPress={handleClose} textColor={colors.muted}>
-					Maybe later
+					{t("checkin.maybeLater")}
 				</Button>
 			</View>
 		</KeyboardAvoidingView>

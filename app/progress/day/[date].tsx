@@ -9,9 +9,11 @@ import { getCatalog } from "@/src/data/seed-loader";
 import type { DailyCheckin, UrgeEvent } from "@/src/domain/types";
 import { parseLocalDate } from "@/src/utils/date";
 import { format } from "date-fns";
+import { ja } from "date-fns/locale";
 import { useLocalSearchParams } from "expo-router";
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Card, Chip, Divider, Text } from "react-native-paper";
 
@@ -22,6 +24,7 @@ import { Card, Chip, Divider, Text } from "react-native-paper";
 export default function DayDetailScreen(): React.ReactElement {
 	const { date } = useLocalSearchParams<{ date: string }>();
 	const { db } = useDatabaseContext();
+	const { t, i18n } = useTranslation();
 
 	const [urgeEvents, setUrgeEvents] = useState<UrgeEvent[]>([]);
 	const [checkin, setCheckin] = useState<DailyCheckin | null>(null);
@@ -62,9 +65,11 @@ export default function DayDetailScreen(): React.ReactElement {
 	// Helpers
 	// ---------------------------------------------------------------------------
 
+	const dateFnsLocale = i18n.language === "ja" ? ja : undefined;
+
 	function formatTime(isoUtc: string): string {
 		try {
-			return format(new Date(isoUtc), "h:mm a");
+			return format(new Date(isoUtc), "h:mm a", { locale: dateFnsLocale });
 		} catch {
 			return "";
 		}
@@ -72,16 +77,18 @@ export default function DayDetailScreen(): React.ReactElement {
 
 	function formatDateLabel(ds: string): string {
 		try {
-			return format(parseLocalDate(ds), "EEEE, MMMM d, yyyy");
+			return format(parseLocalDate(ds), "EEEE, MMMM d, yyyy", {
+				locale: dateFnsLocale,
+			});
 		} catch {
 			return ds;
 		}
 	}
 
 	function outcomeLabel(outcome: UrgeEvent["outcome"]): string {
-		if (outcome === "success") return "Meditated";
-		if (outcome === "fail") return "Did not meditate";
-		return "Ongoing";
+		if (outcome === "success") return t("dayDetail.meditated");
+		if (outcome === "fail") return t("dayDetail.didNotMeditate");
+		return t("dayDetail.ongoing");
 	}
 
 	function outcomeColor(outcome: UrgeEvent["outcome"]): string {
@@ -91,15 +98,15 @@ export default function DayDetailScreen(): React.ReactElement {
 	}
 
 	function urgeKindLabel(kind: string): string {
-		if (kind === "swipe") return "Swiping";
-		if (kind === "check") return "Checking";
-		if (kind === "spend") return "Spending";
+		if (kind === "swipe") return t("dayDetail.urgeKind.swipe");
+		if (kind === "check") return t("dayDetail.urgeKind.check");
+		if (kind === "spend") return t("dayDetail.urgeKind.spend");
 		return kind;
 	}
 
 	function resolveActionTitle(actionId: string): string {
 		if (actionId.length === 0) return "";
-		const catalog = getCatalog();
+		const catalog = getCatalog(i18n.language);
 		const action = catalog.actions.find((a) => a.id === actionId);
 		return action?.title ?? actionId;
 	}
@@ -116,12 +123,12 @@ export default function DayDetailScreen(): React.ReactElement {
 		>
 			{/* Date header */}
 			<Text variant="titleLarge" style={styles.dateTitle}>
-				{dateStr.length > 0 ? formatDateLabel(dateStr) : "Unknown date"}
+				{dateStr.length > 0 ? formatDateLabel(dateStr) : t("dayDetail.unknownDate")}
 			</Text>
 
 			{isLoading ? (
 				<View style={styles.loadingContainer}>
-					<Text style={styles.muted}>Loading...</Text>
+					<Text style={styles.muted}>{t("common.loading")}</Text>
 				</View>
 			) : (
 				<>
@@ -129,17 +136,17 @@ export default function DayDetailScreen(): React.ReactElement {
 					<View style={styles.summaryRow}>
 						<SummaryBadge
 							count={successCount}
-							label="Meditated"
+							label={t("dayDetail.meditated")}
 							color={colors.success}
 						/>
 						<SummaryBadge
 							count={failCount}
-							label="Did not meditate"
+							label={t("dayDetail.didNotMeditate")}
 							color="#E05A5A"
 						/>
 						<SummaryBadge
 							count={ongoingCount}
-							label="Ongoing"
+							label={t("dayDetail.ongoing")}
 							color={colors.muted}
 						/>
 					</View>
@@ -148,24 +155,26 @@ export default function DayDetailScreen(): React.ReactElement {
 					{checkin !== null && (
 						<>
 							<Text variant="titleMedium" style={styles.sectionTitle}>
-								Daily check-in
+								{t("dayDetail.dailyCheckin")}
 							</Text>
 							<Card style={styles.card} mode="contained">
 								<Card.Content style={styles.checkinContent}>
-									<CheckinRow label="Mood" value={checkin.mood} />
+									<CheckinRow label={t("checkin.mood")} value={checkin.mood} />
 									<Divider style={styles.divider} />
-									<CheckinRow label="Fatigue" value={checkin.fatigue} />
+									<CheckinRow label={t("checkin.fatigue")} value={checkin.fatigue} />
 									<Divider style={styles.divider} />
-									<CheckinRow label="Urge level" value={checkin.urge} />
+									<CheckinRow label={t("checkin.urgeLevel")} value={checkin.urge} />
 									{checkin.opened_at_night !== null && (
 										<>
 											<Divider style={styles.divider} />
 											<View style={styles.checkinRow}>
 												<Text variant="bodyMedium" style={styles.muted}>
-													Opened late at night
+													{t("dayDetail.openedLateAtNight")}
 												</Text>
 												<Text variant="bodyMedium" style={styles.valueText}>
-													{checkin.opened_at_night === 1 ? "Yes" : "No"}
+													{checkin.opened_at_night === 1
+														? t("common.yes")
+														: t("common.no")}
 												</Text>
 											</View>
 										</>
@@ -175,10 +184,12 @@ export default function DayDetailScreen(): React.ReactElement {
 											<Divider style={styles.divider} />
 											<View style={styles.checkinRow}>
 												<Text variant="bodyMedium" style={styles.muted}>
-													Spent today
+													{t("dayDetail.spentToday")}
 												</Text>
 												<Text variant="bodyMedium" style={styles.valueText}>
-													{checkin.spent_today === 1 ? "Yes" : "No"}
+													{checkin.spent_today === 1
+														? t("common.yes")
+														: t("common.no")}
 												</Text>
 											</View>
 										</>
@@ -192,7 +203,7 @@ export default function DayDetailScreen(): React.ReactElement {
 					{urgeEvents.length > 0 && (
 						<>
 							<Text variant="titleMedium" style={styles.sectionTitle}>
-								Urge events
+								{t("dayDetail.urgeEvents")}
 							</Text>
 							<View style={styles.timeline}>
 								{urgeEvents.map((ev, idx) => (
@@ -237,7 +248,9 @@ export default function DayDetailScreen(): React.ReactElement {
 											</Text>
 											{ev.action_id.length > 0 && (
 												<Text variant="bodySmall" style={styles.muted}>
-													Coping: {resolveActionTitle(ev.action_id)}
+													{t("dayDetail.coping", {
+														action: resolveActionTitle(ev.action_id),
+													})}
 												</Text>
 											)}
 										</View>
@@ -251,7 +264,7 @@ export default function DayDetailScreen(): React.ReactElement {
 					{urgeEvents.length === 0 && checkin === null && (
 						<View style={styles.emptyState}>
 							<Text variant="bodyLarge" style={styles.muted}>
-								No data recorded for this day.
+								{t("dayDetail.noData")}
 							</Text>
 						</View>
 					)}
