@@ -5,8 +5,10 @@
 
 import { colors } from "@/src/constants/theme";
 import type { DayOfWeekCount, TimeOfDayCount } from "@/src/data/repositories";
+import type { TFunction } from "i18next";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { Card, Text } from "react-native-paper";
 import Animated, {
@@ -20,23 +22,8 @@ import Animated, {
 // Helpers
 // ---------------------------------------------------------------------------
 
-const DOW_LABELS: Record<number, string> = {
-	0: "Sunday",
-	1: "Monday",
-	2: "Tuesday",
-	3: "Wednesday",
-	4: "Thursday",
-	5: "Friday",
-	6: "Saturday",
-};
-
-const TIME_LABELS: Record<string, string> = {
-	morning: "morning (5am–noon)",
-	afternoon: "afternoon (noon–6pm)",
-	evening: "evening (6pm+)",
-};
-
 function buildInsights(
+	t: TFunction,
 	dowCounts: DayOfWeekCount[],
 	timeCounts: TimeOfDayCount[],
 	thisWeekResets: number,
@@ -50,9 +37,10 @@ function buildInsights(
 		dowCounts[0] ?? { dayOfWeek: 1, count: 0 },
 	);
 	if (bestDow.count > 0) {
-		insights.push(
-			`You reset most on ${DOW_LABELS[bestDow.dayOfWeek] ?? "weekdays"}`,
-		);
+		const dayLabel = t(`weeklyInsight.dow.${bestDow.dayOfWeek}`, {
+			defaultValue: t("weeklyInsight.dow.default"),
+		});
+		insights.push(t("weeklyInsight.resetMostOn", { day: dayLabel }));
 	}
 
 	// Strongest time-of-day
@@ -61,9 +49,10 @@ function buildInsights(
 		timeCounts[0] ?? { bucket: "morning", count: 0 },
 	);
 	if (bestTime.count > 0) {
-		insights.push(
-			`Your strongest time is ${TIME_LABELS[bestTime.bucket] ?? bestTime.bucket}`,
-		);
+		const timeLabel = t(`weeklyInsight.timeOfDay.${bestTime.bucket}`, {
+			defaultValue: bestTime.bucket,
+		});
+		insights.push(t("weeklyInsight.strongestTimeIs", { time: timeLabel }));
 	}
 
 	// Weekly trend
@@ -72,15 +61,17 @@ function buildInsights(
 			((thisWeekResets - lastWeekResets) / lastWeekResets) * 100,
 		);
 		if (pct > 0) {
-			insights.push(`Resets up ${pct}% vs last week`);
+			insights.push(t("weeklyInsight.resetsUp", { pct }));
 		} else if (pct < 0) {
-			insights.push(`Resets down ${Math.abs(pct)}% vs last week`);
+			insights.push(t("weeklyInsight.resetsDown", { pct: Math.abs(pct) }));
 		} else {
-			insights.push("Same number of resets as last week");
+			insights.push(t("weeklyInsight.sameResets"));
 		}
 	} else if (thisWeekResets > 0) {
 		insights.push(
-			`${thisWeekResets} reset${thisWeekResets > 1 ? "s" : ""} this week — great start`,
+			thisWeekResets > 1
+				? t("weeklyInsight.resetsThisWeek", { count: thisWeekResets })
+				: t("weeklyInsight.resetThisWeek"),
 		);
 	}
 
@@ -110,7 +101,9 @@ export function WeeklyInsightCard({
 	lastWeekResets,
 	rotateIntervalMs = 4000,
 }: WeeklyInsightCardProps): React.ReactElement | null {
+	const { t } = useTranslation();
 	const insights = buildInsights(
+		t,
 		dowCounts,
 		timeCounts,
 		thisWeekResets,
@@ -160,7 +153,7 @@ export function WeeklyInsightCard({
 		<Card style={styles.card} mode="contained">
 			<Card.Content style={styles.content}>
 				<Text variant="labelMedium" style={styles.sectionLabel}>
-					WEEKLY INSIGHT
+					{t("weeklyInsight.sectionLabel")}
 				</Text>
 				<Animated.View style={animatedStyle}>
 					<Text variant="bodyLarge" style={styles.insightText}>

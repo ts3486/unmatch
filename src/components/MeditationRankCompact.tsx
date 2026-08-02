@@ -8,6 +8,7 @@ import {
 } from "@/src/constants/config";
 import { colors } from "@/src/constants/theme";
 import type React from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { Surface, Text } from "react-native-paper";
 
@@ -28,8 +29,10 @@ export function MeditationRankCompact({
 	level,
 	meditationCount,
 }: MeditationRankCompactProps): React.ReactElement {
+	const { t } = useTranslation();
 	const isMaxLevel = level >= MEDITATION_RANK_CAP;
-	const meditationsIntoCurrentLevel = meditationCount % MEDITATION_RANK_PER_LEVEL;
+	const meditationsIntoCurrentLevel =
+		meditationCount % MEDITATION_RANK_PER_LEVEL;
 
 	return (
 		<Surface style={styles.card} elevation={2}>
@@ -37,11 +40,11 @@ export function MeditationRankCompact({
 				{level}
 			</Text>
 			<Text variant="labelMedium" style={styles.label}>
-				rank
+				{t("meditationRank.rank")}
 			</Text>
 			<Text variant="labelSmall" style={styles.progress}>
 				{isMaxLevel
-					? "Max"
+					? t("meditationRank.max")
 					: `${meditationsIntoCurrentLevel}/${MEDITATION_RANK_PER_LEVEL}`}
 			</Text>
 		</Surface>

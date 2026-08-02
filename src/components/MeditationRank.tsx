@@ -8,6 +8,7 @@ import {
 import { colors } from "@/src/constants/theme";
 import type React from "react";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Animated, StyleSheet, View } from "react-native";
 import { ProgressBar, Surface, Text } from "react-native-paper";
 
@@ -40,19 +41,18 @@ export function MeditationRank({
 	level,
 	meditationCount,
 }: MeditationRankProps): React.ReactElement {
+	const { t } = useTranslation();
 	const isMaxLevel = level >= MEDITATION_RANK_CAP;
 
 	// Meditations within the current level window (0–4 out of 5).
-	const meditationsIntoCurrentLevel = meditationCount % MEDITATION_RANK_PER_LEVEL;
+	const meditationsIntoCurrentLevel =
+		meditationCount % MEDITATION_RANK_PER_LEVEL;
 	const progressFraction = isMaxLevel
 		? 1
 		: meditationsIntoCurrentLevel / MEDITATION_RANK_PER_LEVEL;
 
 	// Number of "growth rings" to render (filled vs unfilled).
-	const rings = Array.from(
-		{ length: MEDITATION_RANK_PER_LEVEL },
-		(_, i) => i,
-	);
+	const rings = Array.from({ length: MEDITATION_RANK_PER_LEVEL }, (_, i) => i);
 
 	// ---------------------------------------------------------------------------
 	// Idle pulse animation on container
@@ -135,22 +135,25 @@ export function MeditationRank({
 			<Surface style={styles.container} elevation={2}>
 				{/* Title */}
 				<Text variant="titleMedium" style={styles.title}>
-					Your Meditation Rank
+					{t("meditationRank.title")}
 				</Text>
 
 				{/* Level header */}
 				<View style={styles.headerRow}>
 					<View>
 						<Text variant="labelMedium" style={styles.label}>
-							Rank
+							{t("meditationRank.rank")}
 						</Text>
 						<Text variant="displayMedium" style={styles.levelNumber}>
 							{level}
 						</Text>
 						<Text variant="bodySmall" style={styles.sublabel}>
 							{isMaxLevel
-								? "Maximum rank reached"
-								: `Rank ${level} of ${MEDITATION_RANK_CAP}`}
+								? t("meditationRank.maximumRankReached")
+								: t("meditationRank.rankOfCap", {
+										level,
+										cap: MEDITATION_RANK_CAP,
+									})}
 						</Text>
 					</View>
 
@@ -174,7 +177,7 @@ export function MeditationRank({
 						))}
 						<Text variant="labelSmall" style={styles.ringsLabel}>
 							{isMaxLevel
-								? "Max"
+								? t("meditationRank.max")
 								: `${meditationsIntoCurrentLevel} / ${MEDITATION_RANK_PER_LEVEL}`}
 						</Text>
 					</View>
@@ -189,14 +192,16 @@ export function MeditationRank({
 					/>
 					{!isMaxLevel && (
 						<Text variant="labelSmall" style={styles.progressLabel}>
-							{MEDITATION_RANK_PER_LEVEL - meditationsIntoCurrentLevel} more to
-							Rank {level + 1}
+							{t("meditationRank.moreToNextRank", {
+								count: MEDITATION_RANK_PER_LEVEL - meditationsIntoCurrentLevel,
+								next: level + 1,
+							})}
 						</Text>
 					)}
 					{isMaxLevel && (
 						<View style={styles.maxBadge}>
 							<Text variant="labelSmall" style={styles.maxBadgeText}>
-								Max Rank
+								{t("meditationRank.maxRank")}
 							</Text>
 						</View>
 					)}

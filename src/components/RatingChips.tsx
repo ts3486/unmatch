@@ -4,36 +4,50 @@
 
 import { colors } from "@/src/constants/theme";
 import type React from "react";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { Chip, Text } from "react-native-paper";
 
 // ---------------------------------------------------------------------------
-// Label maps
+// Label maps — translated, memoized per render
 // ---------------------------------------------------------------------------
 
-export const MOOD_LABELS: Record<number, string> = {
-	1: "Low",
-	2: "Okay",
-	3: "Good",
-	4: "Great",
-	5: "Amazing",
-};
+export function useMoodLabels(): Record<number, string> {
+	const { t } = useTranslation();
+	return useMemo(
+		() => ({
+			1: t("ratingChips.mood.1"),
+			2: t("ratingChips.mood.2"),
+			3: t("ratingChips.mood.3"),
+		}),
+		[t],
+	);
+}
 
-export const FATIGUE_LABELS: Record<number, string> = {
-	1: "Fine",
-	2: "Tired",
-	3: "Drained",
-	4: "Exhausted",
-	5: "Wrecked",
-};
+export function useFatigueLabels(): Record<number, string> {
+	const { t } = useTranslation();
+	return useMemo(
+		() => ({
+			1: t("ratingChips.fatigue.1"),
+			2: t("ratingChips.fatigue.2"),
+			3: t("ratingChips.fatigue.3"),
+		}),
+		[t],
+	);
+}
 
-export const URGE_LABELS: Record<number, string> = {
-	1: "Calm",
-	2: "Mild",
-	3: "Strong",
-	4: "Intense",
-	5: "Overwhelming",
-};
+export function useUrgeLabels(): Record<number, string> {
+	const { t } = useTranslation();
+	return useMemo(
+		() => ({
+			1: t("ratingChips.urge.1"),
+			2: t("ratingChips.urge.2"),
+			3: t("ratingChips.urge.3"),
+		}),
+		[t],
+	);
+}
 
 // ---------------------------------------------------------------------------
 // Props
@@ -71,7 +85,7 @@ export function RatingChips({
 				</Text>
 			)}
 			<View style={styles.chipRow}>
-				{[1, 2, 3, 4, 5].map((n) => (
+				{[1, 2, 3].map((n) => (
 					<Chip
 						key={n}
 						selected={value === n}

@@ -4,10 +4,10 @@
 // TypeScript strict mode.
 
 import {
-	FATIGUE_LABELS,
-	MOOD_LABELS,
 	RatingChips,
-	URGE_LABELS,
+	useFatigueLabels,
+	useMoodLabels,
+	useUrgeLabels,
 } from "@/src/components/RatingChips";
 import { colors } from "@/src/constants/theme";
 import type { UseCheckinReturn } from "@/src/hooks/useCheckin";
@@ -15,6 +15,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import type React from "react";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Divider, Surface, Text } from "react-native-paper";
 
@@ -35,6 +36,10 @@ export function InlineCheckin({
 	checkin,
 	onExpand,
 }: InlineCheckinProps): React.ReactElement {
+	const { t } = useTranslation();
+	const moodLabels = useMoodLabels();
+	const fatigueLabels = useFatigueLabels();
+	const urgeLabels = useUrgeLabels();
 	const { isComplete, existingCheckin } = checkin;
 
 	const handleDetails = useCallback((): void => {
@@ -55,32 +60,32 @@ export function InlineCheckin({
 						color={colors.success}
 					/>
 					<Text variant="titleSmall" style={styles.titleDone}>
-						Today's check-in
+						{t("checkin.alreadySubmittedTitle")}
 					</Text>
 				</View>
 
 				<RatingChips
-					label="Mood"
+					label={t("checkin.mood")}
 					value={existingCheckin.mood}
 					onChange={() => {}}
 					readonly
-					labelMap={MOOD_LABELS}
+					labelMap={moodLabels}
 				/>
 				<Divider style={styles.divider} />
 				<RatingChips
-					label="Fatigue"
+					label={t("checkin.fatigue")}
 					value={existingCheckin.fatigue}
 					onChange={() => {}}
 					readonly
-					labelMap={FATIGUE_LABELS}
+					labelMap={fatigueLabels}
 				/>
 				<Divider style={styles.divider} />
 				<RatingChips
-					label="Urge level"
+					label={t("checkin.urgeLevel")}
 					value={existingCheckin.urge}
 					onChange={() => {}}
 					readonly
-					labelMap={URGE_LABELS}
+					labelMap={urgeLabels}
 				/>
 
 				<Text
@@ -88,7 +93,7 @@ export function InlineCheckin({
 					style={styles.detailsLink}
 					onPress={handleDetails}
 				>
-					View details
+					{t("checkin.viewDetails")}
 				</Text>
 			</Surface>
 		);
@@ -109,10 +114,10 @@ export function InlineCheckin({
 					/>
 					<View style={styles.collapsedText}>
 						<Text variant="titleSmall" style={styles.title}>
-							Daily check-in
+							{t("home.dailyCheckin")}
 						</Text>
 						<Text variant="bodySmall" style={styles.subtitle}>
-							A quick self-reflection — private and offline
+							{t("home.dailyCheckinHint")}
 						</Text>
 					</View>
 					<MaterialCommunityIcons

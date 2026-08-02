@@ -6,6 +6,7 @@
 import { colors } from "@/src/constants/theme";
 import type React from "react";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { Card, Text } from "react-native-paper";
 import Animated, {
@@ -32,6 +33,7 @@ export function PersonalBestCard({
 	bestStreak,
 	currentStreak,
 }: PersonalBestCardProps): React.ReactElement | null {
+	const { t } = useTranslation();
 	const opacity = useSharedValue(0);
 	const translateY = useSharedValue(8);
 
@@ -69,13 +71,13 @@ export function PersonalBestCard({
 						</View>
 						<View style={styles.textBlock}>
 							<Text variant="labelMedium" style={styles.label}>
-								NEW PERSONAL BEST
+								{t("personalBest.newPersonalBest")}
 							</Text>
 							<Text variant="titleMedium" style={styles.headline}>
-								{bestStreak} day check-in streak
+								{t("personalBest.streakLabel", { count: bestStreak })}
 							</Text>
 							<Text variant="bodySmall" style={styles.sub}>
-								Keep going — you're on a roll.
+								{t("personalBest.keepGoing")}
 							</Text>
 						</View>
 					</View>

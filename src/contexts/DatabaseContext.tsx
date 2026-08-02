@@ -3,6 +3,7 @@
 
 import { initDatabase } from "@/src/data/database";
 import { seedContentIfEmpty } from "@/src/data/seed-loader";
+import { resolveDeviceLocale } from "@/src/i18n";
 import type { SQLiteDatabase } from "expo-sqlite";
 import type React from "react";
 import {
@@ -45,7 +46,7 @@ export function DatabaseProvider({
 
 		async function init(): Promise<void> {
 			const database = await initDatabase();
-			await seedContentIfEmpty(database);
+			await seedContentIfEmpty(database, resolveDeviceLocale());
 
 			if (!cancelled) {
 				setDb(database);

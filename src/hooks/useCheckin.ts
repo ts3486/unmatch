@@ -42,12 +42,12 @@ interface CheckinActions {
 export type UseCheckinReturn = CheckinState & CheckinActions;
 
 // ---------------------------------------------------------------------------
-// Default slider values (midpoint of 1-5 scale)
+// Default slider values (midpoint of 1-3 scale)
 // ---------------------------------------------------------------------------
 
-const DEFAULT_MOOD = 3;
-const DEFAULT_FATIGUE = 3;
-const DEFAULT_URGE = 3;
+const DEFAULT_MOOD = 2;
+const DEFAULT_FATIGUE = 2;
+const DEFAULT_URGE = 2;
 
 // ---------------------------------------------------------------------------
 // Hook

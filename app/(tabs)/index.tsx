@@ -12,24 +12,10 @@ import { useDismissedTips } from "@/src/hooks/useDismissedTips";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import type React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Animated, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Chip, Text } from "react-native-paper";
-
-// ---------------------------------------------------------------------------
-// Guide steps
-// ---------------------------------------------------------------------------
-
-const GUIDE_STEPS = [
-	{
-		title: "Breathing exercise",
-		text: "Breathe with the circle when you feel the urge to open a dating app. It runs continuously — just follow along.",
-	},
-	{
-		title: "Daily check-in",
-		text: "Tap the button at the bottom to log how you're feeling today. A quick daily check-in counts as a success for the day.",
-	},
-] as const;
 
 // ---------------------------------------------------------------------------
 // Guide overlay — centered modal with step indicator
@@ -50,6 +36,7 @@ function GuideOverlay({
 	text: string;
 	onNext: () => void;
 }): React.ReactElement | null {
+	const { t } = useTranslation();
 	const anim = useRef(new Animated.Value(0)).current;
 	const [mounted, setMounted] = useState(false);
 
@@ -119,10 +106,10 @@ function GuideOverlay({
 					onPress={onNext}
 					style={styles.overlayButton}
 					activeOpacity={0.7}
-					accessibilityLabel={isLast ? "Got it" : "Next"}
+					accessibilityLabel={isLast ? t("home.guide.gotIt") : t("home.guide.next")}
 				>
 					<Text variant="labelMedium" style={styles.overlayButtonText}>
-						{isLast ? "Got it" : "Next"}
+						{isLast ? t("home.guide.gotIt") : t("home.guide.next")}
 					</Text>
 				</TouchableOpacity>
 			</Animated.View>
@@ -135,10 +122,26 @@ function GuideOverlay({
 // ---------------------------------------------------------------------------
 
 export default function HomeScreen(): React.ReactElement {
+	const { t } = useTranslation();
 	const { todaySuccess, isLoading } = useAppState();
 
 	const checkin = useCheckin();
 	const tips = useDismissedTips();
+
+	const GUIDE_STEPS = useMemo(
+		() =>
+			[
+				{
+					title: t("home.guide.breathing.title"),
+					text: t("home.guide.breathing.text"),
+				},
+				{
+					title: t("home.guide.checkin.title"),
+					text: t("home.guide.checkin.text"),
+				},
+			] as const,
+		[t],
+	);
 
 	// Guide state: which step we're on, or null if not showing
 	const [guideStep, setGuideStep] = useState<number | null>(null);
@@ -166,7 +169,7 @@ export default function HomeScreen(): React.ReactElement {
 			}
 			return prev + 1;
 		});
-	}, [tips]);
+	}, [tips, GUIDE_STEPS.length]);
 
 	const handleShowGuide = useCallback(() => {
 		setGuideStep(0);
@@ -222,7 +225,7 @@ export default function HomeScreen(): React.ReactElement {
 		return (
 			<View style={styles.loadingContainer}>
 				<Text variant="bodyMedium" style={styles.loadingText}>
-					Loading...
+					{t("common.loading")}
 				</Text>
 			</View>
 		);
@@ -244,7 +247,7 @@ export default function HomeScreen(): React.ReactElement {
 						<TouchableOpacity
 							onPress={handleShowGuide}
 							hitSlop={8}
-							accessibilityLabel="Show guide"
+							accessibilityLabel={t("home.showGuideA11y")}
 							style={styles.helpButton}
 						>
 							<MaterialCommunityIcons
@@ -259,7 +262,7 @@ export default function HomeScreen(): React.ReactElement {
 								style={styles.successChip}
 								textStyle={styles.successChipText}
 							>
-								Today done
+								{t("home.todayDone")}
 							</Chip>
 						)}
 					</View>
@@ -291,7 +294,7 @@ export default function HomeScreen(): React.ReactElement {
 							color={colors.success}
 						/>
 						<Text variant="titleSmall" style={styles.checkinDoneText}>
-							Check-in done
+							{t("home.checkinDone")}
 						</Text>
 						<MaterialCommunityIcons
 							name="chevron-right"
@@ -306,10 +309,10 @@ export default function HomeScreen(): React.ReactElement {
 						style={styles.checkinButton}
 						contentStyle={styles.checkinButtonContent}
 						labelStyle={styles.checkinButtonLabel}
-						accessibilityLabel="Open daily check-in"
-						accessibilityHint="Quick self-reflection — private and offline"
+						accessibilityLabel={t("home.dailyCheckinA11y")}
+						accessibilityHint={t("home.dailyCheckinHint")}
 					>
-						Daily check-in
+						{t("home.dailyCheckin")}
 					</Button>
 				)}
 			</View>

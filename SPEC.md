@@ -41,6 +41,7 @@ This document tracks feature-level requirements, screen specs, and implementatio
 
 ### /(tabs)/settings
 - Notification style toggle
+- Language toggle — English / 日本語, persists to `user_profile.locale`
 - Blocker guide link
 - Privacy/data export link
 - No "Why We Charge" / "Unlock Unmatch" rows — app is free, no upsell surface in Settings
@@ -69,9 +70,20 @@ This document tracks feature-level requirements, screen specs, and implementatio
 - Spend categories: iap, date, gift, tipping, transport, other
 - App access: free for all users. The `(tabs)` navigator no longer gates on `isPremium` — no redirect to paywall.
 
+## Localization
+- Supported locales: `en` (default), `ja`
+- Library: `react-i18next` + `i18next`; device locale detected via `expo-localization`
+- Resolution order: `user_profile.locale` (persisted, set by explicit Settings toggle) → device locale (`expo-localization`) → `en` fallback
+- UI strings extracted to `src/i18n/locales/en.json` / `src/i18n/locales/ja.json`, accessed via `useTranslation()` / `t()` — no more inline English literals in screens/components
+- Seed content: parallel Japanese seed files `data/seed/catalog.ja.json` and `data/seed/starter_7d.ja.json`, mirroring the English structure exactly (same IDs, same shape); the seed loader picks the file matching the active locale
+- Date formatting: `date-fns/locale/ja` wired into the two locale-sensitive `format()` calls (`app/progress/day/[date].tsx`) via the active locale
+- Notification copy (`src/constants/notification-content.ts`) localized through the same `t()` keys
+- `__tests__/wording/forbidden-wording.test.ts` extended with Japanese-equivalent patterns for the same 5 banned categories (sexual wording, cure/treatment claims, perfect-blocking claims, relationship/dating coaching, forced/involuntary lockout), run against both seed locale variants
+- Translations are machine-generated for this pass; flagged for a native-speaker pass before shipping, especially `/settings/privacy` (legal copy) and any claims-adjacent seed content
+
 ## Data
-- Seed: `data/seed/catalog.json` (triggers, actions, spend delay cards)
-- Seed: `data/seed/starter_7d.json` (7-day course)
+- Seed: `data/seed/catalog.json` / `data/seed/catalog.ja.json` (triggers, actions, spend delay cards)
+- Seed: `data/seed/starter_7d.json` / `data/seed/starter_7d.ja.json` (7-day course)
 - Storage: expo-sqlite, local only, no backend
 
 ## Services

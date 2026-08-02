@@ -4,6 +4,7 @@
 
 import { colors } from "@/src/constants/theme";
 import type React from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 
@@ -17,14 +18,12 @@ import { Text } from "react-native-paper";
  * Communicates that no data leaves the device.
  */
 export function PrivacyBadge(): React.ReactElement {
+	const { t } = useTranslation();
 	return (
-		<View
-			style={styles.container}
-			accessibilityLabel="This app works 100% offline"
-		>
+		<View style={styles.container} accessibilityLabel={t("common.offlineA11y")}>
 			<View style={styles.dot} />
 			<Text variant="labelSmall" style={styles.label}>
-				100% offline
+				{t("common.offlineLabel")}
 			</Text>
 		</View>
 	);

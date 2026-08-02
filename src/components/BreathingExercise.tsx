@@ -9,8 +9,14 @@ import {
 } from "@/src/constants/config";
 import { colors } from "@/src/constants/theme";
 import type React from "react";
-import { useEffect, useRef } from "react";
-import { Animated, type AccessibilityRole, StyleSheet, View } from "react-native";
+import { useEffect, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import {
+	type AccessibilityRole,
+	Animated,
+	StyleSheet,
+	View,
+} from "react-native";
 import { Text } from "react-native-paper";
 import { BreathingCircle, type BreathingPhase } from "./BreathingCircle";
 
@@ -19,23 +25,6 @@ import { BreathingCircle, type BreathingPhase } from "./BreathingCircle";
 // ---------------------------------------------------------------------------
 
 const CYCLE_DURATION = BREATHING_INHALE + BREATHING_HOLD + BREATHING_EXHALE; // 12s
-
-// ---------------------------------------------------------------------------
-// Affirmations — one per breathing cycle, rotating
-// ---------------------------------------------------------------------------
-
-const AFFIRMATIONS: string[] = [
-	"You don't need their validation.",
-	"Your time is worth more than a swipe.",
-	"Stop chasing matches. Start building yourself.",
-	"That boost won't make you happier.",
-	"You're here because you chose yourself.",
-	"Real connection starts within.",
-	"No app can fill what you already have.",
-	"Invest in yourself, not in likes.",
-	"You are enough without a match.",
-	"Let the urge pass. You're stronger than it.",
-];
 
 /**
  * Derives the current breathing phase and time remaining in that phase
@@ -125,14 +114,25 @@ export function BreathingExercise({
 	sessionComplete,
 	onRestart,
 }: BreathingExerciseProps): React.ReactElement {
+	const { t } = useTranslation();
 	const { phase, phaseTimeLeft } = getPhase(timeLeft, totalDuration);
 	const phaseConfig = PHASE_CONFIG[phase];
+	const phaseLabels: Record<BreathingPhase, string> = {
+		Inhale: t("breathing.phase.inhale"),
+		Hold: t("breathing.phase.hold"),
+		Exhale: t("breathing.phase.exhale"),
+	};
+
+	const affirmations = useMemo(
+		() => t("breathing.affirmations", { returnObjects: true }) as string[],
+		[t],
+	);
 
 	// Derive which breathing cycle we're in (0-based) to pick an affirmation.
 	const elapsed = totalDuration - timeLeft;
 	const cycleIndex = Math.floor(elapsed / CYCLE_DURATION);
 	const affirmation =
-		AFFIRMATIONS[cycleIndex % AFFIRMATIONS.length] ?? AFFIRMATIONS[0];
+		affirmations[cycleIndex % affirmations.length] ?? affirmations[0];
 
 	// Affirmation animation — fade out + slide down, then fade in + slide up.
 	const affirmationOpacity = useRef(new Animated.Value(1)).current;
@@ -210,7 +210,7 @@ export function BreathingExercise({
 			{sessionComplete ? (
 				<View style={styles.affirmationContainer}>
 					<Text variant="headlineSmall" style={styles.completionText}>
-						Well done. You chose yourself.
+						{t("breathing.completionText")}
 					</Text>
 				</View>
 			) : (
@@ -248,10 +248,10 @@ export function BreathingExercise({
 						variant="titleLarge"
 						style={[styles.phaseText, { color: phaseConfig.color }]}
 						accessibilityLiveRegion="polite"
-						accessibilityLabel={`${phase}`}
+						accessibilityLabel={phaseLabels[phase]}
 						accessibilityRole={"text" as AccessibilityRole}
 					>
-						{phase}
+						{phaseLabels[phase]}
 					</Text>
 				</Animated.View>
 			)}
@@ -266,13 +266,13 @@ export function BreathingExercise({
 								style={styles.restartLink}
 								onPress={onRestart}
 							>
-								Restart session
+								{t("breathing.restartSession")}
 							</Text>
 						)
 					) : (
 						<>
 							<Text variant="labelMedium" style={styles.sessionLabel}>
-								Session
+								{t("breathing.session")}
 							</Text>
 							<Text variant="headlineMedium" style={styles.sessionTime}>
 								{formatElapsed(sessionTimeLeft)}
@@ -284,25 +284,25 @@ export function BreathingExercise({
 
 			{/* Cycle guide — freeze active states when session complete */}
 			{!sessionComplete && (
-			<View style={styles.cycleGuide}>
-				<CycleStep
-					label="Inhale"
-					duration={BREATHING_INHALE}
-					active={!sessionComplete && phase === "Inhale"}
-				/>
-				<View style={styles.cycleDivider} />
-				<CycleStep
-					label="Hold"
-					duration={BREATHING_HOLD}
-					active={!sessionComplete && phase === "Hold"}
-				/>
-				<View style={styles.cycleDivider} />
-				<CycleStep
-					label="Exhale"
-					duration={BREATHING_EXHALE}
-					active={!sessionComplete && phase === "Exhale"}
-				/>
-			</View>
+				<View style={styles.cycleGuide}>
+					<CycleStep
+						label={phaseLabels.Inhale}
+						duration={BREATHING_INHALE}
+						active={!sessionComplete && phase === "Inhale"}
+					/>
+					<View style={styles.cycleDivider} />
+					<CycleStep
+						label={phaseLabels.Hold}
+						duration={BREATHING_HOLD}
+						active={!sessionComplete && phase === "Hold"}
+					/>
+					<View style={styles.cycleDivider} />
+					<CycleStep
+						label={phaseLabels.Exhale}
+						duration={BREATHING_EXHALE}
+						active={!sessionComplete && phase === "Exhale"}
+					/>
+				</View>
 			)}
 		</View>
 	);

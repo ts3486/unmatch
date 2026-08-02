@@ -96,13 +96,23 @@ interface RawStarterCourse {
 // Load raw JSON (require for React Native bundler compatibility)
 // ---------------------------------------------------------------------------
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const rawCatalog: RawCatalog =
-	require("../../data/seed/catalog.json") as RawCatalog;
+export type SeedLocale = "en" | "ja";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const rawStarterCourse: RawStarterCourse =
-	require("../../data/seed/starter_7d.json") as RawStarterCourse;
+const rawCatalogByLocale: Record<SeedLocale, RawCatalog> = {
+	en: require("../../data/seed/catalog.json") as RawCatalog,
+	ja: require("../../data/seed/catalog.ja.json") as RawCatalog,
+};
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const rawStarterCourseByLocale: Record<SeedLocale, RawStarterCourse> = {
+	en: require("../../data/seed/starter_7d.json") as RawStarterCourse,
+	ja: require("../../data/seed/starter_7d.ja.json") as RawStarterCourse,
+};
+
+function resolveSeedLocale(locale: string): SeedLocale {
+	return locale === "ja" ? "ja" : "en";
+}
 
 // ---------------------------------------------------------------------------
 // Mapping helpers: raw JSON (camelCase) -> domain types (snake_case)
@@ -149,21 +159,24 @@ function mapCopy(raw: RawCopy): CatalogCopy {
 }
 
 // ---------------------------------------------------------------------------
-// Memoized, mapped catalog
+// Memoized, mapped catalog (one per locale)
 // ---------------------------------------------------------------------------
 
-let _catalog: Catalog | null = null;
+const _catalogByLocale = new Map<SeedLocale, Catalog>();
 
 /**
- * Returns the typed Catalog object derived from catalog.json.
- * The result is memoized after the first call.
+ * Returns the typed Catalog object derived from catalog.json (or catalog.ja.json).
+ * The result is memoized per locale after the first call.
  */
-export function getCatalog(): Catalog {
-	if (_catalog !== null) {
-		return _catalog;
+export function getCatalog(locale: string = "en"): Catalog {
+	const seedLocale = resolveSeedLocale(locale);
+	const cached = _catalogByLocale.get(seedLocale);
+	if (cached !== undefined) {
+		return cached;
 	}
 
-	_catalog = {
+	const rawCatalog = rawCatalogByLocale[seedLocale];
+	const catalog: Catalog = {
 		triggers: rawCatalog.triggers.map(mapTrigger),
 		actions: rawCatalog.actions.map(mapAction),
 		urge_kinds: rawCatalog.urgeKinds.map(mapUrgeKind),
@@ -174,13 +187,17 @@ export function getCatalog(): Catalog {
 		motivation_messages: rawCatalog.motivation_messages ?? [],
 	};
 
-	return _catalog;
+	_catalogByLocale.set(seedLocale, catalog);
+	return catalog;
 }
 
 /**
- * Returns the typed StarterCourse object derived from starter_7d.json.
+ * Returns the typed StarterCourse object derived from starter_7d.json
+ * (or starter_7d.ja.json).
  */
-export function getStarterCourse(): StarterCourse {
+export function getStarterCourse(locale: string = "en"): StarterCourse {
+	const seedLocale = resolveSeedLocale(locale);
+	const rawStarterCourse = rawStarterCourseByLocale[seedLocale];
 	const days: StarterDay[] = rawStarterCourse.days.map(
 		(raw: RawStarterDay): StarterDay => ({
 			day_index: raw.dayIndex,
@@ -204,11 +221,14 @@ export function getStarterCourse(): StarterCourse {
 
 /**
  * Checks whether the content table is empty. If so, inserts all seven days
- * from starter_7d.json into the content table.
+ * from starter_7d.json (or the locale variant) into the content table.
  *
  * Safe to call on every app launch; it is a no-op when content already exists.
  */
-export async function seedContentIfEmpty(db: SQLiteDatabase): Promise<void> {
+export async function seedContentIfEmpty(
+	db: SQLiteDatabase,
+	locale: string = "en",
+): Promise<void> {
 	const existing = await db.getFirstAsync<{ count: number }>(
 		"SELECT COUNT(*) AS count FROM content;",
 	);
@@ -217,7 +237,9 @@ export async function seedContentIfEmpty(db: SQLiteDatabase): Promise<void> {
 		return;
 	}
 
-	const course = getStarterCourse();
+	const seedLocale = resolveSeedLocale(locale);
+	const rawStarterCourse = rawStarterCourseByLocale[seedLocale];
+	const course = getStarterCourse(seedLocale);
 
 	for (const day of course.days) {
 		// content_id matches the raw contentId from the JSON file to keep IDs stable.
@@ -238,6 +260,29 @@ export async function seedContentIfEmpty(db: SQLiteDatabase): Promise<void> {
 				day.action_text,
 				day.est_minutes,
 			],
+		);
+	}
+}
+
+/**
+ * Overwrites the title/body/action_text of existing content rows to match
+ * the given locale's course text, keyed by content_id. Called when the user
+ * switches language so the already-seeded course content is re-translated.
+ * content_progress (completion tracking) is untouched since content_id is
+ * stable across locales.
+ */
+export async function reseedContentForLocale(
+	db: SQLiteDatabase,
+	locale: string,
+): Promise<void> {
+	const seedLocale = resolveSeedLocale(locale);
+	const rawStarterCourse = rawStarterCourseByLocale[seedLocale];
+
+	for (const raw of rawStarterCourse.days) {
+		await db.runAsync(
+			`UPDATE content SET title = ?, body = ?, action_text = ?
+       WHERE content_id = ?;`,
+			[raw.title, raw.body, raw.actionText, raw.contentId],
 		);
 	}
 }

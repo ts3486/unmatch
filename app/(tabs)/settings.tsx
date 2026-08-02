@@ -8,6 +8,7 @@ import { useAppState } from "@/src/contexts/AppStateContext";
 import { useDatabaseContext } from "@/src/contexts/DatabaseContext";
 import { updateUserProfile } from "@/src/data/repositories";
 import type { NotificationStyle } from "@/src/domain/types";
+import { type SupportedLocale, isSupportedLocale } from "@/src/i18n";
 import {
 	cancelAllScheduled,
 	requestPermissions,
@@ -15,6 +16,7 @@ import {
 import { router } from "expo-router";
 import type React from "react";
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { Divider, List, Text } from "react-native-paper";
 
@@ -23,7 +25,9 @@ import { Divider, List, Text } from "react-native-paper";
 // ---------------------------------------------------------------------------
 
 export default function SettingsScreen(): React.ReactElement {
-	const { userProfile, refreshProfile, refreshPremiumStatus } = useAppState();
+	const { t, i18n } = useTranslation();
+	const { userProfile, refreshProfile, refreshPremiumStatus, changeLocale } =
+		useAppState();
 	const { db } = useDatabaseContext();
 
 	const [notifStyle, setNotifStyle] = useState<NotificationStyle>(
@@ -54,20 +58,36 @@ export default function SettingsScreen(): React.ReactElement {
 				const granted = await requestPermissions();
 				if (!granted) {
 					Alert.alert(
-						"Notifications Disabled",
-						"You can enable notifications in your device settings.",
+						t("settings.notifDisabledTitle"),
+						t("settings.notifDisabledBody"),
 					);
 				}
 			}
 		} finally {
 			setIsUpdating(false);
 		}
-	}, [db, userProfile, refreshProfile, notifStyle, isUpdating]);
+	}, [db, userProfile, refreshProfile, notifStyle, isUpdating, t]);
 
 	const notifLabel: Record<NotificationStyle, string> = {
-		normal: "On",
-		off: "Off",
+		normal: t("settings.on"),
+		off: t("settings.off"),
 	};
+
+	const languageLabel: Record<SupportedLocale, string> = {
+		en: t("settings.languageEnglish"),
+		ja: t("settings.languageJapanese"),
+	};
+
+	const currentLocale: SupportedLocale = isSupportedLocale(i18n.language)
+		? i18n.language
+		: "en";
+
+	const cycleLocale = useCallback(async (): Promise<void> => {
+		const cycle: SupportedLocale[] = ["en", "ja"];
+		const currentIdx = cycle.indexOf(currentLocale);
+		const next = cycle[(currentIdx + 1) % cycle.length] as SupportedLocale;
+		await changeLocale(next);
+	}, [currentLocale, changeLocale]);
 
 	// ---------------------------------------------------------------------------
 	// Render
@@ -80,23 +100,27 @@ export default function SettingsScreen(): React.ReactElement {
 			showsVerticalScrollIndicator={false}
 		>
 			<Text variant="headlineMedium" style={styles.screenTitle}>
-				Settings
+				{t("settings.title")}
 			</Text>
 
 			{/* Notifications */}
 			<Text variant="labelLarge" style={styles.sectionLabel}>
-				Your Notifications
+				{t("settings.yourNotifications")}
 			</Text>
 			<View style={styles.listCard}>
 				<List.Item
-					title="Notification style"
-					description={`Current: ${notifLabel[notifStyle]}`}
+					title={t("settings.notificationStyle")}
+					description={t("settings.currentPrefix", {
+						value: notifLabel[notifStyle],
+					})}
 					titleStyle={styles.listTitle}
 					descriptionStyle={styles.listDesc}
 					onPress={() => {
 						void cycleNotifStyle();
 					}}
-					accessibilityLabel={`Notification style: ${notifLabel[notifStyle]}. Tap to change.`}
+					accessibilityLabel={t("settings.notifStyleA11y", {
+						value: notifLabel[notifStyle],
+					})}
 					accessibilityRole="button"
 					right={() => (
 						<Text variant="labelMedium" style={styles.rightLabel}>
@@ -104,22 +128,39 @@ export default function SettingsScreen(): React.ReactElement {
 						</Text>
 					)}
 				/>
+				<Divider style={{ backgroundColor: colors.border }} />
+				<List.Item
+					title={t("settings.language")}
+					description={languageLabel[currentLocale]}
+					titleStyle={styles.listTitle}
+					descriptionStyle={styles.listDesc}
+					onPress={() => {
+						void cycleLocale();
+					}}
+					accessibilityLabel={`${t("settings.language")}: ${languageLabel[currentLocale]}`}
+					accessibilityRole="button"
+					right={() => (
+						<Text variant="labelMedium" style={styles.rightLabel}>
+							{languageLabel[currentLocale]}
+						</Text>
+					)}
+				/>
 			</View>
 
 			{/* Resources */}
 			<Text variant="labelLarge" style={styles.sectionLabel}>
-				Tools
+				{t("settings.tools")}
 			</Text>
 			<View style={styles.listCard}>
 				<List.Item
-					title="Blocker guide"
-					description="How to limit dating app access using device settings"
+					title={t("settings.blockerGuide")}
+					description={t("settings.blockerGuideDesc")}
 					titleStyle={styles.listTitle}
 					descriptionStyle={styles.listDesc}
 					onPress={() => {
 						router.push("/settings/blocker-guide");
 					}}
-					accessibilityLabel="Blocker guide — how to limit dating app access"
+					accessibilityLabel={`${t("settings.blockerGuide")} — ${t("settings.blockerGuideDesc")}`}
 					accessibilityRole="button"
 					right={({ color }) => (
 						<List.Icon icon="chevron-right" color={color} />
@@ -129,18 +170,18 @@ export default function SettingsScreen(): React.ReactElement {
 
 			{/* Data */}
 			<Text variant="labelLarge" style={styles.sectionLabel}>
-				Your Data
+				{t("settings.yourData")}
 			</Text>
 			<View style={styles.listCard}>
 				<List.Item
-					title="Privacy and data"
-					description="Export or delete your local data"
+					title={t("settings.privacyAndData")}
+					description={t("settings.privacyAndDataDesc")}
 					titleStyle={styles.listTitle}
 					descriptionStyle={styles.listDesc}
 					onPress={() => {
 						router.push("/settings/privacy");
 					}}
-					accessibilityLabel="Privacy and data — export or delete your local data"
+					accessibilityLabel={`${t("settings.privacyAndData")} — ${t("settings.privacyAndDataDesc")}`}
 					accessibilityRole="button"
 					right={({ color }) => (
 						<List.Icon icon="chevron-right" color={color} />
@@ -153,22 +194,22 @@ export default function SettingsScreen(): React.ReactElement {
 			{__DEV__ && (
 				<>
 					<Text variant="labelLarge" style={styles.sectionLabel}>
-						Dev Tools
+						{t("settings.devTools")}
 					</Text>
 					<View style={styles.listCard}>
 						<List.Item
-							title="Reset subscription"
-							description="Clears premium status so you can test the paywall"
+							title={t("settings.resetSubscription")}
+							description={t("settings.resetSubscriptionDesc")}
 							titleStyle={[styles.listTitle, { color: colors.warning }]}
 							descriptionStyle={styles.listDesc}
 							onPress={() => {
 								Alert.alert(
-									"Reset subscription?",
-									"This will remove your premium status and redirect to the paywall.",
+									t("settings.resetSubscriptionDialogTitle"),
+									t("settings.resetSubscriptionDialogBody"),
 									[
-										{ text: "Cancel", style: "cancel" },
+										{ text: t("common.cancel"), style: "cancel" },
 										{
-											text: "Reset",
+											text: t("settings.reset"),
 											style: "destructive",
 											onPress: () => {
 												void (async () => {
@@ -190,18 +231,18 @@ export default function SettingsScreen(): React.ReactElement {
 						/>
 						<Divider style={{ backgroundColor: colors.border }} />
 						<List.Item
-							title="Reset onboarding"
-							description="Wipes profile so you restart from onboarding"
+							title={t("settings.resetOnboarding")}
+							description={t("settings.resetOnboardingDesc")}
 							titleStyle={[styles.listTitle, { color: colors.warning }]}
 							descriptionStyle={styles.listDesc}
 							onPress={() => {
 								Alert.alert(
-									"Reset onboarding?",
-									"This will delete your profile and all data. The app will restart at onboarding.",
+									t("settings.resetOnboardingDialogTitle"),
+									t("settings.resetOnboardingDialogBody"),
 									[
-										{ text: "Cancel", style: "cancel" },
+										{ text: t("common.cancel"), style: "cancel" },
 										{
-											text: "Reset",
+											text: t("settings.reset"),
 											style: "destructive",
 											onPress: () => {
 												void (async () => {
@@ -231,7 +272,7 @@ export default function SettingsScreen(): React.ReactElement {
 				<Logo markSize={24} layout="horizontal" wordmarkColor={colors.muted} />
 			</View>
 			<Text variant="bodySmall" style={styles.footerText}>
-				All data stays on your device — always.
+				{t("settings.footerText")}
 			</Text>
 			<View style={styles.bottomSpacer} />
 		</ScrollView>
