@@ -198,39 +198,6 @@ export default function SettingsScreen(): React.ReactElement {
 					</Text>
 					<View style={styles.listCard}>
 						<List.Item
-							title={t("settings.resetSubscription")}
-							description={t("settings.resetSubscriptionDesc")}
-							titleStyle={[styles.listTitle, { color: colors.warning }]}
-							descriptionStyle={styles.listDesc}
-							onPress={() => {
-								Alert.alert(
-									t("settings.resetSubscriptionDialogTitle"),
-									t("settings.resetSubscriptionDialogBody"),
-									[
-										{ text: t("common.cancel"), style: "cancel" },
-										{
-											text: t("settings.reset"),
-											style: "destructive",
-											onPress: () => {
-												void (async () => {
-													await db.runAsync(
-														"DELETE FROM subscription_state WHERE id = 'singleton';",
-													);
-													await refreshPremiumStatus();
-													router.replace("/paywall");
-												})();
-											},
-										},
-									],
-								);
-							}}
-							accessibilityLabel="Reset subscription for testing"
-							left={() => (
-								<List.Icon icon="bug-outline" color={colors.warning} />
-							)}
-						/>
-						<Divider style={{ backgroundColor: colors.border }} />
-						<List.Item
 							title={t("settings.resetOnboarding")}
 							description={t("settings.resetOnboardingDesc")}
 							titleStyle={[styles.listTitle, { color: colors.warning }]}
