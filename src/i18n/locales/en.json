@@ -100,7 +100,7 @@
 		"amount": "Amount (optional)",
 		"amountNote": "Amount is stored locally and never shared.",
 		"personalNote": "Personal note (optional)",
-		"notePlaceholder": "For your eyes only",
+		"notePlaceholder": "How did today go? Write a goal, a win, or anything on your mind.",
 		"noteNote": "Notes are never included in analytics or exports.",
 		"save": "Save my reflection",
 		"saveShort": "Save reflection",

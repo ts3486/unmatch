@@ -1,0 +1,231 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 1242px;
+    height: 2788px;
+    font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #2d1050;
+  }
+  .ss {
+    width: 1242px;
+    height: 2788px;
+    background: linear-gradient(160deg, #0B1220 0%, #121C2E 40%, #1a1040 70%, #2d1050 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .sparkle {
+    position: absolute;
+    bottom: 200px;
+    right: 80px;
+    width: 60px;
+    height: 60px;
+    opacity: 0.6;
+  }
+  .sparkle svg { width: 100%; height: 100%; }
+  .headline-area {
+    padding-top: 0;
+    padding-bottom: 30px;
+    text-align: center;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+  .headline {
+    font-size: 72px;
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1.3;
+    letter-spacing: -0.5px;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  .subheadline {
+    font-size: 40px;
+    font-weight: 400;
+    color: #A7B3C7;
+    line-height: 1.6;
+    margin-top: 28px;
+    max-width: 880px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .phone-frame {
+    width: 780px;
+    height: 1600px;
+    background: #000;
+    border-radius: 100px;
+    border: 6px solid #333;
+    position: relative;
+    overflow: hidden;
+    margin-top: 20px;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 0 2px rgba(255,255,255,0.05);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  .dynamic-island {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 240px;
+    height: 70px;
+    background: #000;
+    border-radius: 40px;
+    z-index: 10;
+  }
+  .status-bar {
+    height: 110px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 60px 10px;
+    color: #fff;
+    font-size: 32px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .status-time { font-weight: 700; }
+  .status-icons { display: flex; gap: 12px; align-items: center; }
+  .status-icons svg { width: 32px; height: 32px; }
+  .screen-content {
+    flex: 1;
+    padding: 20px 44px;
+    display: flex;
+    flex-direction: column;
+    background: #0B1220;
+    overflow: hidden;
+  }
+  .tab-bar {
+    height: 140px;
+    background: #0B1220;
+    border-top: 2px solid #223049;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 30px 30px;
+    flex-shrink: 0;
+  }
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .tab-item svg { width: 44px; height: 44px; }
+  .tab-label {
+    font-size: 20px;
+    font-weight: 500;
+    color: #A7B3C7;
+  }
+  .tab-item.active .tab-label { color: #4C8DFF; }
+  .home-indicator {
+    width: 260px;
+    height: 8px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+    margin: 0 auto 16px;
+    flex-shrink: 0;
+  }
+  .glow-blue {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(76,141,255,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .glow-purple {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+</style></head><body>
+<div class="ss">
+  <div class="glow-blue" style="top:300px;right:-200px;"></div>
+  <div class="glow-purple" style="bottom:200px;left:-150px;"></div>
+  <div class="headline-area">
+    <div class="headline">衝動が来たら<br>深呼吸をしよう</div>
+    <div class="subheadline">60秒のガイド付きリセットで<br>心を落ち着けて、やり過ごそう。</div>
+  </div>
+  <div class="phone-frame">
+    <div class="dynamic-island"></div>
+    
+<div class="status-bar">
+  <span class="status-time">9:41</span>
+  <div class="status-icons">
+    <svg viewBox="0 0 24 24" fill="white"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+    <svg viewBox="0 0 24 24" fill="white"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+  </div>
+</div>
+    <div class="screen-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-top:8px;">
+        <div style="display:flex;align-items:center;gap:16px;">
+          <img src="data:image/png;base64,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" width="52" height="52" style="object-fit:contain;" />
+          <span style="font-size:36px;font-weight:700;color:#E6EDF7;">Unmatch</span>
+        </div>
+        <div style="background:#1A3D2E;border:2px solid #47C28B;border-radius:32px;padding:10px 24px;display:flex;align-items:center;gap:10px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#47C28B"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+          <span style="color:#47C28B;font-size:24px;font-weight:600;">本日完了</span>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;">
+        <div style="font-size:38px;font-weight:600;color:#7AA7FF;text-align:center;line-height:1.5;padding:0 20px;min-height:120px;display:flex;align-items:center;">誰かに認めてもらう必要はない。</div>
+        <div style="width:380px;height:380px;border-radius:50%;border:4px solid #47C28B;display:flex;align-items:center;justify-content:center;">
+          <div style="width:340px;height:340px;border-radius:50%;background:radial-gradient(circle at 40% 40%, rgba(71,194,139,0.35), rgba(71,194,139,0.12) 70%, transparent);display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:72px;font-weight:700;color:#fff;">5</span>
+          </div>
+        </div>
+        <div style="font-size:42px;font-weight:700;color:#47C28B;letter-spacing:2px;">吐く</div>
+        <div style="text-align:center;margin-top:8px;">
+          <div style="font-size:22px;font-weight:600;color:#A7B3C7;letter-spacing:3px;">セッション</div>
+          <div style="font-size:52px;font-weight:600;color:#E6EDF7;margin-top:4px;">0:41</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:24px;margin-top:20px;">
+          <div style="text-align:center;"><div style="font-size:24px;font-weight:500;color:#A7B3C7;">吸う</div><div style="font-size:20px;color:#223049;margin-top:2px;">4s</div></div>
+          <div style="width:40px;height:2px;background:#223049;"></div>
+          <div style="text-align:center;"><div style="font-size:24px;font-weight:500;color:#A7B3C7;">止める</div><div style="font-size:20px;color:#223049;margin-top:2px;">2s</div></div>
+          <div style="width:40px;height:2px;background:#223049;"></div>
+          <div style="text-align:center;"><div style="font-size:24px;font-weight:700;color:#E6EDF7;">吐く</div><div style="font-size:20px;color:#A7B3C7;margin-top:2px;">6s</div></div>
+        </div>
+      </div>
+      <div style="border-top:2px solid #223049;padding:24px 0 8px;">
+        <div style="background:#4C8DFF;border-radius:28px;padding:28px 0;text-align:center;"><span style="color:#fff;font-size:30px;font-weight:600;">デイリーチェックイン</span></div>
+      </div>
+    </div>
+    <div class="tab-bar">
+    <div class="tab-item active">
+      <svg viewBox="0 0 24 24" fill="#4C8DFF"><path d="M12 4c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2m0 14c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4m0-12C9.79 6 8 7.79 8 10s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4"/></svg>
+      <span class="tab-label">ホーム</span>
+    </div>
+    <div class="tab-item">
+      <svg viewBox="0 0 24 24" fill="#A7B3C7"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+      <span class="tab-label">記録</span>
+    </div>
+    <div class="tab-item">
+      <svg viewBox="0 0 24 24" fill="#A7B3C7"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>
+      <span class="tab-label">学ぶ</span>
+    </div>
+    <div class="tab-item">
+      <svg viewBox="0 0 24 24" fill="#A7B3C7"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      <span class="tab-label">設定</span>
+    </div>
+  </div>
+  <div class="home-indicator"></div>
+  </div>
+  
+<div class="sparkle">
+  <svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.5)"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+</div>
+</div></body></html>

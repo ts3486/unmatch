@@ -339,9 +339,11 @@ export default function CheckinScreen(): React.ReactElement {
 
 				<Card style={styles.card} mode="contained">
 					<Card.Content>
+						<Text variant="labelLarge" style={styles.noteLabel}>
+							{t("checkin.personalNote")}
+						</Text>
 						<TextInput
 							mode="outlined"
-							label={t("checkin.personalNote")}
 							placeholder={t("checkin.notePlaceholder")}
 							value={note}
 							onChangeText={setNote}
@@ -483,6 +485,11 @@ const styles = StyleSheet.create({
 	amountNote: {
 		color: colors.muted,
 		lineHeight: 18,
+	},
+	noteLabel: {
+		color: colors.text,
+		fontWeight: "500",
+		marginBottom: 10,
 	},
 	noteInput: {
 		backgroundColor: colors.background,

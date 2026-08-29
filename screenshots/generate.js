@@ -1,4 +1,4 @@
-// Generate 4 individual App Store screenshot HTML files and capture them with headless Chrome.
+// Generate 3 individual App Store screenshot HTML files and capture them with headless Chrome.
 // Usage: node generate.js (then run the Chrome commands printed)
 
 const fs = require('fs');
@@ -9,7 +9,6 @@ const HEIGHT = 2688;
 
 const dir = path.join(__dirname);
 const logoSmallB64 = fs.readFileSync(path.join(dir, 'logo_small.b64'), 'utf8').trim();
-const logoLargeB64 = fs.readFileSync(path.join(dir, 'logo_large.b64'), 'utf8').trim();
 
 const sharedStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -251,6 +250,14 @@ const ss1 = `
 </div>`;
 
 // ========== Screenshot 2: Check-in ==========
+function checkmarkSVG(color) {
+  return `<svg width="22" height="22" viewBox="0 0 24 24" fill="${color}" style="margin-right:8px;flex-shrink:0;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>`;
+}
+
+function pillChip(text, selected) {
+  return `<div style="display:inline-flex;align-items:center;border:2px solid ${selected ? "#4C8DFF" : "#223049"};border-radius:24px;padding:16px 28px;background:${selected ? "#0F1D3A" : "#0B1220"};">${selected ? checkmarkSVG("#E6EDF7") : ""}<span style="font-size:24px;color:${selected ? "#E6EDF7" : "#A7B3C7"};font-weight:${selected ? "700" : "400"};white-space:nowrap;">${text}</span></div>`;
+}
+
 const ss2 = `
 <div class="ss">
   <div class="glow-blue" style="top:500px;left:-200px;"></div>
@@ -263,61 +270,75 @@ const ss2 = `
     <div class="dynamic-island"></div>
     ${statusBarHTML}
     <div class="screen-content">
-      <div style="padding-top:20px;flex:1;display:flex;flex-direction:column;">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="#4C8DFF"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+      <div style="display:flex;align-items:center;margin-bottom:18px;">
+        <div style="display:inline-flex;align-items:center;gap:10px;background:#182338;border-radius:32px;padding:12px 26px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#E6EDF7"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+          <span style="font-size:22px;color:#E6EDF7;font-weight:500;">Back</span>
         </div>
-        <div style="font-size:48px;font-weight:700;color:#E6EDF7;margin-bottom:8px;">Daily check-in</div>
-        <div style="font-size:28px;color:#A7B3C7;margin-bottom:36px;">How are you feeling today?</div>
+        <div style="flex:1;text-align:center;margin-right:140px;"><span style="font-size:24px;color:#E6EDF7;font-weight:600;">Daily Check-in</span></div>
+      </div>
 
-        <div style="margin-bottom:36px;">
-          <div style="font-size:28px;font-weight:600;color:#E6EDF7;margin-bottom:16px;">Mood</div>
-          <div style="display:flex;gap:14px;">
-            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Low</span></div>
-            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Meh</span></div>
-            <div style="flex:1;border:2px solid #4C8DFF;border-radius:20px;padding:16px 8px;text-align:center;background:rgba(76,141,255,0.15);"><span style="font-size:22px;color:#4C8DFF;font-weight:600;">Okay</span></div>
-            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Good</span></div>
-            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Great</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+        <div style="font-size:44px;font-weight:700;color:#E6EDF7;margin-bottom:10px;">Daily check-in</div>
+        <div style="font-size:22px;color:#A7B3C7;line-height:1.45;margin-bottom:18px;">At the end of the day, reflect on your mood, urges, and patterns. This helps you understand your relationship with dating apps and track your progress over time.</div>
+
+        <div style="background:#121C2E;border:2px solid #223049;border-radius:26px;padding:4px 30px;margin-bottom:16px;">
+          <div style="padding:16px 0;">
+            <div style="font-size:24px;font-weight:600;color:#E6EDF7;">Mood</div>
+            <div style="font-size:18px;color:#A7B3C7;margin-top:2px;margin-bottom:12px;">How are you feeling right now?</div>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;">
+              ${pillChip("Low", false)}
+              ${pillChip("Okay", true)}
+              ${pillChip("Great", false)}
+            </div>
+          </div>
+          <div style="height:2px;background:#223049;"></div>
+          <div style="padding:16px 0;">
+            <div style="font-size:24px;font-weight:600;color:#E6EDF7;margin-bottom:12px;">Fatigue</div>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;">
+              ${pillChip("Fine", false)}
+              ${pillChip("Tired", true)}
+              ${pillChip("Exhausted", false)}
+            </div>
+          </div>
+          <div style="height:2px;background:#223049;"></div>
+          <div style="padding:16px 0;">
+            <div style="font-size:24px;font-weight:600;color:#E6EDF7;margin-bottom:12px;">Urge level</div>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;">
+              ${pillChip("Calm", false)}
+              ${pillChip("Strong", true)}
+              ${pillChip("Overwhelming", false)}
+            </div>
           </div>
         </div>
 
-        <div style="margin-bottom:36px;">
-          <div style="font-size:28px;font-weight:600;color:#E6EDF7;margin-bottom:16px;">Fatigue level</div>
-          <div style="display:flex;gap:14px;">
-            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Fine</span></div>
-            <div style="flex:1;border:2px solid #4C8DFF;border-radius:20px;padding:16px 8px;text-align:center;background:rgba(76,141,255,0.15);"><span style="font-size:22px;color:#4C8DFF;font-weight:600;">Mild</span></div>
-            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Tired</span></div>
-            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:20px;color:#A7B3C7;">Drained</span></div>
-            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:20px;color:#A7B3C7;">Wrecked</span></div>
+        <div style="background:#121C2E;border:2px solid #223049;border-radius:26px;padding:4px 30px;margin-bottom:16px;">
+          <div style="padding:16px 0;">
+            <div style="font-size:24px;font-weight:600;color:#E6EDF7;margin-bottom:12px;">Opened a dating app late at night?</div>
+            <div style="display:flex;gap:14px;">
+              ${pillChip("Yes", false)}
+              ${pillChip("No", false)}
+            </div>
+          </div>
+          <div style="height:2px;background:#223049;"></div>
+          <div style="padding:16px 0;">
+            <div style="font-size:24px;font-weight:600;color:#E6EDF7;margin-bottom:12px;">Spent money on dating today?</div>
+            <div style="display:flex;gap:14px;">
+              ${pillChip("Yes", false)}
+              ${pillChip("No", false)}
+            </div>
           </div>
         </div>
 
-        <div style="margin-bottom:36px;">
-          <div style="font-size:28px;font-weight:600;color:#E6EDF7;margin-bottom:16px;">Urge level</div>
-          <div style="display:flex;gap:14px;">
-            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Calm</span></div>
-            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Low</span></div>
-            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:20px;color:#A7B3C7;">Medium</span></div>
-            <div style="flex:1;border:2px solid #4C8DFF;border-radius:20px;padding:16px 8px;text-align:center;background:rgba(76,141,255,0.15);"><span style="font-size:22px;color:#4C8DFF;font-weight:600;">Strong</span></div>
-            <div style="flex:1;border:2px solid #223049;border-radius:20px;padding:16px 8px;text-align:center;background:#121C2E;"><span style="font-size:22px;color:#A7B3C7;">Max</span></div>
-          </div>
+        <div style="background:#121C2E;border:2px solid #223049;border-radius:26px;padding:20px 30px;">
+          <div style="font-size:24px;font-weight:600;color:#E6EDF7;margin-bottom:12px;">Personal note (optional)</div>
+          <div style="background:#0B1220;border:2px solid #223049;border-radius:18px;padding:20px;color:#A7B3C7;font-size:21px;line-height:1.5;min-height:80px;">How did today go? Write a goal, a win, or anything on your mind.</div>
         </div>
+      </div>
 
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:28px 0;border-bottom:2px solid #223049;">
-          <div style="font-size:28px;color:#E6EDF7;max-width:480px;">Opened a dating app late at night?</div>
-          <div style="width:80px;height:44px;border-radius:22px;background:#223049;position:relative;"><div style="width:36px;height:36px;border-radius:50%;background:#fff;position:absolute;top:4px;left:4px;"></div></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:28px 0;border-bottom:2px solid #223049;">
-          <div style="font-size:28px;color:#E6EDF7;max-width:480px;">Spent money on dating apps today?</div>
-          <div style="width:80px;height:44px;border-radius:22px;background:#223049;position:relative;"><div style="width:36px;height:36px;border-radius:50%;background:#fff;position:absolute;top:4px;left:4px;"></div></div>
-        </div>
-
-        <div style="margin-top:36px;">
-          <div style="font-size:28px;font-weight:600;color:#E6EDF7;margin-bottom:12px;">Personal note (optional)</div>
-          <div style="background:#121C2E;border:2px solid #223049;border-radius:20px;padding:24px;color:#A7B3C7;font-size:26px;min-height:100px;">Feeling better about not checking...</div>
-        </div>
-
-        <div style="background:#4C8DFF;border-radius:28px;padding:28px 0;text-align:center;width:100%;margin-top:32px;"><span style="color:#fff;font-size:30px;font-weight:600;">Save check-in</span></div>
+      <div style="border-top:2px solid #223049;padding-top:22px;margin-top:16px;">
+        <div style="background:#4C8DFF;border-radius:28px;padding:26px 0;text-align:center;"><span style="color:#fff;font-size:30px;font-weight:700;">Save my reflection</span></div>
+        <div style="text-align:center;margin-top:18px;"><span style="color:#A7B3C7;font-size:24px;">Maybe later</span></div>
       </div>
     </div>
     <div class="home-indicator"></div>
@@ -387,69 +408,11 @@ const ss3 = `
   ${sparkleHTML}
 </div>`;
 
-// ========== Screenshot 4: Paywall ==========
-const ss4 = `
-<div class="ss">
-  <div class="glow-blue" style="top:600px;left:-200px;"></div>
-  <div class="glow-purple" style="bottom:400px;right:-200px;"></div>
-  <div class="headline-area">
-    <div class="headline">Less Than a<br>Single Boost</div>
-    <div class="subheadline">Everything you need to break<br>the dating app cycle.</div>
-  </div>
-  <div class="phone-frame">
-    <div class="dynamic-island"></div>
-    ${statusBarHTML}
-    <div class="screen-content">
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding-top:40px;gap:32px;">
-        <div style="text-align:center;">
-          <img src="data:image/png;base64,${logoLargeB64}" width="100" height="100" style="margin-bottom:16px;object-fit:contain;" />
-          <div style="font-size:48px;font-weight:700;color:#E6EDF7;">Stop mindless swiping</div>
-          <div style="font-size:28px;color:#A7B3C7;max-width:580px;line-height:1.5;margin-top:8px;">Everything you need to be intentional about dating apps</div>
-        </div>
-        <div style="background:rgba(242,193,78,0.15);border:2px solid #F2C14E;border-radius:40px;padding:12px 32px;"><span style="color:#F2C14E;font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Cheaper than one Tinder boost</span></div>
-        <div style="background:#121C2E;border:2px solid #223049;border-radius:24px;padding:36px;width:100%;text-align:center;">
-          <div style="font-size:52px;font-weight:800;color:#E6EDF7;">$4.99/month</div>
-          <div style="font-size:24px;color:#A7B3C7;margin-top:8px;line-height:1.5;">A single boost costs $5.99...<br>Unmatch costs less — and works all month</div>
-        </div>
-        <div style="width:100%;display:flex;flex-direction:column;gap:24px;">
-          <div style="display:flex;align-items:center;gap:20px;">
-            <div style="width:64px;height:64px;background:#0F1D3A;border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <svg viewBox="0 0 24 24" width="32" height="32" fill="#4C8DFF"><circle cx="12" cy="12" r="3"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>
-            </div>
-            <span style="font-size:28px;color:#E6EDF7;line-height:1.4;">60-second panic meditation — anytime, offline</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:20px;">
-            <div style="width:64px;height:64px;background:#0F1D3A;border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <svg viewBox="0 0 24 24" width="32" height="32" fill="#4C8DFF"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg>
-            </div>
-            <span style="font-size:28px;color:#E6EDF7;line-height:1.4;">Spend delay cards — think before you boost</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:20px;">
-            <div style="width:64px;height:64px;background:#0F1D3A;border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <svg viewBox="0 0 24 24" width="32" height="32" fill="#4C8DFF"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
-            </div>
-            <span style="font-size:28px;color:#E6EDF7;line-height:1.4;">Progress tracking — streaks, rank & insights</span>
-          </div>
-        </div>
-        <div style="background:#4C8DFF;border-radius:28px;padding:28px 0;text-align:center;width:100%;margin-top:8px;"><span style="color:#fff;font-size:30px;font-weight:700;">Try 7 Days for Free</span></div>
-        <span style="color:#A7B3C7;font-size:24px;text-decoration:underline;">Restore purchase</span>
-        <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="#A7B3C7"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>
-          <span style="font-size:22px;color:#A7B3C7;">Private & on-device · No account required</span>
-        </div>
-      </div>
-    </div>
-    <div class="home-indicator"></div>
-  </div>
-  ${sparkleHTML}
-</div>`;
-
 // Write individual HTML files
 const screenshots = [
   { name: '1_home_breathing', html: ss1 },
   { name: '2_daily_checkin', html: ss2 },
   { name: '3_progress', html: ss3 },
-  { name: '4_paywall', html: ss4 },
 ];
 
 screenshots.forEach(({ name, html }) => {
